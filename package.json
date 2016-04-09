@@ -26,6 +26,7 @@
   ],
   "dependencies": {
     "axios": "^0.9.1",
+    "ramda": "^0.21.0",
     "ramdasauce": "^1.0.0"
   },
   "devDependencies": {
