@@ -110,6 +110,18 @@ var responseToProblem = function responseToProblem(response) {
   return _ramda2.default.cond([[in200s, _ramda2.default.always(NONE)], [in400s, _ramda2.default.always(CLIENT_ERROR)], [in500s, _ramda2.default.always(SERVER_ERROR)], [_ramda2.default.T, _ramda2.default.always(UNKNOWN_ERROR)]])(response.status || 0);
 };
 
+module.exports = {
+  responseToProblem: responseToProblem,
+  create: create,
+  NONE: NONE,
+  CLIENT_ERROR: CLIENT_ERROR,
+  SERVER_ERROR: SERVER_ERROR,
+  TIMEOUT_ERROR: TIMEOUT_ERROR,
+  CONNECTION_ERROR: CONNECTION_ERROR,
+  NETWORK_ERROR: NETWORK_ERROR,
+  UNKNOWN_ERROR: UNKNOWN_ERROR
+};
+
 exports.NONE = NONE;
 exports.CLIENT_ERROR = CLIENT_ERROR;
 exports.SERVER_ERROR = SERVER_ERROR;
