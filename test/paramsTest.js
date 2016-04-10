@@ -18,7 +18,7 @@ const validConfig = {
 
 test('GET supports params', (t) => {
   const x = create(validConfig)
-  return x.get('/echo?q=hello').then((response) => {
+  return x.get('/echo', {q: 'hello'}).then((response) => {
     t.is(response.problem, NONE)
     t.same(response.data, {echo: 'hello'})
   })
@@ -26,7 +26,7 @@ test('GET supports params', (t) => {
 
 test('POST supports params', (t) => {
   const x = create(validConfig)
-  return x.post('/echo?q=hello').then((response) => {
+  return x.post('/echo', {q: 'hello'}).then((response) => {
     t.is(response.problem, NONE)
     t.same(response.data, {echo: 'hello'})
   })
@@ -34,7 +34,7 @@ test('POST supports params', (t) => {
 
 test('PATCH supports params', (t) => {
   const x = create(validConfig)
-  return x.patch('/echo?q=hello').then((response) => {
+  return x.patch('/echo', {q: 'hello'}).then((response) => {
     t.is(response.problem, NONE)
     t.same(response.data, {echo: 'hello'})
   })
@@ -42,7 +42,7 @@ test('PATCH supports params', (t) => {
 
 test('PUT supports params', (t) => {
   const x = create(validConfig)
-  return x.put('/echo?q=hello').then((response) => {
+  return x.put('/echo', {q: 'hello'}).then((response) => {
     t.is(response.problem, NONE)
     t.same(response.data, {echo: 'hello'})
   })
@@ -50,8 +50,32 @@ test('PUT supports params', (t) => {
 
 test('DELETE supports params', (t) => {
   const x = create(validConfig)
-  return x.delete('/echo?q=hello').then((response) => {
+  return x.delete('/echo', {q: 'hello'}).then((response) => {
     t.is(response.problem, NONE)
     t.same(response.data, {echo: 'hello'})
+  })
+})
+
+test('Empty params are supported', (t) => {
+  const x = create(validConfig)
+  return x.get('/echo', {}).then((response) => {
+    t.is(response.problem, NONE)
+    t.same(response.data, {echo: ''})
+  })
+})
+
+test('Null params are supported', (t) => {
+  const x = create(validConfig)
+  return x.get('/echo', null).then((response) => {
+    t.is(response.problem, NONE)
+    t.same(response.data, {echo: ''})
+  })
+})
+
+test('Undefined params are supported', (t) => {
+  const x = create(validConfig)
+  return x.get('/echo').then((response) => {
+    t.is(response.problem, NONE)
+    t.same(response.data, {echo: ''})
   })
 })
