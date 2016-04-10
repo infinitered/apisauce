@@ -20,6 +20,7 @@ api
 api
   .get('/rate_limit')
   .then(RS.dotPath('data.rate.remaining'))
+  .then(R.concat('Calls Remaining This Hour: '))
   .then(console.log)
 
 api
