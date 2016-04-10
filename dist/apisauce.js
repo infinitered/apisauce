@@ -36,6 +36,7 @@ var CONNECTION_ERROR = 'CONNECTION_ERROR';
 var NETWORK_ERROR = 'NETWORK_ERROR';
 var UNKNOWN_ERROR = 'UNKNOWN_ERROR';
 
+var TIMEOUT_ERROR_CODES = ['ECONNABORTED'];
 var NODEJS_CONNECTION_ERROR_CODES = ['ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET'];
 var in200s = _ramdasauce2.default.isWithin(200, 299);
 var in400s = _ramdasauce2.default.isWithin(400, 499);
@@ -148,8 +149,7 @@ var convertResponse = function convertResponse(axiosResponse) {
  */
 var responseToProblem = function responseToProblem(response) {
   if (response instanceof Error) {
-    var known = _ramda2.default.contains(response.code, NODEJS_CONNECTION_ERROR_CODES);
-    return known ? CONNECTION_ERROR : UNKNOWN_ERROR;
+    return _ramda2.default.cond([[_ramda2.default.contains(_ramda2.default.__, TIMEOUT_ERROR_CODES), _ramda2.default.always(TIMEOUT_ERROR)], [_ramda2.default.contains(_ramda2.default.__, NODEJS_CONNECTION_ERROR_CODES), _ramda2.default.always(CONNECTION_ERROR)], [_ramda2.default.T, _ramda2.default.always(UNKNOWN_ERROR)]])(response.code);
   }
   if (_ramda2.default.isNil(response) || !_ramda2.default.has('status')) return UNKNOWN_ERROR;
   return _ramda2.default.cond([[in200s, _ramda2.default.always(NONE)], [in400s, _ramda2.default.always(CLIENT_ERROR)], [in500s, _ramda2.default.always(SERVER_ERROR)], [_ramda2.default.T, _ramda2.default.always(UNKNOWN_ERROR)]])(response.status || 0);
