@@ -11,18 +11,23 @@ const api = apisauce.create({
   }
 })
 
+// attach a monitor that fires with each request
+api.addMonitor(
+  R.pipe(
+    RS.dotPath('headers.x-ratelimit-remaining'),
+    R.concat('Calls remaining this hour: '),
+    console.log
+  )
+)
+
+// show the latest commit message
 api
   .get(`/repos/${REPO}/commits`)
   .then(RS.dotPath('data.0.commit.message'))
   .then(R.concat('Latest Commit: '))
   .then(console.log)
 
-api
-  .get('/rate_limit')
-  .then(RS.dotPath('data.rate.remaining'))
-  .then(R.concat('Calls Remaining This Hour: '))
-  .then(console.log)
-
+// call a non-existant API to show that the flow is identical!
 api
   .post('/something/bad')
   .then(R.props(['ok', 'status', 'problem']))

@@ -6,11 +6,11 @@ The API fresh maker.
 
 # Features
 
-* start the awesome `axios` library
-* ensures promises are always resolved (that's right, i said it)
-* generates functions that map to your APIs
-* simplifies server responses & error checking
-* doesn't trap `axios`'s power if you need it
+* low-fat wrapper for the amazing `axios` http client library
+* all responses follow the same flow: success and failure alike
+* responses have a `problem` property to help guide exception flow
+* attach functions that get called each request
+* detects connection issues
 
 # Installing
 
@@ -26,15 +26,20 @@ The API fresh maker.
 # Usage
 
 ```js
-import apisauce from 'apisauce'
+// showLastCommitMessageForThisLibrary.js
+import {create} from 'apisauce'
 
-const api = apisauce.create({
+// define the api
+const api = create({
   baseURL: 'https://api.github.com',
-  timeout: 10000,
   headers: {'Accept': 'application/vnd.github.v3+json'}
 })
 
-api.get('/repos/skellock/apisauce/commits').then(console.log)
+// start making calls
+api
+  .get('/repos/skellock/apisauce/commits')
+  .then((response) => response.data[0].commit.message)
+  .then(console.log)
 ```
 
 # Problem Codes
@@ -59,7 +64,7 @@ Which problem is chosen will be picked by walking down the list.
 
 # Feedback
 
-Bugs?  Comments?  Features?  Bitcoins?  PRs and Issues happily welcomed!
+Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
@@ -71,5 +76,4 @@ Bugs?  Comments?  Features?  Bitcoins?  PRs and Issues happily welcomed!
 
 * [ ] Detect network failures on iOS and Android.
 * [ ] Pass through axios options like timeout & headers per request
-* [ ] Provide callbacks at the api level
 * [ ] Expose the progress upload event
