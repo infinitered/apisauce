@@ -176,7 +176,15 @@ block.
 
 Remember.  Safety first!
 
+# Using Async/Await
 
+If you're more of a stage-0 kinda person, you can use it like this:
+
+```js
+const api = create({baseURL: '...'})
+const response = await api.get('/slowest/site/on/the/net')
+console.log(response.ok) // yay!
+```
 
 # Problem Codes
 

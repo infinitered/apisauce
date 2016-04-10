@@ -6,7 +6,7 @@ gulp.task('build', () => {
   return gulp.src('lib/apisauce.js')
     .pipe(rollup({}))
     .pipe(babel({
-      presets: ['es2015', 'stage-2']
+      presets: ['es2015', 'stage-0']
     }))
     .pipe(gulp.dest('./dist'))
 })
