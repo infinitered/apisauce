@@ -1,6 +1,6 @@
 import test from 'ava'
 import {create, NONE, CLIENT_ERROR, SERVER_ERROR} from '../lib/apisauce'
-import createServer from './testServer'
+import createServer from '../support/server'
 
 const PORT = 9192
 let server = null

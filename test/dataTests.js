@@ -1,6 +1,6 @@
 import test from 'ava'
 import {create} from '../lib/apisauce'
-import createServer from './testServer'
+import createServer from '../support/server'
 
 const PORT = 9193
 const MOCK = {a: {b: [1, 2, 3]}}
