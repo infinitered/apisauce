@@ -36,7 +36,6 @@ var CONNECTION_ERROR = 'CONNECTION_ERROR';
 var NETWORK_ERROR = 'NETWORK_ERROR';
 var UNKNOWN_ERROR = 'UNKNOWN_ERROR';
 
-var VERBS = _ramda2.default.split(',', 'get,post,patch,delete,put,head');
 var NODEJS_CONNECTION_ERROR_CODES = ['ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET'];
 var in200s = _ramdasauce2.default.isWithin(200, 299);
 var in400s = _ramdasauce2.default.isWithin(400, 499);
@@ -54,45 +53,91 @@ var create = function create(config) {
 
   // create the axios instance
   var instance = _axios2.default.create(combinedConfig);
+  var monitors = [];
+  var addMonitor = function addMonitor(monitor) {
+    monitors.push(monitor);
+  };
 
-  // make the functions for requesting each verb
-  return _ramda2.default.pipe(_ramda2.default.map(function (v) {
-    return [v, _ramda2.default.partial(doRequest, [instance, v])];
-  }), _ramda2.default.append(['axios', instance]), _ramda2.default.fromPairs)(VERBS);
+  // create the base object
+  var sauce = {
+    axiosInstance: instance,
+    monitors: monitors,
+    addMonitor: addMonitor
+  };
+
+  // attach functions for each our HTTP verbs
+  sauce.get = _ramda2.default.partial(doRequestWithoutBody, [sauce, 'get']);
+  sauce.delete = _ramda2.default.partial(doRequestWithoutBody, [sauce, 'delete']);
+  sauce.head = _ramda2.default.partial(doRequestWithoutBody, [sauce, 'head']);
+  sauce.post = _ramda2.default.partial(doRequestWithBody, [sauce, 'post']);
+  sauce.put = _ramda2.default.partial(doRequestWithBody, [sauce, 'put']);
+  sauce.patch = _ramda2.default.partial(doRequestWithBody, [sauce, 'patch']);
+
+  // send it back
+  return sauce;
 };
 
 /**
-  Make the request.
+  Make the request for GET, HEAD, DELETE
  */
-var doRequest = function doRequest(instance, verb, url, params, data) {
-  var requestConfig = {
-    url: url,
-    params: params,
-    method: verb,
-    data: data
-  };
-  // console.log(requestConfig)
-  return instance.request(requestConfig).then(function (response) {
-    var problem = responseToProblem(response);
-    var status = response.status;
-    var headers = response.headers;
-    var config = response.config;
-    var data = response.data;
+var doRequestWithoutBody = function doRequestWithoutBody(api, method, url) {
+  var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+  var axiosConfig = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
-    return { ok: true, status: status, headers: headers, config: config, data: data, problem: problem };
-  }).catch(function (response) {
-    var problem = responseToProblem(response);
-    if (response instanceof Error) {
-      return { ok: false, status: null, headers: null, config: null, data: null, problem: problem };
-    } else {
-      var status = response.status;
-      var headers = response.headers;
-      var config = response.config;
-      var _data = response.data;
+  return doRequest(api, _ramda2.default.merge({ url: url, params: params, method: method }, axiosConfig));
+};
 
-      return { ok: false, status: status, headers: headers, config: config, data: _data, problem: problem };
+/**
+  Make the request for POST, PUT, PATCH
+ */
+var doRequestWithBody = function doRequestWithBody(api, method, url) {
+  var data = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
+  var axiosConfig = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
+
+  return doRequest(api, _ramda2.default.merge({ url: url, method: method, data: data }, axiosConfig));
+};
+
+/**
+  Make the request with this config!
+ */
+var doRequest = function doRequest(api, axiosRequestConfig) {
+  var axiosInstance = api.axiosInstance;
+
+  // first convert the axios response, then execute our callback
+
+  var chain = _ramda2.default.pipe(convertResponse, _ramda2.default.partial(runMonitors, [api]));
+
+  // Make the request and execute the identical pipeline for both promise paths.
+  return axiosInstance.request(axiosRequestConfig).then(chain).catch(chain);
+};
+
+/**
+  Fires after we convert from axios' response into our response.  Exceptions
+  raised for each monitor will be ignored.
+ */
+var runMonitors = function runMonitors(api, ourResponse) {
+  api.monitors.forEach(function (fn) {
+    try {
+      fn(ourResponse);
+    } catch (error) {
+      // all monitor complaints will be ignored
     }
   });
+  return ourResponse;
+};
+
+/**
+  Converts an axios response/error into our response.
+ */
+var convertResponse = function convertResponse(axiosResponse) {
+  return {
+    problem: responseToProblem(axiosResponse),
+    ok: _ramda2.default.pipe(_ramda2.default.propOr(0, 'status'), in200s)(axiosResponse),
+    status: axiosResponse.status || null,
+    headers: axiosResponse.headers || null,
+    config: axiosResponse.config || null,
+    data: axiosResponse.data || null
+  };
 };
 
 /**
