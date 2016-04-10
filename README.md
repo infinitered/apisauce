@@ -73,6 +73,12 @@ const api = create({
 })
 ```
 
+Default timeouts can be applied too:
+
+```js
+const api = create({baseURL: '...', timeout: 30000}) // 30 seconds
+```
+
 ### Calling The API
 
 With your fresh `api`, you can now call it like this:
@@ -97,6 +103,73 @@ api.put('/servers/1', {live: true})
 * url - the relative path to the API (required)
 * data - Object - the object jumping the wire
 * axiosConfig - Object - config passed along to the `axios` request (optional)
+
+### Responses
+
+The responses are promise-based, so you you'll need to handle things in a
+`.then()` function.
+
+The promised is always resolved with a `response` object.
+
+Even if there was a problem with the request!  This is one of the goals of
+this library.  It ensures sane calling code without having to handle `.catch`
+and have 2 separate flows.
+
+A response will always have these 2 properties:
+
+```
+ok      - Boolean - True is the status code is in the 200's; false otherwise.
+problem - String  - One of 6 different values (see below - problem codes)
+```
+
+If the request made it to the server and got a response of any kind, response
+will also have these properties:
+
+```
+data    - Object - this is probably the thing you're after.
+status  - Number - the HTTP response code
+headers - Object - the HTTP response headers
+config  - Object - the `axios` config object used to make the request
+```
+
+### Adding Monitors
+
+Monitors are functions you can attach to the API which will be caused
+everytime a request is made.  You can use it to do things like:
+
+* check for headers and record values
+* determine if you need to trigger other parts of your code
+* measure performance of API calls
+* preform logging
+
+Monitors are run just before the promise is resolved.  You get an
+early sneak peak at what will come back.
+
+You cannot change anything, just look.
+
+Here's a sample monitor:
+```js
+const naviLogger = (response) => console.log('hey!  listen! ', response)
+```
+
+You add it to the api like this:
+
+```js
+api.addMonitor(naviLogger)
+```
+
+Any exceptions that you trigger in your monitor will not affect the flow
+of the api request.
+
+```js
+api.addMonitor(response => this.kaboom())
+```
+
+Interally, each monitor callback is surrounded by an oppressive `try/catch`
+block.
+
+Remember.  Safety first!
+
 
 
 # Problem Codes
@@ -131,6 +204,5 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 ### TODO
 
+* [ ] Detect and handle timeouts.
 * [ ] Detect network failures on iOS and Android.
-* [ ] Pass through axios options like timeout & headers per request
-* [ ] Expose the progress upload event
