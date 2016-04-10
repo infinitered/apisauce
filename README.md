@@ -212,7 +212,7 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
-### 0.1.0 - April 10th, 2016
+### 0.1.1 - April 10th, 2016
 
 * [NEW] timeout detection
 
