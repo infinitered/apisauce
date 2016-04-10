@@ -135,12 +135,12 @@ config  - Object - the `axios` config object used to make the request
 ### Adding Monitors
 
 Monitors are functions you can attach to the API which will be caused
-everytime a request is made.  You can use it to do things like:
+when any request is made.  You can use it to do things like:
 
 * check for headers and record values
 * determine if you need to trigger other parts of your code
 * measure performance of API calls
-* preform logging
+* perform logging
 
 Monitors are run just before the promise is resolved.  You get an
 early sneak peak at what will come back.
@@ -149,13 +149,8 @@ You cannot change anything, just look.
 
 Here's a sample monitor:
 ```js
-const naviLogger = (response) => console.log('hey!  listen! ', response)
-```
-
-You add it to the api like this:
-
-```js
-api.addMonitor(naviLogger)
+const naviMonitor = (response) => console.log('hey!  listen! ', response)
+api.addMonitor(naviMonitor)
 ```
 
 Any exceptions that you trigger in your monitor will not affect the flow
@@ -165,7 +160,7 @@ of the api request.
 api.addMonitor(response => this.kaboom())
 ```
 
-Interally, each monitor callback is surrounded by an oppressive `try/catch`
+Internally, each monitor callback is surrounded by an oppressive `try/catch`
 block.
 
 Remember.  Safety first!
