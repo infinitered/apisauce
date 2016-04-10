@@ -22,14 +22,19 @@ The API fresh maker.
 * Built with ES6.
 * Supported in Node and the browser(s).
 
-# Fast Track
-
-```js
-```
 
 # Usage
 
 ```js
+import apisauce from 'apisauce'
+
+const api = apisauce.create({
+  baseURL: 'https://api.github.com',
+  timeout: 10000,
+  headers: {'Accept': 'application/vnd.github.v3+json'}
+})
+
+api.get('/repos/skellock/apisauce/commits').then(console.log)
 ```
 
 # Problem Codes
@@ -58,6 +63,13 @@ Bugs?  Comments?  Features?  Bitcoins?  PRs and Issues happily welcomed!
 
 # Release Notes
 
-### 1.0.0 - April 10th, 2016
+### 0.1.0 - April 10th, 2016
 
 * Initial Release
+
+### TODO
+
+[ ] Detect network failures on iOS and Android.
+[ ] Pass through axios options like timeout & headers per request
+[ ] Provide callbacks at the api level
+[ ] Expose the progress upload event
