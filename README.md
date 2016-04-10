@@ -69,7 +69,7 @@ Bugs?  Comments?  Features?  Bitcoins?  PRs and Issues happily welcomed!
 
 ### TODO
 
-[ ] Detect network failures on iOS and Android.
-[ ] Pass through axios options like timeout & headers per request
-[ ] Provide callbacks at the api level
-[ ] Expose the progress upload event
+* [ ] Detect network failures on iOS and Android.
+* [ ] Pass through axios options like timeout & headers per request
+* [ ] Provide callbacks at the api level
+* [ ] Expose the progress upload event
