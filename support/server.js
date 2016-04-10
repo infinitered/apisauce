@@ -19,6 +19,11 @@ export default (port, mockData = {}) => {
       send200(res)
       return
     }
+    if (RS.startsWith('/echo', url)) {
+      const echo = R.slice(8, Infinity, url)
+      sendResponse(res, 200, JSON.stringify({echo}))
+      return
+    }
     if (RS.startsWith('/number', url)) {
       const n = R.slice(8, 11, url)
       sendResponse(res, n, JSON.stringify(mockData))
