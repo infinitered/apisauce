@@ -40,13 +40,14 @@ check the problem.  The values are exposed as `CONSTANTS`
 hanging on your built API.
 
 ```
-Constant        VALUE             Status Code   Explanation
+Constant        VALUE               Status Code   Explanation
 ----------------------------------------------------------------------------------------
-NONE            null              200-299       No problems.
-CLIENT_ERROR    'CLIENT_ERROR'    400-499       Any non-specific 400 series error.
-SERVER_ERROR    'SERVER_ERROR'    500-599       Any 500 series error.
-TIMEOUT_ERROR   'TIMEOUT_ERROR'   ---           Server didn't respond in time.
-NETWORK_ERROR   'NETWORK_ERROR'   ---           Couldn't even get to the server!
+NONE             null               200-299       No problems.
+CLIENT_ERROR     'CLIENT_ERROR'     400-499       Any non-specific 400 series error.
+SERVER_ERROR     'SERVER_ERROR'     500-599       Any 500 series error.
+TIMEOUT_ERROR    'TIMEOUT_ERROR'    ---           Server didn't respond in time.
+CONNECTION_ERROR 'CONNECTION_ERROR' ---           Server not available, bad dns.
+NETWORK_ERROR    'NETWORK_ERROR'    ---           Network not available.
 ```
 
 Which problem is chosen will be picked by walking down the list.

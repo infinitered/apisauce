@@ -1,5 +1,5 @@
 import test from 'ava'
-import lib from '../lib/apisauce'
+import {create} from '../lib/apisauce'
 import createServer from './testServer'
 
 const PORT = 9193
@@ -18,7 +18,7 @@ const validConfig = {
 }
 
 test('has valid data with a 200', (t) => {
-  const x = lib.create(validConfig)
+  const x = create(validConfig)
   return x.get('/number/200', {a: 'b'}).then((response) => {
     t.is(response.status, 200)
     t.same(response.data, MOCK)
@@ -26,7 +26,7 @@ test('has valid data with a 200', (t) => {
 })
 
 test('has valid data with a 400s', (t) => {
-  const x = lib.create(validConfig)
+  const x = create(validConfig)
   return x.get('/number/404').then((response) => {
     t.is(response.status, 404)
     t.same(response.data, MOCK)
@@ -34,7 +34,7 @@ test('has valid data with a 400s', (t) => {
 })
 
 test('has valid data with a 500s', (t) => {
-  const x = lib.create(validConfig)
+  const x = create(validConfig)
   return x.get('/number/500').then((response) => {
     t.is(response.status, 500)
     t.same(response.data, MOCK)
