@@ -145,7 +145,7 @@ config  - Object - the `axios` config object used to make the request
 
 ### Adding Monitors
 
-Monitors are functions you can attach to the API which will be caused
+Monitors are functions you can attach to the API which will be called
 when any request is made.  You can use it to do things like:
 
 * check for headers and record values
