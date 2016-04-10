@@ -12,7 +12,7 @@ const send200 = (res, body) => {
   sendResponse(res, 200, body || '<h1>OK</h1>')
 }
 
-export default (port) => {
+export default (port, mockData = {}) => {
   const server = http.createServer((req, res) => {
     const url = req.url
     if (url === '/ok') {
@@ -20,8 +20,8 @@ export default (port) => {
       return
     }
     if (RS.startsWith('/number', url)) {
-      const n = R.pipe(R.split('/'), R.last)(url)
-      sendResponse(res, n, '')
+      const n = R.slice(8, 11, url)
+      sendResponse(res, n, JSON.stringify(mockData))
       return
     }
   })
