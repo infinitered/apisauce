@@ -1,5 +1,5 @@
 import test from 'ava'
-import {create} from '../lib/apisauce'
+import {create, NONE, CLIENT_ERROR, SERVER_ERROR} from '../lib/apisauce'
 import createServer from './testServer'
 
 const PORT = 9192
@@ -20,6 +20,7 @@ test('reads the status code for 200s', (t) => {
   const x = create(validConfig)
   return x.get('/number/201').then((response) => {
     t.is(response.status, 201)
+    t.is(response.problem, NONE)
   })
 })
 
@@ -27,6 +28,7 @@ test('reads the status code for 400s', (t) => {
   const x = create(validConfig)
   return x.get('/number/401').then((response) => {
     t.is(response.status, 401)
+    t.is(response.problem, CLIENT_ERROR)
   })
 })
 
@@ -34,5 +36,6 @@ test('reads the status code for 500s', (t) => {
   const x = create(validConfig)
   return x.get('/number/501').then((response) => {
     t.is(response.status, 501)
+    t.is(response.problem, SERVER_ERROR)
   })
 })
