@@ -57,6 +57,12 @@ export default (port, mockData = {}) => {
       return
     }
 
+    if (RS.startsWith('/sleep', url)) {
+      const wait = R.pipe(R.split('/'), R.last, Number)(url)
+      setTimeout(() => { send200(res) }, wait)
+      return
+    }
+
     if (url === '/post') {
       processPost(req, res, function () {
         sendResponse(res, 200, JSON.stringify({got: req.post}))

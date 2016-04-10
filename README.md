@@ -1,7 +1,7 @@
 # Apisauce
 
 ```
-(Ring ring ring,)
+(Ring ring ring)
 < Hello?
 > Hi, can I speak to JSON API.
 < Speaking.
@@ -178,7 +178,7 @@ Remember.  Safety first!
 
 # Using Async/Await
 
-If you're more of a stage-0 kinda person, you can use it like this:
+If you're more of a `stage-0` kinda person, you can use it like this:
 
 ```js
 const api = create({baseURL: '...'})
@@ -214,9 +214,12 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 ### 0.1.0 - April 10th, 2016
 
+* [NEW] timeout detection
+
+### 0.1.0 - April 10th, 2016
+
 * Initial Release
 
 ### TODO
 
-* [ ] Detect and handle timeouts.
 * [ ] Detect network failures on iOS and Android.
