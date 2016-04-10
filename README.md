@@ -23,7 +23,7 @@ The API fresh maker.
 * Supported in Node and the browser(s).
 
 
-# Usage
+# Quick Start
 
 ```js
 // showLastCommitMessageForThisLibrary.js
@@ -41,6 +41,63 @@ api
   .then((response) => response.data[0].commit.message)
   .then(console.log)
 ```
+
+See the examples folder for more code.
+
+# Documentation
+
+### Create an API
+
+You create an api by calling `.create()` and passing in a configuration object.
+
+```js
+const api = create({baseURL: 'https://api.github.com'})
+```
+
+The only required property is `baseURL` and it should be the starting point for
+your API.  It can contain a sub-path and a port as well.
+
+```js
+const api = create({baseURL: 'https://example.com/api/v3'})
+```
+
+HTTP request headers for all requests can be included as well.
+
+```js
+const api = create({
+  baseURL: '...',
+  headers: {
+    'X-API-KEY': '123',
+    'X-MARKS-THE-SPOT': 'yarrrrr'
+  }
+})
+```
+
+### Calling The API
+
+With your fresh `api`, you can now call it like this:
+
+```js
+api.get('/repos/skellock/apisauce/commits')
+api.head('/me')
+api.delete('/users/69')
+api.post('/todos', {note: 'jump around'})
+api.patch('/servers/1', {live: false})
+api.put('/servers/1', {live: true})
+```
+
+`get`, `head`, and `delete` accept 3 parameters:
+
+* url - the relative path to the API (required)
+* params - Object - query string variables (optional)
+* axiosConfig - Object - config passed along to the `axios` request (optional)
+
+`post`, `put`, and `patch` accept 3 different parameters:
+
+* url - the relative path to the API (required)
+* data - Object - the object jumping the wire
+* axiosConfig - Object - config passed along to the `axios` request (optional)
+
 
 # Problem Codes
 
