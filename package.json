@@ -1,7 +1,7 @@
 {
   "name": "apisauce",
   "version": "0.0.1",
-  "description": "The API fresh maker.",
+  "description": "A JSON API client for JavaScript. No, no. Not like that. Like this.",
   "repository": {
     "type": "git",
     "url": "https://github.com/skellock/apisauce.git"
