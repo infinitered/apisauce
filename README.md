@@ -1,6 +1,17 @@
 # Apisauce
 
-The API fresh maker.
+```
+(Ring ring ring,)
+< Hello?
+> Hi, can I speak to JSON API.
+< Speaking.
+> Hi, it's me JavaScript.  Look, we need to talk.
+< Now is not a good time...
+> Wait, I just wanted to say, sorry.
+< ...
+```
+
+Talking to APIs doesn't have to be awkward anymore.
 
 [![npm module](https://badge.fury.io/js/apisauce.svg)](https://www.npmjs.org/package/apisauce)
 
