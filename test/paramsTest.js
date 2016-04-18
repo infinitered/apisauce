@@ -79,3 +79,19 @@ test('Undefined params are supported', (t) => {
     t.deepEqual(response.data, {echo: ''})
   })
 })
+
+test('Null parameters should be null', (t) => {
+  const x = create(validConfig)
+  return x.get('/echo', {q: null}).then((response) => {
+    t.is(response.problem, NONE)
+    t.deepEqual(response.data, {echo: ''})
+  })
+})
+
+test('Empty parameters should be empty', (t) => {
+  const x = create(validConfig)
+  return x.get('/echo', {q: ''}).then((response) => {
+    t.is(response.problem, NONE)
+    t.deepEqual(response.data, {echo: ''})
+  })
+})
