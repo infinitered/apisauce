@@ -21,7 +21,7 @@ test('POST has proper data', (t) => {
   const x = create(validConfig)
   return x.post('/post', MOCK).then((response) => {
     t.is(response.status, 200)
-    t.same(response.data, {got: MOCK})
+    t.deepEqual(response.data, {got: MOCK})
   })
 })
 
@@ -29,7 +29,7 @@ test('PATCH has proper data', (t) => {
   const x = create(validConfig)
   return x.patch('/post', MOCK).then((response) => {
     t.is(response.status, 200)
-    t.same(response.data, {got: MOCK})
+    t.deepEqual(response.data, {got: MOCK})
   })
 })
 
@@ -37,6 +37,6 @@ test('PUT has proper data', (t) => {
   const x = create(validConfig)
   return x.put('/post', MOCK).then((response) => {
     t.is(response.status, 200)
-    t.same(response.data, {got: MOCK})
+    t.deepEqual(response.data, {got: MOCK})
   })
 })

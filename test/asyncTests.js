@@ -21,5 +21,5 @@ test('can be used with async/await', async (t) => {
   const x = create(validConfig)
   const response = await x.get('/number/200', {a: 'b'})
   t.is(response.status, 200)
-  t.same(response.data, MOCK)
+  t.deepEqual(response.data, MOCK)
 })

@@ -25,13 +25,13 @@ test('config must have a valid baseURL', (t) => {
 
 test('returns an object when we configure correctly', (t) => {
   const x = create(validConfig)
-  t.ok(x)
-  t.ok(x.axiosInstance)
+  t.truthy(x)
+  t.truthy(x.axiosInstance)
 })
 
 test('configures axios correctly', (t) => {
   const axios = create(validConfig).axiosInstance
   t.is(axios.defaults.timeout, 0)
   t.is(axios.defaults.baseURL, validConfig.baseURL)
-  t.same(axios.defaults.headers, validConfig.headers)
+  t.deepEqual(axios.defaults.headers, validConfig.headers)
 })

@@ -21,7 +21,7 @@ test('has valid data with a 200', (t) => {
   const x = create(validConfig)
   return x.get('/number/200', {a: 'b'}).then((response) => {
     t.is(response.status, 200)
-    t.same(response.data, MOCK)
+    t.deepEqual(response.data, MOCK)
   })
 })
 
@@ -29,7 +29,7 @@ test('has valid data with a 400s', (t) => {
   const x = create(validConfig)
   return x.get('/number/404').then((response) => {
     t.is(response.status, 404)
-    t.same(response.data, MOCK)
+    t.deepEqual(response.data, MOCK)
   })
 })
 
@@ -37,6 +37,6 @@ test('has valid data with a 500s', (t) => {
   const x = create(validConfig)
   return x.get('/number/500').then((response) => {
     t.is(response.status, 500)
-    t.same(response.data, MOCK)
+    t.deepEqual(response.data, MOCK)
   })
 })
