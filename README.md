@@ -137,10 +137,11 @@ If the request made it to the server and got a response of any kind, response
 will also have these properties:
 
 ```
-data    - Object - this is probably the thing you're after.
-status  - Number - the HTTP response code
-headers - Object - the HTTP response headers
-config  - Object - the `axios` config object used to make the request
+data     - Object - this is probably the thing you're after.
+status   - Number - the HTTP response code
+headers  - Object - the HTTP response headers
+config   - Object - the `axios` config object used to make the request
+duration - Number - the number of milliseconds it took to run this request
 ```
 
 ### Adding Monitors
