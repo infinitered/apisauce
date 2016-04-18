@@ -20,7 +20,7 @@ const validConfig = {
 test('times out', (t) => {
   const x = create(validConfig)
   return x.get('/sleep/150').then((response) => {
-    t.notOk(response.ok)
+    t.falsy(response.ok)
     t.is(response.problem, TIMEOUT_ERROR)
   })
 })

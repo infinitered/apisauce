@@ -20,8 +20,8 @@ const validConfig = {
 
 test('attaches a monitor', (t) => {
   const api = create(validConfig)
-  t.ok(api.addMonitor)
-  t.ok(api.monitors)
+  t.truthy(api.addMonitor)
+  t.truthy(api.monitors)
   t.is(api.monitors.length, 0)
   api.addMonitor(R.identity)
   t.is(api.monitors.length, 1)
