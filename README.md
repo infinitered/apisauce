@@ -213,6 +213,10 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.1.3 - April 18th, 2016
+
+* [FIX] Forgot to run the `dist` script to repackage.  :(  Failsauce.
+
 ### 0.1.2 - April 18th, 2016
 
 * [NEW] Added duration (in milliseconds) to the response.
