@@ -104,9 +104,10 @@ var doRequestWithBody = function doRequestWithBody(api, method, url) {
 var doRequest = function doRequest(api, axiosRequestConfig) {
   var axiosInstance = api.axiosInstance;
 
-  // first convert the axios response, then execute our callback
+  var startedAt = _ramdasauce2.default.toNumber(new Date());
 
-  var chain = _ramda2.default.pipe(convertResponse, _ramda2.default.partial(runMonitors, [api]));
+  // first convert the axios response, then execute our callback
+  var chain = _ramda2.default.pipe(_ramda2.default.partial(convertResponse, [startedAt]), _ramda2.default.partial(runMonitors, [api]));
 
   // Make the request and execute the identical pipeline for both promise paths.
   return axiosInstance.request(axiosRequestConfig).then(chain).catch(chain);
@@ -130,8 +131,11 @@ var runMonitors = function runMonitors(api, ourResponse) {
 /**
   Converts an axios response/error into our response.
  */
-var convertResponse = function convertResponse(axiosResponse) {
+var convertResponse = function convertResponse(startedAt, axiosResponse) {
+  var end = _ramdasauce2.default.toNumber(new Date());
+  var duration = end - startedAt;
   return {
+    duration: duration,
     problem: responseToProblem(axiosResponse),
     ok: _ramda2.default.pipe(_ramda2.default.propOr(0, 'status'), in200s)(axiosResponse),
     status: axiosResponse.status || null,
