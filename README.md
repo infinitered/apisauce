@@ -51,6 +51,10 @@ api
   .get('/repos/skellock/apisauce/commits')
   .then((response) => response.data[0].commit.message)
   .then(console.log)
+
+// customizing headers per-request
+api.post('/users', {name: 'steve'}, {headers: {'x-gigawatts': '1.21'}})
+
 ```
 
 See the examples folder for more code.
@@ -98,7 +102,7 @@ With your fresh `api`, you can now call it like this:
 api.get('/repos/skellock/apisauce/commits')
 api.head('/me')
 api.delete('/users/69')
-api.post('/todos', {note: 'jump around'})
+api.post('/todos', {note: 'jump around'}, {headers: {'x-ray': 'machine'}})
 api.patch('/servers/1', {live: false})
 api.put('/servers/1', {live: true})
 ```
