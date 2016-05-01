@@ -9,10 +9,12 @@
   "main": "./dist/apisauce.js",
   "scripts": {
     "test": "ava",
+    "test:watch": "npm run test -- --watch",
+    "coverage": "nyc ava",
+    "dist": "npm run clean && npm run build && npm run docs",
     "docs": "node_modules/.bin/jsdoc --configure .jsdoc.json",
-    "dist": "npm run clean && gulp build && npm run docs",
     "clean": "rm -rf dist docs",
-    "gulp": "gulp build"
+    "build": "BABEL_ENV=production gulp build"
   },
   "keywords": [
     "axios",
@@ -41,8 +43,19 @@
     "gulp-babel": "^6.1.2",
     "gulp-rollup": "^1.8.0",
     "jsdoc": "^3.4.0",
+    "nyc": "^6.4.0",
     "rollup": "^0.25.7",
     "xyz": "^0.5.0"
+  },
+  "babel": {
+    "presets": ["es2015", "stage-0"],
+    "plugins": ["transform-runtime"],
+    "ignore": "test/*",
+    "env": {
+      "development": {
+        "sourceMaps": "inline"
+      }
+    }
   },
   "ava": {
     "require": [

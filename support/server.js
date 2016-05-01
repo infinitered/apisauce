@@ -7,24 +7,14 @@ const processPost = (request, response, callback) => {
   if (typeof callback !== 'function') return null
 
   const handlePost = R.contains(request.method, ['POST', 'PATCH', 'PUT'])
-  if (handlePost) {
-    request.on('data', function (data) {
-      queryData += data
-      if (queryData.length > 1e6) {
-        queryData = ''
-        response.writeHead(413, {'Content-Type': 'text/plain'}).end()
-        request.connection.destroy()
-      }
-    })
+  request.on('data', function (data) {
+    queryData += data
+  })
 
-    request.on('end', function () {
-      request.post = JSON.parse(queryData)
-      callback()
-    })
-  } else {
-    response.writeHead(405, {'Content-Type': 'text/plain'})
-    response.end()
-  }
+  request.on('end', function () {
+    request.post = JSON.parse(queryData)
+    callback()
+  })
 }
 
 const sendResponse = (res, statusCode, body) => {
