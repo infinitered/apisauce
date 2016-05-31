@@ -28,7 +28,7 @@ Talking to APIs doesn't have to be awkward anymore.
 `npm i apisauce --save`
 
 * Depends on `ramdasauce 1.0.0+`
-* Depends on `axios 0.9.1+`.
+* Depends on `axios 0.11.1+`.
 * Targets ES5.
 * Built with ES6.
 * Supported in Node and the browser(s).
@@ -216,6 +216,11 @@ Which problem is chosen will be picked by walking down the list.
 Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
+
+### 0.1.4 - May 31st, 2016
+
+* [NEW] Bumped all dependencies to latest version.
+* [FIX] Repaired dev dependencies. thx [@gabceb](https://github.com/gabceb)
 
 ### 0.1.3 - April 18th, 2016
 
