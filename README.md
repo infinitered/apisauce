@@ -217,6 +217,10 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.1.5 - June 1st, 2016
+
+* [FIX] Fixed up the problematic babel references in package.json - [@gantman](https://github.com/gantman)
+
 ### 0.1.4 - May 31st, 2016
 
 * [NEW] Bumped all dependencies to latest version.

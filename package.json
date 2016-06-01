@@ -48,21 +48,6 @@
     "rollup": "^0.26.3",
     "xyz": "^0.5.0"
   },
-  "babel": {
-    "presets": [
-      "es2015",
-      "stage-0"
-    ],
-    "plugins": [
-      "transform-runtime"
-    ],
-    "ignore": "test/*",
-    "env": {
-      "development": {
-        "sourceMaps": "inline"
-      }
-    }
-  },
   "ava": {
     "require": [
       "babel-core/register"
