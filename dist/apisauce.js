@@ -153,6 +153,9 @@ var convertResponse = function convertResponse(startedAt, axiosResponse) {
  */
 var responseToProblem = function responseToProblem(response) {
   if (response instanceof Error) {
+    // first check if the error message is Network Error (set by axios at 0.12) on platforms other than NodeJS.
+    if (response.message === 'Network Error') return NETWORK_ERROR;
+    // then check the specific error code
     return _ramda2.default.cond([[_ramda2.default.contains(_ramda2.default.__, TIMEOUT_ERROR_CODES), _ramda2.default.always(TIMEOUT_ERROR)], [_ramda2.default.contains(_ramda2.default.__, NODEJS_CONNECTION_ERROR_CODES), _ramda2.default.always(CONNECTION_ERROR)], [_ramda2.default.T, _ramda2.default.always(UNKNOWN_ERROR)]])(response.code);
   }
   if (_ramda2.default.isNil(response) || !_ramda2.default.has('status')) return UNKNOWN_ERROR;
