@@ -4,7 +4,9 @@ const rollup = require('gulp-rollup')
 
 gulp.task('build', () => {
   return gulp.src('lib/apisauce.js')
-    .pipe(rollup({}))
+    .pipe(rollup({
+      entry: './lib/apisauce.js'
+    }))
     .pipe(babel({
       presets: ['es2015', 'stage-0']
     }))

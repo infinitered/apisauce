@@ -217,9 +217,10 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
-### 0.1.6 - Next
+### 0.2.0 - July 1st, 2016
 
 * [NEW] Bumped all dependencies to the latest version.
+* [NEW] Network errors and timeouts are now detected on React Native - [@skellock](https://github.com/skellock)
 
 ### 0.1.5 - June 1st, 2016
 
