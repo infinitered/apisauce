@@ -59,11 +59,28 @@ var create = function create(config) {
     monitors.push(monitor);
   };
 
+  // convenience for setting new request headers
+  var setHeader = function setHeader(name, value) {
+    instance.defaults.headers[name] = value;
+    return instance;
+  };
+
+  // sets headers in bulk
+  var setHeaders = function setHeaders(headers) {
+    var keys = _ramda2.default.keys(headers);
+    _ramda2.default.forEach(function (header) {
+      return setHeader(header, headers[header]);
+    }, keys);
+    return instance;
+  };
+
   // create the base object
   var sauce = {
     axiosInstance: instance,
     monitors: monitors,
-    addMonitor: addMonitor
+    addMonitor: addMonitor,
+    setHeader: setHeader,
+    setHeaders: setHeaders
   };
 
   // attach functions for each our HTTP verbs
