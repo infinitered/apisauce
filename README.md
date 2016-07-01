@@ -148,6 +148,19 @@ config   - Object - the `axios` config object used to make the request
 duration - Number - the number of milliseconds it took to run this request
 ```
 
+### Changing Headers
+
+Once you've created your api, you're able to change HTTP requests by
+calling `setHeader` or `setHeaders` on the api.
+
+```js
+api.setHeader('Authorization', 'the new token goes here')
+api.setHeaders({
+  'Authorization': 'token',
+  'X-Even-More': 'hawtness'
+})
+```
+
 ### Adding Monitors
 
 Monitors are functions you can attach to the API which will be called
@@ -216,6 +229,10 @@ Which problem is chosen will be picked by walking down the list.
 Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
+
+### 0.3.0 - July 1st, 2016
+
+* [NEW] setHeader and setHeaders for updating HTTP request headers - [@skellock](https://github.com/skellock)
 
 ### 0.2.0 - July 1st, 2016
 
