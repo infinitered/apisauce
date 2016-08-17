@@ -40,6 +40,20 @@ test('alters the request', (t) => {
   })
 })
 
+test('survives empty PUTs', (t) => {
+  const x = create({ baseURL: `http://localhost:${port}` })
+  let count = 0
+  x.addRequestTransform(({ data, url, method }) => {
+    count++
+  })
+  t.is(count, 0)
+  return x.post('/puts', null).then(response => {
+    t.is(response.status, 200)
+    t.is(count, 1)
+    t.deepEqual(response.data, {got: {a: 'hi'}})
+  })
+})
+
 test('alters nothing for gets', (t) => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
