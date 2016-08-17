@@ -8,6 +8,12 @@ var axios = _interopDefault(require('axios'));
 var R = _interopDefault(require('ramda'));
 var RS = _interopDefault(require('ramdasauce'));
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+};
+
 // check for an invalid config
 var isInvalidConfig = R.anyPass([R.isNil, R.isEmpty, R.complement(R.has('baseURL')), R.complement(R.propIs(String, 'baseURL')), R.propSatisfies(R.isEmpty, 'baseURL')]);
 
@@ -100,13 +106,22 @@ var create = function create(config) {
     var data = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
     var axiosConfig = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 
-    var clonedData = R.clone(data);
-    // give an opportunity for anything to the response transforms to change stuff along the way
-    R.forEach(function (transform) {
-      transform({ data: clonedData, method: method, url: url });
-    }, requestTransforms);
+    if (!R.isNil(data) && requestTransforms.length > 0) {
+      var _ret = function () {
+        var clonedData = R.clone(data);
+        // give an opportunity for anything to the response transforms to change stuff along the way
+        R.forEach(function (transform) {
+          transform({ data: clonedData, method: method, url: url });
+        }, requestTransforms);
+        return {
+          v: doRequest(R.merge({ url: url, method: method, data: clonedData }, axiosConfig))
+        };
+      }();
 
-    return doRequest(R.merge({ url: url, method: method, data: clonedData }, axiosConfig));
+      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
+    } else {
+      return doRequest(R.merge({ url: url, method: method, data: data }, axiosConfig));
+    }
   };
 
   /**
