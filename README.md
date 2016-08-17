@@ -286,6 +286,7 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 ### 0.4.0 - August 17, 2016
 
+* [NEW] Adds transform support for request and response - @skellock](https://github.com/skellock) ([#26](https://github.com/skellock/apisauce/pull/26))
 * [NEW] Upgraded to axios 0.13 and fixed a few API changes to make it transparent - [@skellock](https://github.com/skellock) ([#24](https://github.com/skellock/apisauce/pull/24))
 * [FIX] Exposes the config (request) object when the API call fails [@skellock](https://github.com/skellock) ([#25](https://github.com/skellock/apisauce/pull/25))
 

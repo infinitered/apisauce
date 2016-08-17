@@ -58,6 +58,16 @@ var create = function create(config) {
     monitors.push(monitor);
   };
 
+  var requestTransforms = [];
+  var responseTransforms = [];
+
+  var addRequestTransform = function addRequestTransform(transform) {
+    return requestTransforms.push(transform);
+  };
+  var addResponseTransform = function addResponseTransform(transform) {
+    return responseTransforms.push(transform);
+  };
+
   // convenience for setting new request headers
   var setHeader = function setHeader(name, value) {
     instance.defaults.headers[name] = value;
@@ -73,124 +83,130 @@ var create = function create(config) {
     return instance;
   };
 
+  /**
+    Make the request for GET, HEAD, DELETE
+   */
+  var doRequestWithoutBody = function doRequestWithoutBody(method, url) {
+    var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+    var axiosConfig = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
+    return doRequest(R.merge({ url: url, params: params, method: method }, axiosConfig));
+  };
+
+  /**
+    Make the request for POST, PUT, PATCH
+   */
+  var doRequestWithBody = function doRequestWithBody(method, url) {
+    var data = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+    var axiosConfig = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+
+    var clonedData = R.clone(data);
+    // give an opportunity for anything to the response transforms to change stuff along the way
+    R.forEach(function (transform) {
+      transform({ data: clonedData, method: method, url: url });
+    }, requestTransforms);
+
+    return doRequest(R.merge({ url: url, method: method, data: clonedData }, axiosConfig));
+  };
+
+  /**
+    Make the request with this config!
+   */
+  var doRequest = function doRequest(axiosRequestConfig) {
+    var startedAt = RS.toNumber(new Date());
+
+    // first convert the axios response, then execute our callback
+    var chain = R.pipe(R.partial(convertResponse, [startedAt]), runMonitors);
+
+    // Make the request and execute the identical pipeline for both promise paths.
+    return instance.request(axiosRequestConfig).then(chain).catch(chain);
+  };
+
+  /**
+    Fires after we convert from axios' response into our response.  Exceptions
+    raised for each monitor will be ignored.
+   */
+  var runMonitors = function runMonitors(ourResponse) {
+    monitors.forEach(function (fn) {
+      try {
+        fn(ourResponse);
+      } catch (error) {
+        // all monitor complaints will be ignored
+      }
+    });
+    return ourResponse;
+  };
+
+  /**
+    Converts an axios response/error into our response.
+   */
+  var convertResponse = function convertResponse(startedAt, axiosResponse) {
+    var end = RS.toNumber(new Date());
+    var duration = end - startedAt;
+
+    // new in Axios 0.13 -- some data could be buried 1 level now
+    var isError = axiosResponse instanceof Error;
+    var response = isError ? axiosResponse.response : axiosResponse;
+    var status = response && response.status || null;
+    var problem = isError ? getProblemFromError(axiosResponse) : getProblemFromStatus(status);
+    var ok = in200s(status);
+    var config = axiosResponse.config || null;
+    var headers = response && response.headers || null;
+    var data = response && response.data || null;
+
+    // give an opportunity for anything to the response transforms to change stuff along the way
+    if (responseTransforms.length > 0) {
+      R.forEach(function (transform) {
+        transform({ duration: duration, problem: problem, ok: ok, status: status, headers: headers, config: config, data: data });
+      }, responseTransforms);
+    }
+
+    return { duration: duration, problem: problem, ok: ok, status: status, headers: headers, config: config, data: data };
+  };
+
+  /**
+    What's the problem for this response?
+     TODO: We're losing some error granularity, but i'm cool with that
+    until someone cares.
+   */
+  var getProblemFromError = function getProblemFromError(error) {
+    // first check if the error message is Network Error (set by axios at 0.12) on platforms other than NodeJS.
+    if (error.message === 'Network Error') return NETWORK_ERROR;
+    // then check the specific error code
+    return R.cond([
+    // if we don't have an error code, we have a response status
+    [R.isNil, function () {
+      return getProblemFromStatus(error.response.status);
+    }], [R.contains(R.__, TIMEOUT_ERROR_CODES), R.always(TIMEOUT_ERROR)], [R.contains(R.__, NODEJS_CONNECTION_ERROR_CODES), R.always(CONNECTION_ERROR)], [R.T, R.always(UNKNOWN_ERROR)]])(error.code);
+  };
+
+  /**
+   * Given a HTTP status code, return back the appropriate problem enum.
+   */
+  var getProblemFromStatus = function getProblemFromStatus(status) {
+    return R.cond([[R.isNil, R.always(UNKNOWN_ERROR)], [in200s, R.always(NONE)], [in400s, R.always(CLIENT_ERROR)], [in500s, R.always(SERVER_ERROR)], [R.T, R.always(UNKNOWN_ERROR)]])(status);
+  };
+
   // create the base object
   var sauce = {
     axiosInstance: instance,
     monitors: monitors,
     addMonitor: addMonitor,
+    requestTransforms: requestTransforms,
+    responseTransforms: responseTransforms,
+    addRequestTransform: addRequestTransform,
+    addResponseTransform: addResponseTransform,
     setHeader: setHeader,
-    setHeaders: setHeaders
+    setHeaders: setHeaders,
+    get: R.partial(doRequestWithoutBody, ['get']),
+    delete: R.partial(doRequestWithoutBody, ['delete']),
+    head: R.partial(doRequestWithoutBody, ['head']),
+    post: R.partial(doRequestWithBody, ['post']),
+    put: R.partial(doRequestWithBody, ['put']),
+    patch: R.partial(doRequestWithBody, ['patch'])
   };
-
-  // attach functions for each our HTTP verbs
-  sauce.get = R.partial(doRequestWithoutBody, [sauce, 'get']);
-  sauce.delete = R.partial(doRequestWithoutBody, [sauce, 'delete']);
-  sauce.head = R.partial(doRequestWithoutBody, [sauce, 'head']);
-  sauce.post = R.partial(doRequestWithBody, [sauce, 'post']);
-  sauce.put = R.partial(doRequestWithBody, [sauce, 'put']);
-  sauce.patch = R.partial(doRequestWithBody, [sauce, 'patch']);
-
-  // send it back
+  // send back the sauce
   return sauce;
-};
-
-/**
-  Make the request for GET, HEAD, DELETE
- */
-var doRequestWithoutBody = function doRequestWithoutBody(api, method, url) {
-  var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
-  var axiosConfig = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
-
-  return doRequest(api, R.merge({ url: url, params: params, method: method }, axiosConfig));
-};
-
-/**
-  Make the request for POST, PUT, PATCH
- */
-var doRequestWithBody = function doRequestWithBody(api, method, url) {
-  var data = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
-  var axiosConfig = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
-
-  return doRequest(api, R.merge({ url: url, method: method, data: data }, axiosConfig));
-};
-
-/**
-  Make the request with this config!
- */
-var doRequest = function doRequest(api, axiosRequestConfig) {
-  var axiosInstance = api.axiosInstance;
-
-  var startedAt = RS.toNumber(new Date());
-
-  // first convert the axios response, then execute our callback
-  var chain = R.pipe(R.partial(convertResponse, [startedAt]), R.partial(runMonitors, [api]));
-
-  // Make the request and execute the identical pipeline for both promise paths.
-  return axiosInstance.request(axiosRequestConfig).then(chain).catch(chain);
-};
-
-/**
-  Fires after we convert from axios' response into our response.  Exceptions
-  raised for each monitor will be ignored.
- */
-var runMonitors = function runMonitors(api, ourResponse) {
-  api.monitors.forEach(function (fn) {
-    try {
-      fn(ourResponse);
-    } catch (error) {
-      // all monitor complaints will be ignored
-    }
-  });
-  return ourResponse;
-};
-
-/**
-  Converts an axios response/error into our response.
- */
-var convertResponse = function convertResponse(startedAt, axiosResponse) {
-  var end = RS.toNumber(new Date());
-  var duration = end - startedAt;
-
-  // new in Axios 0.13 -- some data could be buried 1 level now
-  var isError = axiosResponse instanceof Error;
-  var response = isError ? axiosResponse.response : axiosResponse;
-  var data = response && response.data || null;
-  var status = response && response.status || null;
-  var problem = isError ? getProblemFromError(axiosResponse) : getProblemFromStatus(status);
-
-  return {
-    duration: duration,
-    problem: problem,
-    ok: in200s(status),
-    status: status,
-    headers: response && response.headers || null,
-    config: axiosResponse.config || null,
-    data: data
-  };
-};
-
-/**
-  What's the problem for this response?
-
-  TODO: We're losing some error granularity, but i'm cool with that
-  until someone cares.
- */
-var getProblemFromError = function getProblemFromError(error) {
-  // first check if the error message is Network Error (set by axios at 0.12) on platforms other than NodeJS.
-  if (error.message === 'Network Error') return NETWORK_ERROR;
-  // then check the specific error code
-  return R.cond([
-  // if we don't have an error code, we have a response status
-  [R.isNil, function () {
-    return getProblemFromStatus(error.response.status);
-  }], [R.contains(R.__, TIMEOUT_ERROR_CODES), R.always(TIMEOUT_ERROR)], [R.contains(R.__, NODEJS_CONNECTION_ERROR_CODES), R.always(CONNECTION_ERROR)], [R.T, R.always(UNKNOWN_ERROR)]])(error.code);
-};
-
-/**
- * Given a HTTP status code, return back the appropriate problem enum.
- */
-var getProblemFromStatus = function getProblemFromStatus(status) {
-  return R.cond([[R.isNil, R.always(UNKNOWN_ERROR)], [in200s, R.always(NONE)], [in400s, R.always(CLIENT_ERROR)], [in500s, R.always(SERVER_ERROR)], [R.T, R.always(UNKNOWN_ERROR)]])(status);
 };
 
 var apisauce = {
@@ -214,6 +230,4 @@ exports.CONNECTION_ERROR = CONNECTION_ERROR;
 exports.NETWORK_ERROR = NETWORK_ERROR;
 exports.UNKNOWN_ERROR = UNKNOWN_ERROR;
 exports.create = create;
-exports.getProblemFromError = getProblemFromError;
-exports.getProblemFromStatus = getProblemFromStatus;
 exports['default'] = apisauce;
