@@ -164,7 +164,7 @@ var convertResponse = function convertResponse(startedAt, axiosResponse) {
     ok: in200s(status),
     status: status,
     headers: response && response.headers || null,
-    config: response && response.config || null,
+    config: axiosResponse.config || null,
     data: data
   };
 };
