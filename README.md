@@ -21,6 +21,7 @@ Talking to APIs doesn't have to be awkward anymore.
 * all responses follow the same flow: success and failure alike
 * responses have a `problem` property to help guide exception flow
 * attach functions that get called each request
+* attach functions that change all request or response data
 * detects connection issues
 
 # Installing
@@ -193,6 +194,59 @@ Internally, each monitor callback is surrounded by an oppressive `try/catch`
 block.
 
 Remember.  Safety first!
+
+### Adding Transforms
+
+In addition to monitoring, you can change every request or response globally.
+
+This can be useful if you would like to:
+
+* fix an api response
+* inject extra stuff dynamically in the request or response
+
+For responses, you're provided an object with these properties.
+
+* `data` - the object originally from the server that you might wanna mess with
+* `duration` - the number of milliseconds
+* `problem` - the problem code (see the bottom for the list)
+* `ok` - true or false
+* `status` - the HTTP status code
+* `headers` - the HTTP response headers
+* `config` - the underlying axios config for the request
+
+Data is the only option changeable.
+
+```js
+api.addResponseTransform(response) => {
+  const badluck = Math.floor(Math.random() * 10) === 0
+  if (badluck) {
+    // just mutate the data to what you want.
+    response.data.doorsOpen = false
+    response.data.message = 'I cannot let you do that.'
+  }
+})
+```
+
+There's also a request transform too, however, it's only called for PUT, POST and PATCH.
+
+The object passed in has 3 properties:
+
+* `data` - the object being passed up to the server
+* `method` - `post`, `put`, or `patch`
+* `url` - the url we're hitting
+
+```js
+// only called for PUT, POST, and PATCH
+api.addRequestTransform(({ data }) => {
+  if (data.password && data.password === 'password') {
+    data.username = `${data.username} is secure!`
+  }
+})
+```
+
+Unlike monitors, exceptions are not swallowed.  They will bring down the stack, so careful!
+
+
 
 # Using Async/Await
 
