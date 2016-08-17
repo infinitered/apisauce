@@ -193,6 +193,18 @@ var getProblemFromStatus = function getProblemFromStatus(status) {
   return R.cond([[R.isNil, R.always(UNKNOWN_ERROR)], [in200s, R.always(NONE)], [in400s, R.always(CLIENT_ERROR)], [in500s, R.always(SERVER_ERROR)], [R.T, R.always(UNKNOWN_ERROR)]])(status);
 };
 
+var apisauce = {
+  DEFAULT_HEADERS: DEFAULT_HEADERS,
+  NONE: NONE,
+  CLIENT_ERROR: CLIENT_ERROR,
+  SERVER_ERROR: SERVER_ERROR,
+  TIMEOUT_ERROR: TIMEOUT_ERROR,
+  CONNECTION_ERROR: CONNECTION_ERROR,
+  NETWORK_ERROR: NETWORK_ERROR,
+  UNKNOWN_ERROR: UNKNOWN_ERROR,
+  create: create
+};
+
 exports.DEFAULT_HEADERS = DEFAULT_HEADERS;
 exports.NONE = NONE;
 exports.CLIENT_ERROR = CLIENT_ERROR;
@@ -204,3 +216,4 @@ exports.UNKNOWN_ERROR = UNKNOWN_ERROR;
 exports.create = create;
 exports.getProblemFromError = getProblemFromError;
 exports.getProblemFromStatus = getProblemFromStatus;
+exports['default'] = apisauce;

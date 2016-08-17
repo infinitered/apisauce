@@ -9,5 +9,6 @@ export default {
       presets: ['es2015-rollup', 'stage-0']
     })
   ],
+  exports: 'named',
   dest: 'dist/apisauce.js'
 }
