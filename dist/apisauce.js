@@ -1,31 +1,25 @@
 'use strict';
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.responseToProblem = exports.create = exports.UNKNOWN_ERROR = exports.NETWORK_ERROR = exports.CONNECTION_ERROR = exports.TIMEOUT_ERROR = exports.SERVER_ERROR = exports.CLIENT_ERROR = exports.NONE = undefined;
+Object.defineProperty(exports, '__esModule', { value: true });
 
-var _axios = require('axios');
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var _axios2 = _interopRequireDefault(_axios);
-
-var _ramda = require('ramda');
-
-var _ramda2 = _interopRequireDefault(_ramda);
-
-var _ramdasauce = require('ramdasauce');
-
-var _ramdasauce2 = _interopRequireDefault(_ramdasauce);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var axios = _interopDefault(require('axios'));
+var R = _interopDefault(require('ramda'));
+var RS = _interopDefault(require('ramdasauce'));
 
 // check for an invalid config
-var isInvalidConfig = _ramda2.default.anyPass([_ramda2.default.isNil, _ramda2.default.isEmpty, _ramda2.default.complement(_ramda2.default.has('baseURL')), _ramda2.default.complement(_ramda2.default.propIs(String, 'baseURL')), _ramda2.default.propSatisfies(_ramda2.default.isEmpty, 'baseURL')]);
+var isInvalidConfig = R.anyPass([R.isNil, R.isEmpty, R.complement(R.has('baseURL')), R.complement(R.propIs(String, 'baseURL')), R.propSatisfies(R.isEmpty, 'baseURL')]);
 
-// the default configuration for axios
+// the default headers given to axios
+var DEFAULT_HEADERS = {
+  'Accept': 'application/json',
+  'Content-Type': 'application/json'
+};
+
+// the default configuration for axios, default headers will also be merged in
 var DEFAULT_CONFIG = {
-  timeout: 0,
-  headers: {}
+  timeout: 0
 };
 
 var NONE = null;
@@ -38,9 +32,9 @@ var UNKNOWN_ERROR = 'UNKNOWN_ERROR';
 
 var TIMEOUT_ERROR_CODES = ['ECONNABORTED'];
 var NODEJS_CONNECTION_ERROR_CODES = ['ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET'];
-var in200s = _ramdasauce2.default.isWithin(200, 299);
-var in400s = _ramdasauce2.default.isWithin(400, 499);
-var in500s = _ramdasauce2.default.isWithin(500, 599);
+var in200s = RS.isWithin(200, 299);
+var in400s = RS.isWithin(400, 499);
+var in500s = RS.isWithin(500, 599);
 
 /**
   Creates a instance of our API using the configuration.
@@ -50,10 +44,15 @@ var create = function create(config) {
   if (isInvalidConfig(config)) throw new Error('config must have a baseURL');
 
   // combine the user's defaults with ours
-  var combinedConfig = _ramda2.default.merge(DEFAULT_CONFIG, config);
+  var mergedHeaders = R.merge(DEFAULT_HEADERS, config.headers || {});
+  var combinedConfig = R.merge(DEFAULT_CONFIG, R.merge(config, { headers: mergedHeaders }));
 
   // create the axios instance
-  var instance = _axios2.default.create(combinedConfig);
+  var instance = axios.create(combinedConfig);
+
+  // immediate reset headers because axios kept its own defaults
+  instance.defaults.headers = combinedConfig.headers;
+
   var monitors = [];
   var addMonitor = function addMonitor(monitor) {
     monitors.push(monitor);
@@ -67,8 +66,8 @@ var create = function create(config) {
 
   // sets headers in bulk
   var setHeaders = function setHeaders(headers) {
-    var keys = _ramda2.default.keys(headers);
-    _ramda2.default.forEach(function (header) {
+    var keys = R.keys(headers);
+    R.forEach(function (header) {
       return setHeader(header, headers[header]);
     }, keys);
     return instance;
@@ -84,12 +83,12 @@ var create = function create(config) {
   };
 
   // attach functions for each our HTTP verbs
-  sauce.get = _ramda2.default.partial(doRequestWithoutBody, [sauce, 'get']);
-  sauce.delete = _ramda2.default.partial(doRequestWithoutBody, [sauce, 'delete']);
-  sauce.head = _ramda2.default.partial(doRequestWithoutBody, [sauce, 'head']);
-  sauce.post = _ramda2.default.partial(doRequestWithBody, [sauce, 'post']);
-  sauce.put = _ramda2.default.partial(doRequestWithBody, [sauce, 'put']);
-  sauce.patch = _ramda2.default.partial(doRequestWithBody, [sauce, 'patch']);
+  sauce.get = R.partial(doRequestWithoutBody, [sauce, 'get']);
+  sauce.delete = R.partial(doRequestWithoutBody, [sauce, 'delete']);
+  sauce.head = R.partial(doRequestWithoutBody, [sauce, 'head']);
+  sauce.post = R.partial(doRequestWithBody, [sauce, 'post']);
+  sauce.put = R.partial(doRequestWithBody, [sauce, 'put']);
+  sauce.patch = R.partial(doRequestWithBody, [sauce, 'patch']);
 
   // send it back
   return sauce;
@@ -102,7 +101,7 @@ var doRequestWithoutBody = function doRequestWithoutBody(api, method, url) {
   var params = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
   var axiosConfig = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
-  return doRequest(api, _ramda2.default.merge({ url: url, params: params, method: method }, axiosConfig));
+  return doRequest(api, R.merge({ url: url, params: params, method: method }, axiosConfig));
 };
 
 /**
@@ -112,7 +111,7 @@ var doRequestWithBody = function doRequestWithBody(api, method, url) {
   var data = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
   var axiosConfig = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 
-  return doRequest(api, _ramda2.default.merge({ url: url, method: method, data: data }, axiosConfig));
+  return doRequest(api, R.merge({ url: url, method: method, data: data }, axiosConfig));
 };
 
 /**
@@ -121,10 +120,10 @@ var doRequestWithBody = function doRequestWithBody(api, method, url) {
 var doRequest = function doRequest(api, axiosRequestConfig) {
   var axiosInstance = api.axiosInstance;
 
-  var startedAt = _ramdasauce2.default.toNumber(new Date());
+  var startedAt = RS.toNumber(new Date());
 
   // first convert the axios response, then execute our callback
-  var chain = _ramda2.default.pipe(_ramda2.default.partial(convertResponse, [startedAt]), _ramda2.default.partial(runMonitors, [api]));
+  var chain = R.pipe(R.partial(convertResponse, [startedAt]), R.partial(runMonitors, [api]));
 
   // Make the request and execute the identical pipeline for both promise paths.
   return axiosInstance.request(axiosRequestConfig).then(chain).catch(chain);
@@ -149,16 +148,24 @@ var runMonitors = function runMonitors(api, ourResponse) {
   Converts an axios response/error into our response.
  */
 var convertResponse = function convertResponse(startedAt, axiosResponse) {
-  var end = _ramdasauce2.default.toNumber(new Date());
+  var end = RS.toNumber(new Date());
   var duration = end - startedAt;
+
+  // new in Axios 0.13 -- some data could be buried 1 level now
+  var isError = axiosResponse instanceof Error;
+  var response = isError ? axiosResponse.response : axiosResponse;
+  var data = response && response.data || null;
+  var status = response && response.status || null;
+  var problem = isError ? getProblemFromError(axiosResponse) : getProblemFromStatus(status);
+
   return {
     duration: duration,
-    problem: responseToProblem(axiosResponse),
-    ok: _ramda2.default.pipe(_ramda2.default.propOr(0, 'status'), in200s)(axiosResponse),
-    status: axiosResponse.status || null,
-    headers: axiosResponse.headers || null,
-    config: axiosResponse.config || null,
-    data: axiosResponse.data || null
+    problem: problem,
+    ok: in200s(status),
+    status: status,
+    headers: response && response.headers || null,
+    config: response && response.config || null,
+    data: data
   };
 };
 
@@ -168,29 +175,37 @@ var convertResponse = function convertResponse(startedAt, axiosResponse) {
   TODO: We're losing some error granularity, but i'm cool with that
   until someone cares.
  */
-var responseToProblem = function responseToProblem(response) {
-  if (response instanceof Error) {
-    // first check if the error message is Network Error (set by axios at 0.12) on platforms other than NodeJS.
-    if (response.message === 'Network Error') return NETWORK_ERROR;
-    // then check the specific error code
-    return _ramda2.default.cond([[_ramda2.default.contains(_ramda2.default.__, TIMEOUT_ERROR_CODES), _ramda2.default.always(TIMEOUT_ERROR)], [_ramda2.default.contains(_ramda2.default.__, NODEJS_CONNECTION_ERROR_CODES), _ramda2.default.always(CONNECTION_ERROR)], [_ramda2.default.T, _ramda2.default.always(UNKNOWN_ERROR)]])(response.code);
-  }
-  if (_ramda2.default.isNil(response) || !_ramda2.default.has('status')) return UNKNOWN_ERROR;
-  return _ramda2.default.cond([[in200s, _ramda2.default.always(NONE)], [in400s, _ramda2.default.always(CLIENT_ERROR)], [in500s, _ramda2.default.always(SERVER_ERROR)], [_ramda2.default.T, _ramda2.default.always(UNKNOWN_ERROR)]])(response.status || 0);
+var getProblemFromError = function getProblemFromError(error) {
+  // first check if the error message is Network Error (set by axios at 0.12) on platforms other than NodeJS.
+  if (error.message === 'Network Error') return NETWORK_ERROR;
+  // then check the specific error code
+  return R.cond([
+  // if we don't have an error code, we have a response status
+  [R.isNil, function () {
+    return getProblemFromStatus(error.response.status);
+  }], [R.contains(R.__, TIMEOUT_ERROR_CODES), R.always(TIMEOUT_ERROR)], [R.contains(R.__, NODEJS_CONNECTION_ERROR_CODES), R.always(CONNECTION_ERROR)], [R.T, R.always(UNKNOWN_ERROR)]])(error.code);
 };
 
-module.exports = {
-  responseToProblem: responseToProblem,
-  create: create,
+/**
+ * Given a HTTP status code, return back the appropriate problem enum.
+ */
+var getProblemFromStatus = function getProblemFromStatus(status) {
+  return R.cond([[R.isNil, R.always(UNKNOWN_ERROR)], [in200s, R.always(NONE)], [in400s, R.always(CLIENT_ERROR)], [in500s, R.always(SERVER_ERROR)], [R.T, R.always(UNKNOWN_ERROR)]])(status);
+};
+
+var apisauce = {
+  DEFAULT_HEADERS: DEFAULT_HEADERS,
   NONE: NONE,
   CLIENT_ERROR: CLIENT_ERROR,
   SERVER_ERROR: SERVER_ERROR,
   TIMEOUT_ERROR: TIMEOUT_ERROR,
   CONNECTION_ERROR: CONNECTION_ERROR,
   NETWORK_ERROR: NETWORK_ERROR,
-  UNKNOWN_ERROR: UNKNOWN_ERROR
+  UNKNOWN_ERROR: UNKNOWN_ERROR,
+  create: create
 };
 
+exports.DEFAULT_HEADERS = DEFAULT_HEADERS;
 exports.NONE = NONE;
 exports.CLIENT_ERROR = CLIENT_ERROR;
 exports.SERVER_ERROR = SERVER_ERROR;
@@ -199,4 +214,6 @@ exports.CONNECTION_ERROR = CONNECTION_ERROR;
 exports.NETWORK_ERROR = NETWORK_ERROR;
 exports.UNKNOWN_ERROR = UNKNOWN_ERROR;
 exports.create = create;
-exports.responseToProblem = responseToProblem;
+exports.getProblemFromError = getProblemFromError;
+exports.getProblemFromStatus = getProblemFromStatus;
+exports['default'] = apisauce;

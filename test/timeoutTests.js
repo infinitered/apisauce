@@ -1,24 +1,21 @@
 import test from 'ava'
 import {create, TIMEOUT_ERROR} from '../lib/apisauce'
 import createServer from '../support/server'
+import getFreePort from '../support/getFreePort'
 
-const PORT = 9198
+let port
 let server = null
-test.before((t) => {
-  server = createServer(PORT)
+test.before(async t => {
+  port = await getFreePort()
+  server = createServer(port)
 })
 
 test.after('cleanup', (t) => {
   server.close()
 })
 
-const validConfig = {
-  baseURL: `http://localhost:${PORT}`,
-  timeout: 100
-}
-
 test('times out', (t) => {
-  const x = create(validConfig)
+  const x = create({ baseURL: `http://localhost:${port}`, timeout: 100 })
   return x.get('/sleep/150').then((response) => {
     t.falsy(response.ok)
     t.is(response.problem, TIMEOUT_ERROR)
