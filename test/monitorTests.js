@@ -2,24 +2,22 @@ import test from 'ava'
 import {create} from '../lib/apisauce'
 import createServer from '../support/server'
 import R from 'ramda'
+import getFreePort from '../support/getFreePort'
 
-const PORT = 9196
 const MOCK = {a: {b: [1, 2, 3]}}
+let port
 let server = null
-test.before((t) => {
-  server = createServer(PORT, MOCK)
+test.before(async t => {
+  port = await getFreePort()
+  server = createServer(port, MOCK)
 })
 
 test.after('cleanup', (t) => {
   server.close()
 })
 
-const validConfig = {
-  baseURL: `http://localhost:${PORT}`
-}
-
 test('attaches a monitor', (t) => {
-  const api = create(validConfig)
+  const api = create({ baseURL: `http://localhost:${port}` })
   t.truthy(api.addMonitor)
   t.truthy(api.monitors)
   t.is(api.monitors.length, 0)
@@ -30,7 +28,7 @@ test('attaches a monitor', (t) => {
 test('fires our monitor function', (t) => {
   let a = 0
   let b = 0
-  const x = create(validConfig)
+  const x = create({ baseURL: `http://localhost:${port}` })
   x.addMonitor((response) => { a += 1 })
   x.addMonitor((response) => { b = response.status })
   t.is(a, 0)
@@ -44,7 +42,7 @@ test('fires our monitor function', (t) => {
 test('ignores exceptions raised inside monitors', (t) => {
   let a = 0
   let b = 0
-  const x = create(validConfig)
+  const x = create({ baseURL: `http://localhost:${port}` })
   x.addMonitor((response) => { a += 1 })
   x.addMonitor((response) => { this.recklessDisregardForAllThingsJust(true) })
   x.addMonitor((response) => { b = response.status })

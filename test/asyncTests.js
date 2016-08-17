@@ -1,24 +1,22 @@
 import test from 'ava'
 import {create} from '../lib/apisauce'
 import createServer from '../support/server'
+import getFreePort from '../support/getFreePort'
 
-const PORT = 9197
-const MOCK = {a: {b: [1, 2, 3]}}
+let port
 let server = null
-test.before((t) => {
-  server = createServer(PORT, MOCK)
+const MOCK = {a: {b: [1, 2, 3]}}
+test.before(async t => {
+  port = await getFreePort()
+  server = createServer(port, MOCK)
 })
 
-test.after('cleanup', (t) => {
+test.after.always('cleanup', (t) => {
   server.close()
 })
 
-const validConfig = {
-  baseURL: `http://localhost:${PORT}`
-}
-
-test('can be used with async/await', async (t) => {
-  const x = create(validConfig)
+test('can be used with async/await', async t => {
+  const x = create({baseURL: `http://localhost:${port}`})
   const response = await x.get('/number/200', {a: 'b'})
   t.is(response.status, 200)
   t.deepEqual(response.data, MOCK)

@@ -6,7 +6,6 @@ const processPost = (request, response, callback) => {
   let queryData = ''
   if (typeof callback !== 'function') return null
 
-  const handlePost = R.contains(request.method, ['POST', 'PATCH', 'PUT'])
   request.on('data', function (data) {
     queryData += data
   })

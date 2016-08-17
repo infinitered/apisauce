@@ -1,17 +1,14 @@
 import test from 'ava'
 import {create} from '../lib/apisauce'
 import createServer from '../support/server'
+import getFreePort from '../support/getFreePort'
 
-const validConfig = {
-  baseURL: 'http://localhost:9201',
-  headers: {'X-Testing': 'hello'}
-}
-
-const PORT = 9201
 const MOCK = {a: {b: [1, 2, 3]}}
+let port
 let server = null
-test.before((t) => {
-  server = createServer(PORT, MOCK)
+test.before(async t => {
+  port = await getFreePort()
+  server = createServer(port, MOCK)
 })
 
 test.after('cleanup', (t) => {
@@ -19,7 +16,7 @@ test.after('cleanup', (t) => {
 })
 
 test('jumps the wire with the right headers', async t => {
-  const api = create(validConfig)
+  const api = create({ baseURL: `http://localhost:${port}`, headers: {'X-Testing': 'hello'} })
   api.setHeaders({ 'X-Testing': 'foo', steve: 'hey' })
   const response = await api.get('/number/200', {a: 'b'})
   t.is(response.config.headers['X-Testing'], 'foo')
