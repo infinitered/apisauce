@@ -296,7 +296,7 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
-### 0.5.0 - August 17, 2016
+### 0.5.0 - August 28, 2016
 
 * [NEW] Adds more options to addRequestTransform - [@skellock](https://github.com/skellock) ([#28](https://github.com/skellock/apisauce/pull/28))
 
