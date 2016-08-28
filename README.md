@@ -62,7 +62,7 @@ See the examples folder for more code.
 
 # Documentation
 
-### Create an API
+## Create an API
 
 You create an api by calling `.create()` and passing in a configuration object.
 
@@ -95,7 +95,7 @@ Default timeouts can be applied too:
 const api = create({baseURL: '...', timeout: 30000}) // 30 seconds
 ```
 
-### Calling The API
+## Calling The API
 
 With your fresh `api`, you can now call it like this:
 
@@ -120,7 +120,7 @@ api.put('/servers/1', {live: true})
 * data - Object - the object jumping the wire
 * axiosConfig - Object - config passed along to the `axios` request (optional)
 
-### Responses
+## Responses
 
 The responses are promise-based, so you you'll need to handle things in a
 `.then()` function.
@@ -149,7 +149,7 @@ config   - Object - the `axios` config object used to make the request
 duration - Number - the number of milliseconds it took to run this request
 ```
 
-### Changing Headers
+## Changing Headers
 
 Once you've created your api, you're able to change HTTP requests by
 calling `setHeader` or `setHeaders` on the api.
@@ -162,7 +162,7 @@ api.setHeaders({
 })
 ```
 
-### Adding Monitors
+## Adding Monitors
 
 Monitors are functions you can attach to the API which will be called
 when any request is made.  You can use it to do things like:
@@ -195,14 +195,20 @@ block.
 
 Remember.  Safety first!
 
-### Adding Transforms
+## Adding Transforms
 
 In addition to monitoring, you can change every request or response globally.
 
 This can be useful if you would like to:
 
 * fix an api response
-* inject extra stuff dynamically in the request or response
+* add/edit/delete query string variables for all requests
+* change outbound headers without changing everywhere in your app
+
+Unlike monitors, exceptions are not swallowed.  They will bring down the stack, so careful!
+
+
+### Response Transforms
 
 For responses, you're provided an object with these properties.
 
@@ -227,25 +233,29 @@ api.addResponseTransform(response) => {
 })
 ```
 
-There's also a request transform too, however, it's only called for PUT, POST and PATCH.
+### Request Transforms
 
-The object passed in has 3 properties:
+For requests, you are given a `request` object.  Mutate anything in here to change anything about the request.
+
+The object passed in has these properties:
 
 * `data` - the object being passed up to the server
-* `method` - `post`, `put`, or `patch`
+* `method` - the HTTP verb
 * `url` - the url we're hitting
+* `headers` - the request headers
+* `params` - the request params for `get`, `delete`, `head`
 
 ```js
-// only called for PUT, POST, and PATCH
-api.addRequestTransform(({ data }) => {
-  if (data.password && data.password === 'password') {
-    data.username = `${data.username} is secure!`
+api.addRequestTransform(request => {
+  request.headers['X-Request-Transform'] = 'Changing Stuff!'
+  request.params['page'] = 42
+  delete request.params.secure
+  request.url = request.url.replace(/\/v1\//, '/v2/')
+  if (request.data.password && request.data.password === 'password') {
+    request.data.username = `${request.data.username} is secure!`
   }
 })
 ```
-
-Unlike monitors, exceptions are not swallowed.  They will bring down the stack, so careful!
-
 
 
 # Using Async/Await
@@ -278,9 +288,11 @@ NETWORK_ERROR    'NETWORK_ERROR'    ---           Network not available.
 
 Which problem is chosen will be picked by walking down the list.
 
+
 # Feedback
 
 Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
+
 
 # Release Notes
 

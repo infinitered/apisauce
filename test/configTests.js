@@ -31,8 +31,9 @@ test('returns an object when we configure correctly', t => {
 })
 
 test('configures axios correctly', t => {
-  const axios = create(validConfig).axiosInstance
+  const apisauce = create(validConfig)
+  const axios = apisauce.axiosInstance
   t.is(axios.defaults.timeout, 0)
   t.is(axios.defaults.baseURL, validConfig.baseURL)
-  t.deepEqual(axios.defaults.headers, merge(DEFAULT_HEADERS, validConfig.headers))
+  t.deepEqual(apisauce.headers, merge(DEFAULT_HEADERS, validConfig.headers))
 })
