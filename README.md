@@ -299,6 +299,7 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 ### 0.5.0 - August 28, 2016
 
 * [NEW] Adds more options to addRequestTransform - [@skellock](https://github.com/skellock) ([#28](https://github.com/skellock/apisauce/pull/28))
+* [NOTE] Due to how Axios stores headers and our new mutable transforms, I had to move header storage out of Axios and into Apisauce.  This will only affect you if you're talking to the Axios object directly.  I didn't really predict this coming, so heads up if you're talking to the Axios object currently.  It's better to just ask me to change Apisauce to include the missing features.  By the time we get to 1.0, we actually might not even use Axios anymore!  =)
 
 
 ### 0.4.0 - August 17, 2016
