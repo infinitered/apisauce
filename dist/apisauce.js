@@ -8,10 +8,18 @@ var axios = _interopDefault(require('axios'));
 var R = _interopDefault(require('ramda'));
 var RS = _interopDefault(require('ramdasauce'));
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
-} : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+var _extends = Object.assign || function (target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i];
+
+    for (var key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        target[key] = source[key];
+      }
+    }
+  }
+
+  return target;
 };
 
 // check for an invalid config
@@ -50,14 +58,11 @@ var create = function create(config) {
   if (isInvalidConfig(config)) throw new Error('config must have a baseURL');
 
   // combine the user's defaults with ours
-  var mergedHeaders = R.merge(DEFAULT_HEADERS, config.headers || {});
-  var combinedConfig = R.merge(DEFAULT_CONFIG, R.merge(config, { headers: mergedHeaders }));
+  var headers = R.merge(DEFAULT_HEADERS, config.headers || {});
+  var combinedConfig = R.merge(DEFAULT_CONFIG, R.dissoc('headers', config));
 
   // create the axios instance
   var instance = axios.create(combinedConfig);
-
-  // immediate reset headers because axios kept its own defaults
-  instance.defaults.headers = combinedConfig.headers;
 
   var monitors = [];
   var addMonitor = function addMonitor(monitor) {
@@ -76,7 +81,7 @@ var create = function create(config) {
 
   // convenience for setting new request headers
   var setHeader = function setHeader(name, value) {
-    instance.defaults.headers[name] = value;
+    headers[name] = value;
     return instance;
   };
 
@@ -106,22 +111,7 @@ var create = function create(config) {
     var data = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
     var axiosConfig = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 
-    if (!R.isNil(data) && requestTransforms.length > 0) {
-      var _ret = function () {
-        var clonedData = R.clone(data);
-        // give an opportunity for anything to the response transforms to change stuff along the way
-        R.forEach(function (transform) {
-          transform({ data: clonedData, method: method, url: url });
-        }, requestTransforms);
-        return {
-          v: doRequest(R.merge({ url: url, method: method, data: clonedData }, axiosConfig))
-        };
-      }();
-
-      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-    } else {
-      return doRequest(R.merge({ url: url, method: method, data: data }, axiosConfig));
-    }
+    return doRequest(R.merge({ url: url, method: method, data: data }, axiosConfig));
   };
 
   /**
@@ -129,6 +119,23 @@ var create = function create(config) {
    */
   var doRequest = function doRequest(axiosRequestConfig) {
     var startedAt = RS.toNumber(new Date());
+
+    axiosRequestConfig.headers = _extends({}, headers, axiosRequestConfig.headers);
+    // add the request transforms
+    if (requestTransforms.length > 0) {
+      (function () {
+        // create an object to feed through the request transforms
+        var request = R.pick(['url', 'method', 'data', 'headers', 'params'], axiosRequestConfig);
+
+        // go go go!
+        R.forEach(function (transform) {
+          return transform(request);
+        }, requestTransforms);
+
+        // overwrite our axios request with whatever our object looks like now
+        axiosRequestConfig = R.merge(axiosRequestConfig, request);
+      })();
+    }
 
     // first convert the axios response, then execute our callback
     var chain = R.pipe(R.partial(convertResponse, [startedAt]), runMonitors);
@@ -213,6 +220,7 @@ var create = function create(config) {
     addResponseTransform: addResponseTransform,
     setHeader: setHeader,
     setHeaders: setHeaders,
+    headers: headers,
     get: R.partial(doRequestWithoutBody, ['get']),
     delete: R.partial(doRequestWithoutBody, ['delete']),
     head: R.partial(doRequestWithoutBody, ['head']),
