@@ -96,10 +96,10 @@ test('promises can be used for asynchronous transforms', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
   x.addRequestTransform(request => {
     new Promise((resolve, reject) => {
-      setTimeout(() => {
+      process.nextTick(() => {
         request.params.w = 3
         resolve()
-      }, 50)
+      })
     })
   })
   return x.get('/number/200').then(response => {
