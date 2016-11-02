@@ -22,6 +22,8 @@ test('supports all verbs', (t) => {
   t.truthy(x.put)
   t.truthy(x.head)
   t.truthy(x.delete)
+  t.truthy(x.link)
+  t.truthy(x.unlink)
 })
 
 test('can make a get', (t) => {
@@ -69,5 +71,21 @@ test('can make a head', (t) => {
   return x.head('/ok').then((response) => {
     t.truthy(response.ok)
     t.is(response.config.method, 'head')
+  })
+})
+
+test('can make a link', (t) => {
+  const x = create({ baseURL: `http://localhost:${port}` })
+  return x.link('/ok').then((response) => {
+    t.truthy(response.ok)
+    t.is(response.config.method, 'link')
+  })
+})
+
+test('can make a unlink', (t) => {
+  const x = create({ baseURL: `http://localhost:${port}` })
+  return x.unlink('/ok').then((response) => {
+    t.truthy(response.ok)
+    t.is(response.config.method, 'unlink')
   })
 })
