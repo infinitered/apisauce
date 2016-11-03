@@ -298,6 +298,11 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.6.0 - November 2, 2016
+
+* [NEW] Adds new HTTP verbs for LINK and UNLINK [@justim](https://github.com/justim) ([#35](https://github.com/skellock/apisauce/pull/35))
+* [NEW] Upgrades to Axios 0.15.2 - [@skellock](https://github.com/skellock)
+
 ### 0.5.0 - August 28, 2016
 
 * [NEW] Adds more options to addRequestTransform - [@skellock](https://github.com/skellock) ([#28](https://github.com/skellock/apisauce/pull/28))
