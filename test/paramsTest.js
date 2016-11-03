@@ -54,6 +54,22 @@ test('DELETE supports params', (t) => {
   })
 })
 
+test('LINK supports params', (t) => {
+  const x = create({ baseURL: `http://localhost:${port}` })
+  return x.link('/echo', {q: 'hello'}).then((response) => {
+    t.is(response.problem, NONE)
+    t.deepEqual(response.data, {echo: 'hello'})
+  })
+})
+
+test('UNLINK supports params', (t) => {
+  const x = create({ baseURL: `http://localhost:${port}` })
+  return x.unlink('/echo', {q: 'hello'}).then((response) => {
+    t.is(response.problem, NONE)
+    t.deepEqual(response.data, {echo: 'hello'})
+  })
+})
+
 test('Empty params are supported', (t) => {
   const x = create({ baseURL: `http://localhost:${port}` })
   return x.get('/echo', {}).then((response) => {

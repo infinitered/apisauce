@@ -106,9 +106,11 @@ api.delete('/users/69')
 api.post('/todos', {note: 'jump around'}, {headers: {'x-ray': 'machine'}})
 api.patch('/servers/1', {live: false})
 api.put('/servers/1', {live: true})
+api.link('/images/my_dog.jpg', {}, {headers: {Link: '<http://example.com/profiles/joe>; rel="tag"'}})
+api.unlink('/images/my_dog.jpg', {}, {headers: {Link: '<http://example.com/profiles/joe>; rel="tag"'}})
 ```
 
-`get`, `head`, and `delete` accept 3 parameters:
+`get`, `head`, `delete`, `link` and `unlink` accept 3 parameters:
 
 * url - the relative path to the API (required)
 * params - Object - query string variables (optional)
@@ -243,7 +245,7 @@ The object passed in has these properties:
 * `method` - the HTTP verb
 * `url` - the url we're hitting
 * `headers` - the request headers
-* `params` - the request params for `get`, `delete`, `head`
+* `params` - the request params for `get`, `delete`, `head`, `link`, `unlink`
 
 ```js
 api.addRequestTransform(request => {
