@@ -154,7 +154,7 @@ duration - Number - the number of milliseconds it took to run this request
 ## Changing Headers
 
 Once you've created your api, you're able to change HTTP requests by
-calling `setHeader` or `setHeaders` on the api.
+calling `setHeader` or `setHeaders` on the api. These stay with the api instance, so you can just set ['em and forget 'em](https://gitter.im/infinitered/ignite?at=582e57563f3946057acd2f84).
 
 ```js
 api.setHeader('Authorization', 'the new token goes here')
