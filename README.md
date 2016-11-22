@@ -225,7 +225,7 @@ For responses, you're provided an object with these properties.
 Data is the only option changeable.
 
 ```js
-api.addResponseTransform(response) => {
+api.addResponseTransform(response => {
   const badluck = Math.floor(Math.random() * 10) === 0
   if (badluck) {
     // just mutate the data to what you want.
