@@ -298,6 +298,11 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.7.0 - December 2, 2016
+
+* [NEW] Adds support for reassign data in request transforms - #44 and #42 by @mmahalwy and @skellock 
+* [NEW] Upgrades to Axios 0.15.3 - #43 by @skellock
+
 ### 0.6.0 - November 2, 2016
 
 * [NEW] Adds new HTTP verbs for LINK and UNLINK [@justim](https://github.com/justim) ([#35](https://github.com/skellock/apisauce/pull/35))
