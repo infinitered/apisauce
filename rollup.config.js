@@ -10,5 +10,10 @@ export default {
     })
   ],
   exports: 'named',
-  dest: 'dist/apisauce.js'
+  dest: 'dist/apisauce.js',
+  external: [
+    'ramda',
+    'axios',
+    'ramdasauce'
+  ]
 }
