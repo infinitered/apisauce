@@ -44,7 +44,7 @@ test('alters the request data', (t) => {
   return x.post('/post', MOCK).then(response => {
     t.is(response.status, 200)
     t.is(count, 1)
-    t.is(response.data.got.b, {got: {b: 2}})
+    t.is(response.data.got.b, 2)
   })
 })
 
