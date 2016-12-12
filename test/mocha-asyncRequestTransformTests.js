@@ -1,6 +1,4 @@
 
-var crypto = require('crypto')
-var eccrypto = require('eccrypto')
 var {expect} = require('chai')
 var {create} = require('../lib/apisauce')
 var createServer = require('../support/server').default

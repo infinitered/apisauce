@@ -1,6 +1,4 @@
 
-import crypto from 'crypto'
-import eccrypto from 'eccrypto'
 import test from 'ava'
 import {create} from '../lib/apisauce'
 import createServer from '../support/server'
