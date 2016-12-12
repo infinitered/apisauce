@@ -48,6 +48,36 @@ test('alters the request data', (t) => {
   })
 })
 
+test('transformers should run serially', (t) => {
+  const x = create({ baseURL: `http://localhost:${port}` })
+  let first = false
+  let second = false
+  x.addAsyncRequestTransform(req => {
+    return new Promise((resolve, reject) => {
+      setImmediate(_ => {
+        t.is(first, false)
+        first = true
+        resolve()
+      })
+    })
+  })
+  x.addAsyncRequestTransform(req => {
+    return new Promise((resolve, reject) => {
+      setImmediate(_ => {
+        t.is(first, true)
+        t.is(second, false)
+        second = true
+        resolve()
+      })
+    })
+  })
+  return x.post('/post', MOCK).then(response => {
+    t.is(response.status, 200)
+    t.is(first, true)
+    t.is(second, true)
+  })
+})
+
 test('survives empty PUTs', (t) => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
