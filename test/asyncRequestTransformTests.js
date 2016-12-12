@@ -55,6 +55,7 @@ test('transformers should run serially', (t) => {
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
+        t.is(second, false)
         t.is(first, false)
         first = true
         resolve()
