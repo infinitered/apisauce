@@ -92,21 +92,6 @@ test('params can be added, edited, and deleted', t => {
   })
 })
 
-test('promises can be used for asynchronous transforms', t => {
-  const x = create({ baseURL: `http://localhost:${port}` })
-  x.addRequestTransform(request => {
-    new Promise((resolve, reject) => {
-      process.nextTick(() => {
-        request.params.w = 3
-        resolve()
-      })
-    })
-  })
-  return x.get('/number/200').then(response => {
-    t.is(response.config.params.w, 3)
-  })
-})
-
 test('headers can be created', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
   x.addRequestTransform(request => {
