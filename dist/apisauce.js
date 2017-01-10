@@ -106,6 +106,7 @@ var TIMEOUT_ERROR = 'TIMEOUT_ERROR';
 var CONNECTION_ERROR = 'CONNECTION_ERROR';
 var NETWORK_ERROR = 'NETWORK_ERROR';
 var UNKNOWN_ERROR = 'UNKNOWN_ERROR';
+var CANCEL_ERROR = 'CANCEL_ERROR';
 
 var TIMEOUT_ERROR_CODES = ['ECONNABORTED'];
 var NODEJS_CONNECTION_ERROR_CODES = ['ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET'];
@@ -230,7 +231,7 @@ var create = function create(config) {
     var duration = end - startedAt;
 
     // new in Axios 0.13 -- some data could be buried 1 level now
-    var isError = axiosResponse instanceof Error;
+    var isError = axiosResponse instanceof Error || axiosResponse instanceof axios.Cancel;
     var response = isError ? axiosResponse.response : axiosResponse;
     var status = response && response.status || null;
     var problem = isError ? getProblemFromError(axiosResponse) : getProblemFromStatus(status);
@@ -258,6 +259,8 @@ var create = function create(config) {
   var getProblemFromError = function getProblemFromError(error) {
     // first check if the error message is Network Error (set by axios at 0.12) on platforms other than NodeJS.
     if (error.message === 'Network Error') return NETWORK_ERROR;
+    if (axios.isCancel(error)) return CANCEL_ERROR;
+
     // then check the specific error code
     return R.cond([
     // if we don't have an error code, we have a response status
@@ -318,5 +321,6 @@ exports.TIMEOUT_ERROR = TIMEOUT_ERROR;
 exports.CONNECTION_ERROR = CONNECTION_ERROR;
 exports.NETWORK_ERROR = NETWORK_ERROR;
 exports.UNKNOWN_ERROR = UNKNOWN_ERROR;
+exports.CANCEL_ERROR = CANCEL_ERROR;
 exports.create = create;
 exports['default'] = apisauce;
