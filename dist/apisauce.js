@@ -231,7 +231,7 @@ var create = function create(config) {
     var duration = end - startedAt;
 
     // new in Axios 0.13 -- some data could be buried 1 level now
-    var isError = axiosResponse instanceof Error || axiosResponse instanceof axios.Cancel;
+    var isError = axiosResponse instanceof Error || axios.isCancel(axiosResponse);
     var response = isError ? axiosResponse.response : axiosResponse;
     var status = response && response.status || null;
     var problem = isError ? getProblemFromError(axiosResponse) : getProblemFromStatus(status);

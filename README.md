@@ -286,6 +286,7 @@ SERVER_ERROR     'SERVER_ERROR'     500-599       Any 500 series error.
 TIMEOUT_ERROR    'TIMEOUT_ERROR'    ---           Server didn't respond in time.
 CONNECTION_ERROR 'CONNECTION_ERROR' ---           Server not available, bad dns.
 NETWORK_ERROR    'NETWORK_ERROR'    ---           Network not available.
+CANCEL_ERROR     'CANCEL_ERROR'     ---           Request has been cancelled. Only possible if `cancelToken` is provided in config, see axios `Cancellation`.
 ```
 
 Which problem is chosen will be picked by walking down the list.
