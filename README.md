@@ -299,6 +299,10 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.8.0 - January 15, 2017
+
+* [NEW] Adds cancel token support. - #49 by @romanlv
+
 ### 0.7.0 - December 2, 2016
 
 * [NEW] Adds support for reassign data in request transforms - #44 and #42 by @mmahalwy and @skellock 
