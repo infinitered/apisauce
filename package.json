@@ -1,6 +1,6 @@
 {
   "name": "apisauce",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "A JSON API client for JavaScript. No, no. Not like that. Like this.",
   "repository": {
     "type": "git",
