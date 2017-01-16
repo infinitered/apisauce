@@ -14,7 +14,8 @@
     "dist": "npm run clean && npm run build && npm run docs",
     "docs": "node_modules/.bin/jsdoc --configure .jsdoc.json",
     "clean": "rm -rf dist docs",
-    "build": "BABEL_ENV=production rollup -c"
+    "build": "BABEL_ENV=production rollup -c",
+    "lint": "standard lib/* test/*"
   },
   "keywords": [
     "axios",
