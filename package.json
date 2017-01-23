@@ -1,6 +1,6 @@
 {
   "name": "apisauce",
-  "version": "0.5.0",
+  "version": "0.8.0",
   "description": "A JSON API client for JavaScript. No, no. Not like that. Like this.",
   "repository": {
     "type": "git",
@@ -14,7 +14,8 @@
     "dist": "npm run clean && npm run build && npm run docs",
     "docs": "node_modules/.bin/jsdoc --configure .jsdoc.json",
     "clean": "rm -rf dist docs",
-    "build": "BABEL_ENV=production rollup -c"
+    "build": "BABEL_ENV=production rollup -c",
+    "lint": "standard lib/* test/*"
   },
   "keywords": [
     "axios",
@@ -28,27 +29,27 @@
     "dist/apisauce.js"
   ],
   "dependencies": {
-    "axios": "^0.13.1",
+    "axios": "^0.15.3",
+    "ramda": "^0.23.0",
     "p-waterfall": "^1.0.0",
-    "ramda": "^0.22.1",
     "ramdasauce": "^1.1.1"
   },
   "devDependencies": {
-    "ava": "^0.16.0",
-    "babel-cli": "^6.11.4",
-    "babel-core": "^6.13.2",
-    "babel-eslint": "^6.1.2",
-    "babel-plugin-transform-runtime": "^6.12.0",
-    "babel-preset-es2015": "^6.13.2",
-    "babel-preset-es2015-rollup": "^1.2.0",
-    "babel-preset-stage-0": "^6.5.0",
+    "ava": "^0.17.0",
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.21.0",
+    "babel-eslint": "^7.1.1",
+    "babel-plugin-transform-runtime": "^6.15.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-es2015-rollup": "^3.0.0",
+    "babel-preset-stage-0": "^6.16.0",
     "docdash": "^0.4.0",
-    "jsdoc": "^3.4.0",
-    "nyc": "^8.1.0",
-    "rollup": "^0.34.9",
-    "rollup-plugin-babel": "^2.6.1",
-    "standard": "^7.1.2",
-    "xyz": "^1.0.0"
+    "jsdoc": "^3.4.3",
+    "nyc": "^10.0.0",
+    "rollup": "^0.41.4",
+    "rollup-plugin-babel": "^2.7.1",
+    "standard": "^8.6.0",
+    "xyz": "^2.1.0"
   },
   "ava": {
     "require": [

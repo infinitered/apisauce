@@ -43,6 +43,7 @@ var TIMEOUT_ERROR = 'TIMEOUT_ERROR';
 var CONNECTION_ERROR = 'CONNECTION_ERROR';
 var NETWORK_ERROR = 'NETWORK_ERROR';
 var UNKNOWN_ERROR = 'UNKNOWN_ERROR';
+var CANCEL_ERROR = 'CANCEL_ERROR';
 
 var TIMEOUT_ERROR_CODES = ['ECONNABORTED'];
 var NODEJS_CONNECTION_ERROR_CODES = ['ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET'];
@@ -98,8 +99,8 @@ var create = function create(config) {
     Make the request for GET, HEAD, DELETE
    */
   var doRequestWithoutBody = function doRequestWithoutBody(method, url) {
-    var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-    var axiosConfig = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+    var params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var axiosConfig = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
     return doRequest(R.merge({ url: url, params: params, method: method }, axiosConfig));
   };
@@ -108,8 +109,8 @@ var create = function create(config) {
     Make the request for POST, PUT, PATCH
    */
   var doRequestWithBody = function doRequestWithBody(method, url) {
-    var data = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
-    var axiosConfig = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+    var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+    var axiosConfig = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
     return doRequest(R.merge({ url: url, method: method, data: data }, axiosConfig));
   };
@@ -167,7 +168,7 @@ var create = function create(config) {
     var duration = end - startedAt;
 
     // new in Axios 0.13 -- some data could be buried 1 level now
-    var isError = axiosResponse instanceof Error;
+    var isError = axiosResponse instanceof Error || axios.isCancel(axiosResponse);
     var response = isError ? axiosResponse.response : axiosResponse;
     var status = response && response.status || null;
     var problem = isError ? getProblemFromError(axiosResponse) : getProblemFromStatus(status);
@@ -177,13 +178,14 @@ var create = function create(config) {
     var data = response && response.data || null;
 
     // give an opportunity for anything to the response transforms to change stuff along the way
+    var transformedResponse = { duration: duration, problem: problem, ok: ok, status: status, headers: headers, config: config, data: data };
     if (responseTransforms.length > 0) {
       R.forEach(function (transform) {
-        transform({ duration: duration, problem: problem, ok: ok, status: status, headers: headers, config: config, data: data });
+        return transform(transformedResponse);
       }, responseTransforms);
     }
 
-    return { duration: duration, problem: problem, ok: ok, status: status, headers: headers, config: config, data: data };
+    return transformedResponse;
   };
 
   /**
@@ -194,6 +196,8 @@ var create = function create(config) {
   var getProblemFromError = function getProblemFromError(error) {
     // first check if the error message is Network Error (set by axios at 0.12) on platforms other than NodeJS.
     if (error.message === 'Network Error') return NETWORK_ERROR;
+    if (axios.isCancel(error)) return CANCEL_ERROR;
+
     // then check the specific error code
     return R.cond([
     // if we don't have an error code, we have a response status
@@ -226,7 +230,9 @@ var create = function create(config) {
     head: R.partial(doRequestWithoutBody, ['head']),
     post: R.partial(doRequestWithBody, ['post']),
     put: R.partial(doRequestWithBody, ['put']),
-    patch: R.partial(doRequestWithBody, ['patch'])
+    patch: R.partial(doRequestWithBody, ['patch']),
+    link: R.partial(doRequestWithoutBody, ['link']),
+    unlink: R.partial(doRequestWithoutBody, ['unlink'])
   };
   // send back the sauce
   return sauce;
@@ -252,5 +258,6 @@ exports.TIMEOUT_ERROR = TIMEOUT_ERROR;
 exports.CONNECTION_ERROR = CONNECTION_ERROR;
 exports.NETWORK_ERROR = NETWORK_ERROR;
 exports.UNKNOWN_ERROR = UNKNOWN_ERROR;
+exports.CANCEL_ERROR = CANCEL_ERROR;
 exports.create = create;
 exports['default'] = apisauce;

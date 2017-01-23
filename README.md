@@ -106,9 +106,11 @@ api.delete('/users/69')
 api.post('/todos', {note: 'jump around'}, {headers: {'x-ray': 'machine'}})
 api.patch('/servers/1', {live: false})
 api.put('/servers/1', {live: true})
+api.link('/images/my_dog.jpg', {}, {headers: {Link: '<http://example.com/profiles/joe>; rel="tag"'}})
+api.unlink('/images/my_dog.jpg', {}, {headers: {Link: '<http://example.com/profiles/joe>; rel="tag"'}})
 ```
 
-`get`, `head`, and `delete` accept 3 parameters:
+`get`, `head`, `delete`, `link` and `unlink` accept 3 parameters:
 
 * url - the relative path to the API (required)
 * params - Object - query string variables (optional)
@@ -152,7 +154,7 @@ duration - Number - the number of milliseconds it took to run this request
 ## Changing Headers
 
 Once you've created your api, you're able to change HTTP requests by
-calling `setHeader` or `setHeaders` on the api.
+calling `setHeader` or `setHeaders` on the api. These stay with the api instance, so you can just set ['em and forget 'em](https://gitter.im/infinitered/ignite?at=582e57563f3946057acd2f84).
 
 ```js
 api.setHeader('Authorization', 'the new token goes here')
@@ -223,7 +225,7 @@ For responses, you're provided an object with these properties.
 Data is the only option changeable.
 
 ```js
-api.addResponseTransform(response) => {
+api.addResponseTransform(response => {
   const badluck = Math.floor(Math.random() * 10) === 0
   if (badluck) {
     // just mutate the data to what you want.
@@ -243,7 +245,7 @@ The object passed in has these properties:
 * `method` - the HTTP verb
 * `url` - the url we're hitting
 * `headers` - the request headers
-* `params` - the request params for `get`, `delete`, `head`
+* `params` - the request params for `get`, `delete`, `head`, `link`, `unlink`
 
 ```js
 api.addRequestTransform(request => {
@@ -284,6 +286,7 @@ SERVER_ERROR     'SERVER_ERROR'     500-599       Any 500 series error.
 TIMEOUT_ERROR    'TIMEOUT_ERROR'    ---           Server didn't respond in time.
 CONNECTION_ERROR 'CONNECTION_ERROR' ---           Server not available, bad dns.
 NETWORK_ERROR    'NETWORK_ERROR'    ---           Network not available.
+CANCEL_ERROR     'CANCEL_ERROR'     ---           Request has been cancelled. Only possible if `cancelToken` is provided in config, see axios `Cancellation`.
 ```
 
 Which problem is chosen will be picked by walking down the list.
@@ -295,6 +298,20 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 
 # Release Notes
+
+### 0.8.0 - January 15, 2017
+
+* [NEW] Adds cancel token support. - #49 by @romanlv
+
+### 0.7.0 - December 2, 2016
+
+* [NEW] Adds support for reassign data in request transforms - #44 and #42 by @mmahalwy and @skellock 
+* [NEW] Upgrades to Axios 0.15.3 - #43 by @skellock
+
+### 0.6.0 - November 2, 2016
+
+* [NEW] Adds new HTTP verbs for LINK and UNLINK [@justim](https://github.com/justim) ([#35](https://github.com/skellock/apisauce/pull/35))
+* [NEW] Upgrades to Axios 0.15.2 - [@skellock](https://github.com/skellock)
 
 ### 0.5.0 - August 28, 2016
 

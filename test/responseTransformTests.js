@@ -39,3 +39,19 @@ test('alters the response', (t) => {
     t.deepEqual(response.data.a, 'hi')
   })
 })
+
+test('swap out data on response', t => {
+  const x = create({ baseURL: `http://localhost:${port}` })
+  let count = 0
+  x.addResponseTransform(response => {
+    count++
+    response.status = 222
+    response.data = { a: R.reverse(response.data.a.b) }
+  })
+  // t.is(count, 0)
+  return x.get('/number/201').then(response => {
+    t.is(response.status, 222)
+    t.is(count, 1)
+    t.deepEqual(response.data.a, [3, 2, 1])
+  })
+})
