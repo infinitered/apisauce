@@ -37,7 +37,7 @@ test('alters the request data', (t) => {
         count = 1
         t.is(req.data.b, 1)
         req.data.b = 2
-        resolve()
+        resolve(req)
       })
     })
   })
@@ -58,7 +58,7 @@ test('transformers should run serially', (t) => {
         t.is(second, false)
         t.is(first, false)
         first = true
-        resolve()
+        resolve(req)
       })
     })
   })
@@ -68,7 +68,7 @@ test('transformers should run serially', (t) => {
         t.is(first, true)
         t.is(second, false)
         second = true
-        resolve()
+        resolve(req)
       })
     })
   })
@@ -82,11 +82,11 @@ test('transformers should run serially', (t) => {
 test('survives empty PUTs', (t) => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
-  x.addAsyncRequestTransform(() => {
+  x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
         count++
-        resolve()
+        resolve(req)
       })
     })
   })
@@ -100,11 +100,11 @@ test('survives empty PUTs', (t) => {
 test('fires for gets', (t) => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
-  x.addAsyncRequestTransform(({ data, url, method }) => {
+  x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
         count++
-        resolve()
+        resolve(req)
       })
     })
   })
@@ -118,11 +118,11 @@ test('fires for gets', (t) => {
 
 test('url can be changed', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  x.addAsyncRequestTransform(request => {
+  x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        request.url = R.replace('/201', '/200', request.url)
-        resolve()
+        req.url = R.replace('/201', '/200', req.url)
+        resolve(req)
       })
     })
   })
@@ -133,13 +133,13 @@ test('url can be changed', t => {
 
 test('params can be added, edited, and deleted', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  x.addAsyncRequestTransform(request => {
+  x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        request.params.x = 2
-        request.params.y = 1
-        delete request.params.z
-        resolve()
+        req.params.x = 2
+        req.params.y = 1
+        delete req.params.z
+        resolve(req)
       })
     })
   })
@@ -153,12 +153,12 @@ test('params can be added, edited, and deleted', t => {
 
 test('headers can be created', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  x.addAsyncRequestTransform(request => {
+  x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        t.falsy(request.headers['X-APISAUCE'])
-        request.headers['X-APISAUCE'] = 'new'
-        resolve()
+        t.falsy(req.headers['X-APISAUCE'])
+        req.headers['X-APISAUCE'] = 'new'
+        resolve(req)
       })
     })
   })
@@ -170,12 +170,12 @@ test('headers can be created', t => {
 
 test('headers from creation time can be changed', t => {
   const x = create({ baseURL: `http://localhost:${port}`, headers: { 'X-APISAUCE': 'hello' } })
-  x.addAsyncRequestTransform(request => {
+  x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        t.is(request.headers['X-APISAUCE'], 'hello')
-        request.headers['X-APISAUCE'] = 'change'
-        resolve()
+        t.is(req.headers['X-APISAUCE'], 'hello')
+        req.headers['X-APISAUCE'] = 'change'
+        resolve(req)
       })
     })
   })
@@ -187,12 +187,12 @@ test('headers from creation time can be changed', t => {
 
 test('headers can be deleted', t => {
   const x = create({ baseURL: `http://localhost:${port}`, headers: { 'X-APISAUCE': 'omg' } })
-  x.addAsyncRequestTransform(request => {
+  x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        t.is(request.headers['X-APISAUCE'], 'omg')
-        delete request.headers['X-APISAUCE']
-        resolve()
+        t.is(req.headers['X-APISAUCE'], 'omg')
+        delete req.headers['X-APISAUCE']
+        resolve(req)
       })
     })
   })
