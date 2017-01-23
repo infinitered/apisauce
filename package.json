@@ -29,6 +29,7 @@
   ],
   "dependencies": {
     "axios": "^0.13.1",
+    "p-waterfall": "^1.0.0",
     "ramda": "^0.22.1",
     "ramdasauce": "^1.1.1"
   },
