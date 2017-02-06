@@ -31,6 +31,7 @@
   "dependencies": {
     "axios": "^0.15.3",
     "ramda": "^0.23.0",
+    "p-waterfall": "^1.0.0",
     "ramdasauce": "^1.1.1"
   },
   "devDependencies": {
