@@ -247,6 +247,8 @@ The object passed in has these properties:
 * `headers` - the request headers
 * `params` - the request params for `get`, `delete`, `head`, `link`, `unlink`
 
+Request transforms can be a function:
+
 ```js
 api.addRequestTransform(request => {
   request.headers['X-Request-Transform'] = 'Changing Stuff!'
@@ -258,6 +260,20 @@ api.addRequestTransform(request => {
   }
 })
 ```
+
+And you can also add an async version for use with Promises or `async/await`.
+
+```js
+api.addAsyncRequestTransform(request => {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, 2000)
+  })
+})
+```
+
+This is great if you need to fetch an API key from storage for example.
+
+Multiple async transforms will be run one at a time in succession, not parallel.
 
 
 # Using Async/Await
@@ -298,6 +314,11 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 
 # Release Notes
+
+### 0.9.0 - February 6, 2017
+
+* [NEW] Adds async request transforms. - #31 by @skibz
+* [NEW] Upgrades dependencies including an [odd corner case](https://github.com/skellock/ramdasauce/pull/7). - #52 by @skellock
 
 ### 0.8.0 - January 15, 2017
 
