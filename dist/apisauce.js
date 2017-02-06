@@ -93,6 +93,21 @@ var create = function create(config) {
   };
 
   /**
+   * Sets a new base URL.
+   */
+  var setBaseURL = function setBaseURL(newURL) {
+    instance.defaults.baseURL = newURL;
+    return instance;
+  };
+
+  /**
+   * Gets the current base URL used by axios.
+   */
+  var getBaseURL = function getBaseURL() {
+    return instance.defaults.baseURL;
+  };
+
+  /**
     Make the request for GET, HEAD, DELETE
    */
   var doRequestWithoutBody = function doRequestWithoutBody(method, url) {
@@ -295,6 +310,8 @@ var create = function create(config) {
     setHeader: setHeader,
     setHeaders: setHeaders,
     headers: headers,
+    setBaseURL: setBaseURL,
+    getBaseURL: getBaseURL,
     get: R.partial(doRequestWithoutBody, ['get']),
     delete: R.partial(doRequestWithoutBody, ['delete']),
     head: R.partial(doRequestWithoutBody, ['head']),
