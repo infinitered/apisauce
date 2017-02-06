@@ -151,6 +151,15 @@ config   - Object - the `axios` config object used to make the request
 duration - Number - the number of milliseconds it took to run this request
 ```
 
+## Changing Base URL
+
+You can change the URL your api is connecting to.
+
+```js
+api.setBaseURL('https://some.other.place.com/api/v100')
+console.log(`omg i am now at ${api.getBaseURL()}`)
+```
+
 ## Changing Headers
 
 Once you've created your api, you're able to change HTTP requests by
