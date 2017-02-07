@@ -9,6 +9,16 @@ const MOCK = {b: 1}
 let port
 let server = null
 
+/**
+ * Wait before firing.
+ *
+ * @param {Number} time The number of milliseconds to wait.
+ * @return {Promise}
+ */
+const delay = time => new Promise(resolve => {
+  setTimeout(resolve, time)
+})
+
 test.before(async t => {
   port = await getFreePort()
   server = createServer(port, MOCK)
@@ -48,6 +58,20 @@ test('alters the request data', (t) => {
   })
 })
 
+test('serial async', async t => {
+  const api = create({ baseURL: `http://localhost:${port}` })
+  let fired = false
+  api.addAsyncRequestTransform(request => async () => {
+    await delay(300)
+    request.url = '/number/201'
+    fired = true
+  })
+  const response = await api.get('/number/200')
+  t.true(response.ok)
+  t.is(response.status, 201)
+  t.true(fired)
+})
+
 test('transformers should run serially', (t) => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let first = false
@@ -58,7 +82,7 @@ test('transformers should run serially', (t) => {
         t.is(second, false)
         t.is(first, false)
         first = true
-        resolve(req)
+        resolve()
       })
     })
   })
@@ -68,7 +92,7 @@ test('transformers should run serially', (t) => {
         t.is(first, true)
         t.is(second, false)
         second = true
-        resolve(req)
+        resolve()
       })
     })
   })
@@ -86,7 +110,7 @@ test('survives empty PUTs', (t) => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
         count++
-        resolve(req)
+        resolve()
       })
     })
   })
@@ -104,7 +128,7 @@ test('fires for gets', (t) => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
         count++
-        resolve(req)
+        resolve()
       })
     })
   })
@@ -122,7 +146,7 @@ test('url can be changed', t => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
         req.url = R.replace('/201', '/200', req.url)
-        resolve(req)
+        resolve()
       })
     })
   })
@@ -139,7 +163,7 @@ test('params can be added, edited, and deleted', t => {
         req.params.x = 2
         req.params.y = 1
         delete req.params.z
-        resolve(req)
+        resolve()
       })
     })
   })
@@ -158,7 +182,7 @@ test('headers can be created', t => {
       setImmediate(_ => {
         t.falsy(req.headers['X-APISAUCE'])
         req.headers['X-APISAUCE'] = 'new'
-        resolve(req)
+        resolve()
       })
     })
   })
@@ -175,7 +199,7 @@ test('headers from creation time can be changed', t => {
       setImmediate(_ => {
         t.is(req.headers['X-APISAUCE'], 'hello')
         req.headers['X-APISAUCE'] = 'change'
-        resolve(req)
+        resolve()
       })
     })
   })
@@ -192,7 +216,7 @@ test('headers can be deleted', t => {
       setImmediate(_ => {
         t.is(req.headers['X-APISAUCE'], 'omg')
         delete req.headers['X-APISAUCE']
-        resolve(req)
+        resolve()
       })
     })
   })
