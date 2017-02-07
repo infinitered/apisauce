@@ -330,11 +330,15 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
-### 0.9.0 - February 6, 2017
+### 0.10.0 - February 7, 2017
 
-* [NEW] Adds async request transforms. - #31 by @skibz
+* [NEW] Adds async request transforms. - #31, #54, #56 by @skibz & @skellock
 * [NEW] Adds a way to change the base URL of an API. - #55 by @skellock
 * [NEW] Upgrades dependencies including an [odd corner case](https://github.com/skellock/ramdasauce/pull/7). - #52 by @skellock
+
+### 0.9.0 - February 7, 2017
+
+* [NOTE] We don't talk about 0.9.0.
 
 ### 0.8.0 - January 15, 2017
 
