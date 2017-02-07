@@ -4,19 +4,25 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var _extends = _interopDefault(require('babel-runtime/helpers/extends'));
 var _regeneratorRuntime = _interopDefault(require('babel-runtime/regenerator'));
-var _toConsumableArray = _interopDefault(require('babel-runtime/helpers/toConsumableArray'));
+var _extends = _interopDefault(require('babel-runtime/helpers/extends'));
 var _asyncToGenerator = _interopDefault(require('babel-runtime/helpers/asyncToGenerator'));
+var _typeof = _interopDefault(require('babel-runtime/helpers/typeof'));
 var axios = _interopDefault(require('axios'));
 var R = _interopDefault(require('ramda'));
 var RS = _interopDefault(require('ramdasauce'));
-var pWaterfall = _interopDefault(require('p-waterfall'));
 
 var _this = undefined;
 
 // check for an invalid config
 var isInvalidConfig = R.anyPass([R.isNil, R.isEmpty, R.complement(R.has('baseURL')), R.complement(R.propIs(String, 'baseURL')), R.propSatisfies(R.isEmpty, 'baseURL')]);
+
+/**
+ * Are we dealing with a promise?
+ */
+var isPromise = function isPromise(obj) {
+  return !!obj && ((typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' || typeof obj === 'function') && typeof obj.then === 'function';
+};
 
 // the default headers given to axios
 var DEFAULT_HEADERS = {
@@ -127,44 +133,72 @@ var create = function create(config) {
     return doRequest(R.merge({ url: url, method: method, data: data }, axiosConfig));
   };
 
-  var doRequestTransforms = function doRequestTransforms(transforms, requestConfig) {
-    // create an object to feed through the request transforms
-    var request = R.pick(['url', 'method', 'data', 'headers', 'params'], requestConfig);
-
-    // go go go!
-    R.forEach(function (transform) {
-      return transform(request);
-    }, transforms);
-
-    // overwrite our axios request with whatever our object looks like now
-    return R.merge(requestConfig, request);
-  };
-
-  var doAsyncRequestTransforms = function () {
-    var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(transforms, requestConfig) {
-      var request;
+  /**
+    Make the request with this config!
+   */
+  var doRequest = function () {
+    var _ref = _asyncToGenerator(_regeneratorRuntime.mark(function _callee(axiosRequestConfig) {
+      var index, transform, chain;
       return _regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              // create an object to feed through the request transforms
-              request = R.pick(['url', 'method', 'data', 'headers', 'params'], requestConfig);
+              axiosRequestConfig.headers = _extends({}, headers, axiosRequestConfig.headers);
 
-              // await the promise pipeline and return the merged request config
+              // add the request transforms
+              if (requestTransforms.length > 0) {
+                // overwrite our axios request with whatever our object looks like now
+                // axiosRequestConfig = doRequestTransforms(requestTransforms, axiosRequestConfig)
+                R.forEach(function (transform) {
+                  return transform(axiosRequestConfig);
+                }, requestTransforms);
+              }
 
-              _context.t0 = R;
-              _context.t1 = [requestConfig, request];
-              _context.t2 = _toConsumableArray;
-              _context.next = 6;
-              return pWaterfall(transforms, request);
+              // add the async request transforms
 
-            case 6:
-              _context.t3 = _context.sent;
-              _context.t4 = (0, _context.t2)(_context.t3);
-              _context.t5 = _context.t1.concat.call(_context.t1, _context.t4);
-              return _context.abrupt('return', _context.t0.mergeAll.call(_context.t0, _context.t5));
+              if (!(asyncRequestTransforms.length > 0)) {
+                _context.next = 16;
+                break;
+              }
 
-            case 10:
+              index = 0;
+
+            case 4:
+              if (!(index < asyncRequestTransforms.length)) {
+                _context.next = 16;
+                break;
+              }
+
+              transform = asyncRequestTransforms[index](axiosRequestConfig);
+
+              if (!isPromise(transform)) {
+                _context.next = 11;
+                break;
+              }
+
+              _context.next = 9;
+              return transform;
+
+            case 9:
+              _context.next = 13;
+              break;
+
+            case 11:
+              _context.next = 13;
+              return transform(axiosRequestConfig);
+
+            case 13:
+              index++;
+              _context.next = 4;
+              break;
+
+            case 16:
+
+              // after the call, convert the axios response, then execute our monitors
+              chain = R.pipe(R.partial(convertResponse, [RS.toNumber(new Date())]), runMonitors);
+              return _context.abrupt('return', instance.request(axiosRequestConfig).then(chain).catch(chain));
+
+            case 18:
             case 'end':
               return _context.stop();
           }
@@ -172,59 +206,8 @@ var create = function create(config) {
       }, _callee, _this);
     }));
 
-    return function doAsyncRequestTransforms(_x5, _x6) {
+    return function doRequest(_x5) {
       return _ref.apply(this, arguments);
-    };
-  }();
-
-  /**
-    Make the request with this config!
-   */
-  var doRequest = function () {
-    var _ref2 = _asyncToGenerator(_regeneratorRuntime.mark(function _callee2(axiosRequestConfig) {
-      var chain;
-      return _regeneratorRuntime.wrap(function _callee2$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-
-              axiosRequestConfig.headers = _extends({}, headers, axiosRequestConfig.headers);
-
-              // add the async request transforms
-
-              if (!(asyncRequestTransforms.length > 0)) {
-                _context2.next = 5;
-                break;
-              }
-
-              _context2.next = 4;
-              return doAsyncRequestTransforms(asyncRequestTransforms, axiosRequestConfig);
-
-            case 4:
-              axiosRequestConfig = _context2.sent;
-
-            case 5:
-
-              // add the request transforms
-              if (requestTransforms.length > 0) {
-                // overwrite our axios request with whatever our object looks like now
-                axiosRequestConfig = doRequestTransforms(requestTransforms, axiosRequestConfig);
-              }
-
-              // first convert the axios response, then execute our callback
-              chain = R.pipe(R.partial(convertResponse, [RS.toNumber(new Date())]), runMonitors);
-              return _context2.abrupt('return', instance.request(axiosRequestConfig).then(chain).catch(chain));
-
-            case 8:
-            case 'end':
-              return _context2.stop();
-          }
-        }
-      }, _callee2, _this);
-    }));
-
-    return function doRequest(_x7) {
-      return _ref2.apply(this, arguments);
     };
   }();
 

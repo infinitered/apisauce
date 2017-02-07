@@ -270,14 +270,20 @@ api.addRequestTransform(request => {
 })
 ```
 
-And you can also add an async version for use with Promises or `async/await`.
+And you can also add an async version for use with Promises or `async/await`. When you resolve
+your promise, ensure you pass the request along.
 
 ```js
 api.addAsyncRequestTransform(request => {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, 2000)
-  })
+  return new Promise(resolve => setTimeout(resolve, 2000))
 })
+```
+
+```js
+api.addAsyncRequestTransform(request => async () => {
+  await AsyncStorage.load('something')
+  request.
+}})
 ```
 
 This is great if you need to fetch an API key from storage for example.
