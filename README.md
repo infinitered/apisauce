@@ -282,7 +282,6 @@ api.addAsyncRequestTransform(request => {
 ```js
 api.addAsyncRequestTransform(request => async () => {
   await AsyncStorage.load('something')
-  request.
 }})
 ```
 
