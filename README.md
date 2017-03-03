@@ -282,7 +282,7 @@ api.addAsyncRequestTransform(request => {
 ```js
 api.addAsyncRequestTransform(request => async () => {
   await AsyncStorage.load('something')
-}})
+})
 ```
 
 This is great if you need to fetch an API key from storage for example.
