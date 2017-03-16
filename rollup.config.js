@@ -7,7 +7,7 @@ export default {
     babel({
       babelrc: false,
       runtimeHelpers: true,
-      presets: ['es2015-rollup', 'stage-0'],
+      presets: ['es2015-rollup', 'stage-3'],
       plugins: ['transform-async-to-generator', 'transform-runtime']
     })
   ],
