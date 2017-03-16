@@ -6,9 +6,8 @@ export default {
   plugins: [
     babel({
       babelrc: false,
-      runtimeHelpers: true,
       presets: ['es2015-rollup', 'stage-3'],
-      plugins: ['transform-async-to-generator', 'transform-runtime']
+      plugins: ['fast-async']
     })
   ],
   exports: 'named',
@@ -18,9 +17,5 @@ export default {
     'axios',
     'ramdasauce',
     'p-waterfall',
-    'babel-runtime/helpers/extends',
-    'babel-runtime/helpers/toConsumableArray',
-    'babel-runtime/helpers/asyncToGenerator',
-    'babel-runtime/regenerator'
   ]
 }

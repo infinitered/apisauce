@@ -1,6 +1,6 @@
 {
   "presets": [ "es2015", "stage-3" ],
-  "plugins": [ "transform-runtime" ],
+  "plugins": [ "fast-async" ],
   "ignore": "test/*",
   "env": {
     "development": {
