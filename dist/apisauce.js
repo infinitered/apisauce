@@ -22,34 +22,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 
 
-var asyncToGenerator = function (fn) {
-  return function () {
-    var gen = fn.apply(this, arguments);
-    return new Promise(function (resolve, reject) {
-      function step(key, arg) {
-        try {
-          var info = gen[key](arg);
-          var value = info.value;
-        } catch (error) {
-          reject(error);
-          return;
-        }
 
-        if (info.done) {
-          resolve(value);
-        } else {
-          return Promise.resolve(value).then(function (value) {
-            step("next", value);
-          }, function (err) {
-            step("throw", err);
-          });
-        }
-      }
-
-      return step("next");
-    });
-  };
-};
 
 
 
@@ -74,8 +47,6 @@ var _extends = Object.assign || function (target) {
 
   return target;
 };
-
-var _this = undefined;
 
 Function.prototype.$asyncbind = function $asyncbind(self, catcher) {
   "use strict";
@@ -490,80 +461,66 @@ var create = function create(config) {
   /**
     Make the request with this config!
    */
-  var doRequest = function () {
-    var _ref = asyncToGenerator(regeneratorRuntime.mark(function _callee(axiosRequestConfig) {
+  var doRequest = function doRequest(axiosRequestConfig) {
+    return new Promise(function ($return, $error) {
       var index, transform, chain;
-      return regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              axiosRequestConfig.headers = _extends({}, headers, axiosRequestConfig.headers);
 
-              // add the request transforms
-              if (requestTransforms.length > 0) {
-                // overwrite our axios request with whatever our object looks like now
-                // axiosRequestConfig = doRequestTransforms(requestTransforms, axiosRequestConfig)
-                R.forEach(function (transform) {
-                  return transform(axiosRequestConfig);
-                }, requestTransforms);
-              }
+      axiosRequestConfig.headers = _extends({}, headers, axiosRequestConfig.headers);
 
-              // add the async request transforms
+      // add the request transforms
+      if (requestTransforms.length > 0) {
+        // overwrite our axios request with whatever our object looks like now
+        // axiosRequestConfig = doRequestTransforms(requestTransforms, axiosRequestConfig)
+        R.forEach(function (transform) {
+          return transform(axiosRequestConfig);
+        }, requestTransforms);
+      }
 
-              if (!(asyncRequestTransforms.length > 0)) {
-                _context.next = 16;
-                break;
-              }
+      // add the async request transforms
+      if (asyncRequestTransforms.length > 0) {
+        index = 0;
+        return Function.$asyncbind.trampoline(this, $Loop_3_exit, $Loop_3_step, $error, true)($Loop_3);
 
-              index = 0;
+        function $Loop_3() {
+          if (index < asyncRequestTransforms.length) {
+            transform = asyncRequestTransforms[index](axiosRequestConfig);
+            if (isPromise(transform)) {
+              return transform.then(function ($await_6) {
+                return $If_5.call(this);
+              }.$asyncbind(this, $error), $error);
+            } else {
+              return transform(axiosRequestConfig).then(function ($await_7) {
+                return $If_5.call(this);
+              }.$asyncbind(this, $error), $error);
+            }
 
-            case 4:
-              if (!(index < asyncRequestTransforms.length)) {
-                _context.next = 16;
-                break;
-              }
-
-              transform = asyncRequestTransforms[index](axiosRequestConfig);
-
-              if (!isPromise(transform)) {
-                _context.next = 11;
-                break;
-              }
-
-              _context.next = 9;
-              return transform;
-
-            case 9:
-              _context.next = 13;
-              break;
-
-            case 11:
-              _context.next = 13;
-              return transform(axiosRequestConfig);
-
-            case 13:
-              index++;
-              _context.next = 4;
-              break;
-
-            case 16:
-
-              // after the call, convert the axios response, then execute our monitors
-              chain = R.pipe(R.partial(convertResponse, [RS.toNumber(new Date())]), runMonitors);
-              return _context.abrupt('return', instance.request(axiosRequestConfig).then(chain).catch(chain));
-
-            case 18:
-            case 'end':
-              return _context.stop();
-          }
+            function $If_5() {
+              return $Loop_3_step;
+            }
+          } else return [1];
         }
-      }, _callee, _this);
-    }));
 
-    return function doRequest(_x5) {
-      return _ref.apply(this, arguments);
-    };
-  }();
+        function $Loop_3_step() {
+          index++;
+          return $Loop_3;
+        }
+
+        function $Loop_3_exit() {
+          return $If_2.call(this);
+        }
+      }
+
+      // after the call, convert the axios response, then execute our monitors
+
+      function $If_2() {
+        chain = R.pipe(R.partial(convertResponse, [RS.toNumber(new Date())]), runMonitors);
+
+        return $return(instance.request(axiosRequestConfig).then(chain).catch(chain));
+      }
+
+      return $If_2.call(this);
+    }.$asyncbind(this));
+  };
 
   /**
     Fires after we convert from axios' response into our response.  Exceptions

@@ -6,8 +6,11 @@ export default {
   plugins: [
     babel({
       babelrc: false,
-      presets: ['es2015-rollup', 'stage-3'],
-      plugins: ['fast-async']
+      presets: ['es2015-rollup'],
+      plugins: [
+        'fast-async',
+        'transform-object-rest-spread',
+      ],
     })
   ],
   exports: 'named',
