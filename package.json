@@ -47,6 +47,8 @@
     "ramdasauce": "^1.2.0",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
+    "rollup-plugin-filesize": "^1.2.1",
+    "rollup-plugin-uglify": "^1.0.1",
     "standard": "^9.0.1",
     "xyz": "^2.1.0"
   },
