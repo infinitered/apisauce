@@ -7,13 +7,10 @@ export default {
     babel({
       babelrc: false,
       presets: ['es2015-rollup'],
-      plugins: [
-        'fast-async',
-        'transform-object-rest-spread'
-      ]
+      plugins: ['fast-async', 'transform-object-rest-spread']
     })
   ],
   exports: 'named',
   dest: 'dist/apisauce.js',
-  external: [ 'ramda', 'axios' ]
+  external: ['ramda', 'axios']
 }

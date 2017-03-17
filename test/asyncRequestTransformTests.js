@@ -1,11 +1,10 @@
-
 import test from 'ava'
-import {create} from '../lib/apisauce'
+import { create } from '../lib/apisauce'
 import createServer from '../support/server'
 import R from 'ramda'
 import getFreePort from '../support/getFreePort'
 
-const MOCK = {b: 1}
+const MOCK = { b: 1 }
 let port
 let server = null
 
@@ -24,11 +23,11 @@ test.before(async t => {
   server = createServer(port, MOCK)
 })
 
-test.after('cleanup', (t) => {
+test.after('cleanup', t => {
   server.close()
 })
 
-test('attaches an async request transform', (t) => {
+test('attaches an async request transform', t => {
   const api = create({ baseURL: `http://localhost:${port}` })
   t.truthy(api.addAsyncRequestTransform)
   t.truthy(api.asyncRequestTransforms)
@@ -37,7 +36,7 @@ test('attaches an async request transform', (t) => {
   t.is(api.asyncRequestTransforms.length, 1)
 })
 
-test('alters the request data', (t) => {
+test('alters the request data', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
   x.addAsyncRequestTransform(req => {
@@ -72,7 +71,7 @@ test('serial async', async t => {
   t.true(fired)
 })
 
-test('transformers should run serially', (t) => {
+test('transformers should run serially', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let first = false
   let second = false
@@ -103,7 +102,7 @@ test('transformers should run serially', (t) => {
   })
 })
 
-test('survives empty PUTs', (t) => {
+test('survives empty PUTs', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
   x.addAsyncRequestTransform(req => {
@@ -121,7 +120,7 @@ test('survives empty PUTs', (t) => {
   })
 })
 
-test('fires for gets', (t) => {
+test('fires for gets', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
   x.addAsyncRequestTransform(req => {
@@ -150,7 +149,7 @@ test('url can be changed', t => {
       })
     })
   })
-  return x.get('/number/201', {x: 1}).then(response => {
+  return x.get('/number/201', { x: 1 }).then(response => {
     t.is(response.status, 200)
   })
 })
@@ -167,7 +166,7 @@ test('params can be added, edited, and deleted', t => {
       })
     })
   })
-  return x.get('/number/200', {x: 1, z: 4}).then(response => {
+  return x.get('/number/200', { x: 1, z: 4 }).then(response => {
     t.is(response.status, 200)
     t.is(response.config.params.x, 2)
     t.is(response.config.params.y, 1)
@@ -186,14 +185,17 @@ test('headers can be created', t => {
       })
     })
   })
-  return x.get('/number/201', {x: 1}).then(response => {
+  return x.get('/number/201', { x: 1 }).then(response => {
     t.is(response.status, 201)
     t.is(response.config.headers['X-APISAUCE'], 'new')
   })
 })
 
 test('headers from creation time can be changed', t => {
-  const x = create({ baseURL: `http://localhost:${port}`, headers: { 'X-APISAUCE': 'hello' } })
+  const x = create({
+    baseURL: `http://localhost:${port}`,
+    headers: { 'X-APISAUCE': 'hello' }
+  })
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
@@ -203,14 +205,17 @@ test('headers from creation time can be changed', t => {
       })
     })
   })
-  return x.get('/number/201', {x: 1}).then(response => {
+  return x.get('/number/201', { x: 1 }).then(response => {
     t.is(response.status, 201)
     t.is(response.config.headers['X-APISAUCE'], 'change')
   })
 })
 
 test('headers can be deleted', t => {
-  const x = create({ baseURL: `http://localhost:${port}`, headers: { 'X-APISAUCE': 'omg' } })
+  const x = create({
+    baseURL: `http://localhost:${port}`,
+    headers: { 'X-APISAUCE': 'omg' }
+  })
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
@@ -220,7 +225,7 @@ test('headers can be deleted', t => {
       })
     })
   })
-  return x.get('/number/201', {x: 1}).then(response => {
+  return x.get('/number/201', { x: 1 }).then(response => {
     t.is(response.status, 201)
     t.falsy(response.config.headers['X-APISAUCE'])
   })
