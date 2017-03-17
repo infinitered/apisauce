@@ -9,16 +9,11 @@ export default {
       presets: ['es2015-rollup'],
       plugins: [
         'fast-async',
-        'transform-object-rest-spread',
-      ],
+        'transform-object-rest-spread'
+      ]
     })
   ],
   exports: 'named',
   dest: 'dist/apisauce.js',
-  external: [
-    'ramda',
-    'axios',
-    'ramdasauce',
-    'p-waterfall',
-  ]
+  external: [ 'ramda', 'axios' ]
 }
