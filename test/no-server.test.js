@@ -1,6 +1,6 @@
 import test from 'ava'
 import { create, CONNECTION_ERROR } from '../lib/apisauce'
-import getFreePort from '../support/getFreePort'
+import getFreePort from './_getFreePort'
 
 let port
 test.before(async t => {

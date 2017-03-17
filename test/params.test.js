@@ -1,7 +1,7 @@
 import test from 'ava'
 import { create, NONE } from '../lib/apisauce'
-import createServer from '../support/server'
-import getFreePort from '../support/getFreePort'
+import createServer from './_server'
+import getFreePort from './_getFreePort'
 
 let port
 let server = null

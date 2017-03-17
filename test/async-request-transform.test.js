@@ -1,8 +1,8 @@
 import test from 'ava'
 import { create } from '../lib/apisauce'
-import createServer from '../support/server'
 import R from 'ramda'
-import getFreePort from '../support/getFreePort'
+import createServer from './_server'
+import getFreePort from './_getFreePort'
 
 const MOCK = { b: 1 }
 let port

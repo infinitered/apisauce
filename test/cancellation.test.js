@@ -1,7 +1,7 @@
 import test from 'ava'
 import { create, CANCEL_ERROR } from '../lib/apisauce'
-import createServer from '../support/server'
-import getFreePort from '../support/getFreePort'
+import createServer from './_server'
+import getFreePort from './_getFreePort'
 import { CancelToken } from 'axios'
 
 let port
