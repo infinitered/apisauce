@@ -328,6 +328,11 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.11.0 - March 17, 2017
+
+* [NEW] Optimizes dependencies - #76, #79, #84 by @cloud-walker & @skellock
+* [BORING] Code formatting, test renaming, and other maintenance.
+
 ### 0.10.0 - February 7, 2017
 
 * [NEW] Adds async request transforms. - #31, #54, #56 by @skibz & @skellock
