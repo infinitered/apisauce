@@ -9,13 +9,13 @@
   "main": "./dist/apisauce.js",
   "scripts": {
     "test": "ava",
-    "watch": "npm run test -- --watch",
+    "watch": "ava --watch",
     "coverage": "nyc ava",
-    "dist": "npm run clean && npm run build && npm run docs",
-    "docs": "node_modules/.bin/jsdoc --configure .jsdoc.json",
-    "clean": "rm -rf dist docs",
+    "dist": "npm run clean && npm run build",
+    "clean": "rm -rf dist",
     "build": "BABEL_ENV=production rollup -c",
-    "lint": "standard lib/* test/*"
+    "lint": "standard lib/* test/* rollup.config.js",
+    "shipit": "npm run dist && np"
   },
   "keywords": [
     "axios",
@@ -40,17 +40,15 @@
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-es2015": "^6.24.0",
     "babel-preset-es2015-rollup": "^3.0.0",
-    "docdash": "^0.4.0",
     "fast-async": "^6.2.1",
-    "jsdoc": "^3.4.3",
+    "np": "^2.13.0",
     "nyc": "^10.0.0",
     "ramdasauce": "^1.2.0",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-filesize": "^1.2.1",
     "rollup-plugin-uglify": "^1.0.1",
-    "standard": "^9.0.1",
-    "xyz": "^2.1.0"
+    "standard": "^9.0.1"
   },
   "ava": {
     "require": [
