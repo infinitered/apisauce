@@ -1,9 +1,9 @@
 import test from 'ava'
-import {create} from '../lib/apisauce'
+import { create } from '../lib/apisauce'
 import createServer from '../support/server'
 import getFreePort from '../support/getFreePort'
 
-const MOCK = {a: {b: [1, 2, 3]}}
+const MOCK = { a: { b: [1, 2, 3] } }
 let port
 let server = null
 test.before(async t => {
@@ -11,19 +11,19 @@ test.before(async t => {
   server = createServer(port, MOCK)
 })
 
-test.after.always('cleanup', (t) => {
+test.after.always('cleanup', t => {
   server.close()
 })
 
-test('has valid data with a 200', (t) => {
+test('has valid data with a 200', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.get('/number/200', {a: 'b'}).then(response => {
+  return x.get('/number/200', { a: 'b' }).then(response => {
     t.is(response.status, 200)
     t.deepEqual(response.data, MOCK)
   })
 })
 
-test('has valid data with a 400s', (t) => {
+test('has valid data with a 400s', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
   return x.get('/number/404').then(response => {
     t.is(response.status, 404)
@@ -31,9 +31,9 @@ test('has valid data with a 400s', (t) => {
   })
 })
 
-test('has valid data with a 500s', (t) => {
+test('has valid data with a 500s', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.get('/number/500').then((response) => {
+  return x.get('/number/500').then(response => {
     t.is(response.status, 500)
     t.deepEqual(response.data, MOCK)
   })

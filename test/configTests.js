@@ -20,8 +20,8 @@ test('config must be an object and have a baseURL', t => {
 
 test('config must have a valid baseURL', t => {
   t.throws(() => create({}))
-  t.throws(() => create({baseURL: null}))
-  t.throws(() => create({baseURL: ''}))
+  t.throws(() => create({ baseURL: null }))
+  t.throws(() => create({ baseURL: '' }))
 })
 
 test('returns an object when we configure correctly', t => {

@@ -36,7 +36,7 @@ export default (port, mockData = {}) => {
 
     if (RS.startsWith('/echo', url)) {
       const echo = R.slice(8, Infinity, url)
-      sendResponse(res, 200, JSON.stringify({echo}))
+      sendResponse(res, 200, JSON.stringify({ echo }))
       return
     }
 
@@ -48,14 +48,19 @@ export default (port, mockData = {}) => {
 
     if (RS.startsWith('/sleep', url)) {
       const wait = R.pipe(R.split('/'), R.last, Number)(url)
-      setTimeout(() => { send200(res) }, wait)
+      setTimeout(
+        () => {
+          send200(res)
+        },
+        wait
+      )
       return
     }
 
     if (url === '/post') {
       processPost(req, res, function () {
-        sendResponse(res, 200, JSON.stringify({got: req.post}))
-        return
+        sendResponse(res, 200, JSON.stringify({ got: req.post }))
+        
       })
     }
   })

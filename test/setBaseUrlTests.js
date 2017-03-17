@@ -1,9 +1,9 @@
 import test from 'ava'
-import {create} from '../lib/apisauce'
+import { create } from '../lib/apisauce'
 import createServer from '../support/server'
 import getFreePort from '../support/getFreePort'
 
-const MOCK = {a: {b: [1, 2, 3]}}
+const MOCK = { a: { b: [1, 2, 3] } }
 let port
 let server = null
 test.before(async t => {
@@ -11,12 +11,15 @@ test.before(async t => {
   server = createServer(port, MOCK)
 })
 
-test.after('cleanup', (t) => {
+test.after('cleanup', t => {
   server.close()
 })
 
 test('changes the headers', async t => {
-  const api = create({ baseURL: `http://localhost:${port}`, headers: {'X-Testing': 'hello'} })
+  const api = create({
+    baseURL: `http://localhost:${port}`,
+    headers: { 'X-Testing': 'hello' }
+  })
   const response1 = await api.get('/number/200')
   t.deepEqual(response1.data, MOCK)
 

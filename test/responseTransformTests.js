@@ -1,10 +1,10 @@
 import test from 'ava'
-import {create} from '../lib/apisauce'
+import { create } from '../lib/apisauce'
 import createServer from '../support/server'
 import R from 'ramda'
 import getFreePort from '../support/getFreePort'
 
-const MOCK = {a: {b: [1, 2, 3]}}
+const MOCK = { a: { b: [1, 2, 3] } }
 let port
 let server = null
 test.before(async t => {
@@ -12,11 +12,11 @@ test.before(async t => {
   server = createServer(port, MOCK)
 })
 
-test.after('cleanup', (t) => {
+test.after('cleanup', t => {
   server.close()
 })
 
-test('attaches a response transform', (t) => {
+test('attaches a response transform', t => {
   const api = create({ baseURL: `http://localhost:${port}` })
   t.truthy(api.addResponseTransform)
   t.truthy(api.responseTransforms)
@@ -25,7 +25,7 @@ test('attaches a response transform', (t) => {
   t.is(api.responseTransforms.length, 1)
 })
 
-test('alters the response', (t) => {
+test('alters the response', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
   x.addResponseTransform(({ data }) => {

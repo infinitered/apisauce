@@ -7,7 +7,7 @@ const REPO = 'skellock/apisauce'
 const api = apisauce.create({
   baseURL: 'https://api.github.com',
   headers: {
-    'Accept': 'application/vnd.github.v3+json'
+    Accept: 'application/vnd.github.v3+json'
   }
 })
 
