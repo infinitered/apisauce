@@ -60,7 +60,6 @@ export default (port, mockData = {}) => {
     if (url === '/post') {
       processPost(req, res, function () {
         sendResponse(res, 200, JSON.stringify({ got: req.post }))
-        
       })
     }
   })

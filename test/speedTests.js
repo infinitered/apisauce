@@ -1,9 +1,9 @@
 import test from 'ava'
-import {create} from '../lib/apisauce'
+import { create } from '../lib/apisauce'
 import createServer from '../support/server'
 import getFreePort from '../support/getFreePort'
 
-const MOCK = {a: {b: [1, 2, 3]}}
+const MOCK = { a: { b: [1, 2, 3] } }
 let port
 let server = null
 test.before(async t => {
@@ -11,11 +11,11 @@ test.before(async t => {
   server = createServer(port, MOCK)
 })
 
-test.after('cleanup', (t) => {
+test.after('cleanup', t => {
   server.close()
 })
 
-test('has a duration node', async (t) => {
+test('has a duration node', async t => {
   const x = create({ baseURL: `http://localhost:${port}` })
   const speed = 150
   const response = await x.get(`/sleep/${speed}`)
