@@ -30,8 +30,7 @@
   ],
   "dependencies": {
     "axios": "^0.15.3",
-    "ramda": "^0.23.0",
-    "ramdasauce": "^1.1.1"
+    "ramda": "^0.23.0"
   },
   "devDependencies": {
     "ava": "^0.18.2",
@@ -45,6 +44,7 @@
     "fast-async": "^6.2.1",
     "jsdoc": "^3.4.3",
     "nyc": "^10.0.0",
+    "ramdasauce": "^1.2.0",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
     "standard": "^9.0.1",
