@@ -29,4 +29,9 @@ test('jumps the wire with the right headers', async t => {
   api.setHeader('steve', 'thx')
   const response2 = await api.get('/number/200', {})
   t.is(response2.config.headers['steve'], 'thx')
+
+  // then remove one of them
+  api.deleteHeader('steve')
+  const response3 = await api.get('/number/200', {})
+  t.is(response3.config.headers['steve'], undefined)
 })
