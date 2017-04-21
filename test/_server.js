@@ -48,12 +48,9 @@ export default (port, mockData = {}) => {
 
     if (RS.startsWith('/sleep', url)) {
       const wait = R.pipe(R.split('/'), R.last, Number)(url)
-      setTimeout(
-        () => {
-          send200(res)
-        },
-        wait
-      )
+      setTimeout(() => {
+        send200(res)
+      }, wait)
       return
     }
 

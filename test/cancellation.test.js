@@ -22,12 +22,9 @@ test('cancel request', t => {
     cancelToken: source.token,
     timeout: 200
   })
-  setTimeout(
-    () => {
-      source.cancel()
-    },
-    20
-  )
+  setTimeout(() => {
+    source.cancel()
+  }, 20)
 
   return x.get('/sleep/150').then(response => {
     t.falsy(response.ok)

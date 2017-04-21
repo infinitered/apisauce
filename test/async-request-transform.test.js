@@ -61,12 +61,11 @@ test('alters the request data', t => {
 test('serial async', async t => {
   const api = create({ baseURL: `http://localhost:${port}` })
   let fired = false
-  api.addAsyncRequestTransform(request =>
-    async () => {
-      await delay(300)
-      request.url = '/number/201'
-      fired = true
-    })
+  api.addAsyncRequestTransform(request => async () => {
+    await delay(300)
+    request.url = '/number/201'
+    fired = true
+  })
   const response = await api.get('/number/200')
   t.true(response.ok)
   t.is(response.status, 201)
