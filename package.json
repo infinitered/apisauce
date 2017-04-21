@@ -1,15 +1,14 @@
 {
   "name": "apisauce",
   "version": "0.11.0",
-  "description": "A JSON API client for JavaScript. No, no. Not like that. Like this.",
+  "description": "Axios + standardized errors + request/response transforms.",
   "repository": {
     "type": "git",
     "url": "https://github.com/skellock/apisauce.git"
   },
   "main": "./dist/apisauce.js",
   "scripts": {
-    "test": "ava",
-    "watch": "ava --watch",
+    "test": "ava -s",
     "coverage": "nyc ava",
     "dist": "npm run clean && npm run build",
     "clean": "rm -rf dist",
@@ -29,7 +28,7 @@
     "dist/apisauce.js"
   ],
   "dependencies": {
-    "axios": "^0.15.3",
+    "axios": "^0.16.1",
     "ramda": "^0.23.0"
   },
   "devDependencies": {
