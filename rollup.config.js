@@ -2,6 +2,19 @@ import babel from 'rollup-plugin-babel'
 import uglify from 'rollup-plugin-uglify'
 import filesize from 'rollup-plugin-filesize'
 
+const externalModules = ['ramda', 'axios']
+
+function isImportExternal (importStr) {
+  let external = false
+
+  // Check for each of the external modules defined above
+  externalModules.forEach(externalModule => {
+    if (importStr.indexOf(externalModule) >= 0) external = true
+  })
+
+  return external
+}
+
 export default {
   entry: 'lib/apisauce.js',
   format: 'cjs',
@@ -9,12 +22,12 @@ export default {
     babel({
       babelrc: false,
       presets: ['es2015-rollup'],
-      plugins: ['fast-async', 'transform-object-rest-spread']
+      plugins: ['fast-async', 'transform-object-rest-spread', 'ramda']
     }),
     uglify(),
     filesize()
   ],
   exports: 'named',
   dest: 'dist/apisauce.js',
-  external: ['ramda', 'axios']
+  external: isImportExternal
 }

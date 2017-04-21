@@ -2,7 +2,8 @@
   "presets": [ "es2015" ],
   "plugins": [
     "fast-async",
-    "transform-object-rest-spread"
+    "transform-object-rest-spread",
+    "ramda"
   ],
   "ignore": "test/*",
   "env": {
