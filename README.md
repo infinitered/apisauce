@@ -328,6 +328,15 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.12.0 - April 25, 2017
+
+* [NEW] Bumps Axios to 0.16.1. #110 by @skellock
+* [NEW] Adds `deleteHeader()`. #95 by @jkeam
+* [FIX] Safely reads status code to support mocking environments. #97 by @ashik94vc
+* [SUPPORT] Uses `babel-plugin-ramda` for lighter builds. #93 by @DiscoStarslayer
+* [SUPPORT] Bumps all dev dependencies. #99 by @skellock
+* [SUPPORT] Reformats codebase with `prettier` and `standard --fix`. #98 by @skellock
+
 ### 0.11.0 - March 17, 2017
 
 * [NEW] Optimizes dependencies - #76, #79, #84 by @cloud-walker & @skellock
