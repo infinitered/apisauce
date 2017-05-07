@@ -1,6 +1,6 @@
 import {AxiosInstance, AxiosRequestConfig} from 'axios';
 
-export type HEADERS = { [key: string]: value };
+export type HEADERS = { [key: string]: string };
 export const DEFAULT_HEADERS: {
   Accept: 'application/json',
   'Content-Type': 'application/json'
@@ -83,14 +83,14 @@ export interface ApisauceInstance {
   /** Gets the current base URL used by axios */
   getBaseURL: () => string;
 
-  get: <T>(url: string, params = {}, axiosConfig: AxiosRequestConfig = {}) => Promise<ApiResponse<T>>;
-  delete: <T>(url: string, params = {}, axiosConfig: AxiosRequestConfig = {}) => Promise<ApiResponse<T>>;
-  head: <T>(url: string, params = {}, axiosConfig: AxiosRequestConfig = {}) => Promise<ApiResponse<T>>;
-  post: <T>(url: string, data: any = null, axiosConfig: AxiosRequestConfig = {}) => Promise<ApiResponse<T>>;
-  put: <T>(url: string, data: any = null, axiosConfig: AxiosRequestConfig = {}) => Promise<ApiResponse<T>>;
-  patch: <T>(url: string, data: any = null, axiosConfig: AxiosRequestConfig = {}) => Promise<ApiResponse<T>>;
-  link: <T>(url: string, params = {}, axiosConfig: AxiosRequestConfig = {}) => Promise<ApiResponse<T>>;
-  unlink: <T>(url: string, params = {}, axiosConfig: AxiosRequestConfig = {}) => Promise<ApiResponse<T>>;
+  get: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>;
+  delete: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>;
+  head: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>;
+  post: <T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>;
+  put: <T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>;
+  patch: <T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>;
+  link: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>;
+  unlink: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>;
 }
 
 export default {
