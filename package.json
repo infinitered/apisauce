@@ -7,10 +7,12 @@
     "url": "https://github.com/skellock/apisauce.git"
   },
   "main": "./dist/apisauce.js",
+  "types": "./dist/apisauce.d.ts",
   "scripts": {
     "test": "ava -s",
     "coverage": "nyc ava",
-    "dist": "npm run clean && npm run build",
+    "dist": "npm run clean && npm run build && npm run types",
+    "types": "cp lib/apisauce.d.ts dist/",
     "clean": "rm -rf dist",
     "build": "BABEL_ENV=production rollup -c",
     "lint": "standard lib/* test/* rollup.config.js",
@@ -25,7 +27,8 @@
   "author": "Steve Kellock <steve@kellock.ca>",
   "license": "MIT",
   "files": [
-    "dist/apisauce.js"
+    "dist/apisauce.js",
+    "dist/apisauce.d.ts"
   ],
   "dependencies": {
     "axios": "^0.16.1",
