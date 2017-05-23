@@ -28,7 +28,7 @@ Talking to APIs doesn't have to be awkward anymore.
 
 `npm i apisauce --save`
 
-* Depends on `axios 0.15.3+`.
+* Depends on `axios@^0.16.1`.
 * Targets ES5.
 * Built with ES6.
 * Supported in Node and the browser(s).
@@ -327,6 +327,10 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 
 # Release Notes
+
+### 0.13.0 - May 23, 2017
+
+* [NEW] Typescript typings <3. #104 by @dxiao
 
 ### 0.12.0 - April 25, 2017
 
