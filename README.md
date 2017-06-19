@@ -328,6 +328,12 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.14.0 - June 19, 2017
+
+* [NEW] Bumps Axios to 0.16.2.
+* [FIX] Address issue with React Native 0.45.1 and enumerable key warning.
+* [BORING] Staring to migrate source to TypeScript because I want to feel normal again.
+
 ### 0.13.0 - May 23, 2017
 
 * [NEW] Typescript typings <3. #104 by @dxiao
