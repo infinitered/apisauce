@@ -19,11 +19,7 @@ export default {
   entry: 'lib/apisauce.js',
   format: 'cjs',
   plugins: [
-    babel({
-      babelrc: false,
-      presets: ['es2015-rollup'],
-      plugins: ['fast-async', 'transform-object-rest-spread', 'ramda']
-    }),
+    babel({ babelrc: false, plugins: ['ramda'] }),
     uglify(),
     filesize()
   ],
