@@ -328,6 +328,10 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.14.1 - August 12, 2017
+
+* [FIX] Correct a typescript typing.
+
 ### 0.14.0 - June 19, 2017
 
 * [NEW] Bumps Axios to 0.16.2.
