@@ -71,7 +71,7 @@ export interface ApisauceInstance {
   responseTransforms: ResponseTransform[];
   addRequestTransform: (transform: RequestTransform) => void;
   addAsyncRequestTransform: (transform: AsyncRequestTransform) => void;
-  addResponseTransforms: (transform: ResponseTransform) => void;
+  addResponseTransform: (transform: ResponseTransform) => void;
 
   headers: HEADERS;
   setHeader: (key: string, value: string) => AxiosInstance;
