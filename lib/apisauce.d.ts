@@ -93,14 +93,16 @@ export interface ApisauceInstance {
   unlink: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>;
 }
 
-export default {
-  DEFAULT_HEADERS,
-  NONE,
-  CLIENT_ERROR,
-  SERVER_ERROR,
-  TIMEOUT_ERROR,
-  CONNECTION_ERROR,
-  NETWORK_ERROR,
-  UNKNOWN_ERROR,
-  create
+declare const _default: {
+  DEFAULT_HEADERS: typeof DEFAULT_HEADERS;
+  NONE: typeof NONE;
+  CLIENT_ERROR: typeof CLIENT_ERROR;
+  SERVER_ERROR: typeof SERVER_ERROR;
+  TIMEOUT_ERROR: typeof TIMEOUT_ERROR;
+  CONNECTION_ERROR: typeof CONNECTION_ERROR;
+  NETWORK_ERROR: typeof NETWORK_ERROR;
+  UNKNOWN_ERROR: typeof UNKNOWN_ERROR;
+  create: typeof create;
 }
+
+export default _default;
