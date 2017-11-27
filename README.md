@@ -328,6 +328,10 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.14.2 - November 27, 2017
+
+* [FIX] Adds TypeScript 2.6 support.  #128 by @hammadzz
+
 ### 0.14.1 - August 12, 2017
 
 * [FIX] Correct a typescript typing.
