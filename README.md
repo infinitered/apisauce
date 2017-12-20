@@ -328,6 +328,10 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.14.3 - December 20, 2017
+
+* [FIX] Exports more interfaces in TS definitions.  #133 by @HelloEdit
+
 ### 0.14.2 - November 27, 2017
 
 * [FIX] Adds TypeScript 2.6 support.  #128 by @hammadzz
