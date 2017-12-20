@@ -33,7 +33,7 @@ export interface ApisauceConfig extends AxiosRequestConfig {
  */
 export function create(config: ApisauceConfig): ApisauceInstance;
 
-interface ApiErrorResponse<T> {
+export interface ApiErrorResponse<T> {
   ok: false;
   problem: PROBLEM_CODE;
 
@@ -43,7 +43,7 @@ interface ApiErrorResponse<T> {
   config?: AxiosRequestConfig;
   duration?: number;
 }
-interface ApiOkResponse<T> {
+export interface ApiOkResponse<T> {
   ok: true;
   problem: null;
 
