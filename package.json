@@ -51,6 +51,7 @@
     "clean": "rm -rf dist",
     "compile": "tsc -p tsconfig.json",
     "coverage": "nyc ava",
+    "prepare": "npm-run-all compile build",
     "dist": "npm-run-all clean compile build test",
     "lint": "standard lib/* test/* rollup.config.js",
     "shipit": "npm-run-all dist np",
