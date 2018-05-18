@@ -51,12 +51,11 @@
     "clean": "rm -rf dist",
     "compile": "tsc -p tsconfig.json",
     "coverage": "nyc ava",
-    "dist": "npm-run-all clean compile build types",
+    "dist": "npm-run-all clean compile build test",
     "lint": "standard lib/* test/* rollup.config.js",
     "shipit": "npm-run-all dist np",
     "test": "npm-run-all compile test:unit",
-    "test:unit": "ava -s",
-    "types": "cp lib/apisauce.d.ts dist/"
+    "test:unit": "ava -s"
   },
   "standard": {
     "parser": "babel-eslint"
