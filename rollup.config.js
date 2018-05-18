@@ -16,14 +16,16 @@ function isImportExternal (importStr) {
 }
 
 export default {
-  entry: 'lib/apisauce.js',
-  format: 'cjs',
+  input: 'lib/apisauce.js',
+  output: {
+    file: 'dist/apisauce.js',
+    format: 'cjs',
+    exports: 'named',
+  },
   plugins: [
     babel({ babelrc: false, plugins: ['ramda'] }),
     uglify(),
     filesize()
   ],
-  exports: 'named',
-  dest: 'dist/apisauce.js',
   external: isImportExternal
 }

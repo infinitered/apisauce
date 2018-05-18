@@ -12,7 +12,7 @@ test('add originalError for UNKNOWN_ERROR', t => {
     t.is(response.problem, UNKNOWN_ERROR)
     t.is(
       response.originalError.message,
-      '"port" option should be >= 0 and < 65536: 65536'
+      'Port should be > 0 and < 65536. Received 65536.'
     )
   })
 })
