@@ -150,6 +150,13 @@ config   - Object - the `axios` config object used to make the request
 duration - Number - the number of milliseconds it took to run this request
 ```
 
+Sometimes on different platforms you need access to the original axios error
+that was thrown:
+
+```
+originalError - Error - the error that axios threw in case you need more info
+```
+
 ## Changing Base URL
 
 You can change the URL your api is connecting to.
