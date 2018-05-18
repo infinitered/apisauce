@@ -335,6 +335,10 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.15.1 - May 18, 2018
+
+* [FIX] Adds missing files to the release build that, you know, make this even work.
+
 ### 0.15.0 - May 18, 2018
 
 * [NEW] Adds an originalError property to the underlying axios exception. #152 by @DiMoNTD
