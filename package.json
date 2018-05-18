@@ -61,6 +61,10 @@
   "standard": {
     "parser": "babel-eslint"
   },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
   "types": "./dist/apisauce.d.ts",
   "version": "0.14.3"
 }

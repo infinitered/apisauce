@@ -1,4 +1,4 @@
-import {AxiosInstance, AxiosRequestConfig} from 'axios';
+import {AxiosInstance, AxiosRequestConfig, AxiosError} from 'axios';
 
 export type HEADERS = { [key: string]: string };
 export const DEFAULT_HEADERS: {
@@ -36,6 +36,7 @@ export function create(config: ApisauceConfig): ApisauceInstance;
 export interface ApiErrorResponse<T> {
   ok: false;
   problem: PROBLEM_CODE;
+  originalError: AxiosError;
 
   data?: T;
   status?: number;
@@ -46,6 +47,7 @@ export interface ApiErrorResponse<T> {
 export interface ApiOkResponse<T> {
   ok: true;
   problem: null;
+  originalError: null;
 
   data?: T;
   status?: number;
