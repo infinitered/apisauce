@@ -328,6 +328,11 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.15.0 - May 18, 2018
+
+* [NEW] Adds an originalError property to the underlying axios exception. #152 by @DiMoNTD
+* [UPGRADE] Bumps to the latest axios (version 0.18). #153
+
 ### 0.14.3 - December 20, 2017
 
 * [FIX] Exports more interfaces in TS definitions.  #133 by @HelloEdit
