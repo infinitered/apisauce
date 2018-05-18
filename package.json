@@ -31,7 +31,7 @@
   },
   "files": [
     "dist/apisauce.js",
-    "dist/apisauce.d.ts"
+    "apisauce.d.ts"
   ],
   "keywords": [
     "axios",
@@ -65,6 +65,6 @@
     "semi": false,
     "singleQuote": true
   },
-  "types": "./dist/apisauce.d.ts",
+  "types": "./apisauce.d.ts",
   "version": "0.15.0"
 }
