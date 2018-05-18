@@ -22,16 +22,16 @@ Talking to APIs doesn't have to be awkward anymore.
 * responses have a `problem` property to help guide exception flow
 * attach functions that get called each request
 * attach functions that change all request or response data
-* detects connection issues
+* detects connection issues (on React Native)
 
 # Installing
 
 `npm i apisauce --save`
 
-* Depends on `axios@^0.16.1`.
+* Depends on `axios@^0.18.0`.
 * Targets ES5.
 * Built with ES6.
-* Supported in Node and the browser(s).
+* Supported in Node and the browser(s) and React Native.
 
 
 # Quick Start
