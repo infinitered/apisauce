@@ -122,6 +122,38 @@ const in200s = isWithin(200, 299)
 const in400s = isWithin(400, 499)
 const in500s = isWithin(500, 599)
 const statusNil = ifElse(isNil, always(undefined), prop('status'))
+
+/**
+  What's the problem for this axios response?
+  */
+export const getProblemFromError = error => {
+  // first check if the error message is Network Error (set by axios at 0.12) on platforms other than NodeJS.
+  if (error.message === 'Network Error') return NETWORK_ERROR
+  if (axios.isCancel(error)) return CANCEL_ERROR
+
+  // then check the specific error code
+  return cond([
+    // if we don't have an error code, we have a response status
+    [isNil, () => getProblemFromStatus(statusNil(error.response))],
+    [containsText(TIMEOUT_ERROR_CODES), always(TIMEOUT_ERROR)],
+    [containsText(NODEJS_CONNECTION_ERROR_CODES), always(CONNECTION_ERROR)],
+    [T, always(UNKNOWN_ERROR)]
+  ])(error.code)
+}
+
+/**
+ * Given a HTTP status code, return back the appropriate problem enum.
+ */
+export const getProblemFromStatus = status => {
+  return cond([
+    [isNil, always(UNKNOWN_ERROR)],
+    [in200s, always(NONE)],
+    [in400s, always(CLIENT_ERROR)],
+    [in500s, always(SERVER_ERROR)],
+    [T, always(UNKNOWN_ERROR)]
+  ])(status)
+}
+
 /**
   Creates a instance of our API using the configuration.
  */
@@ -232,7 +264,10 @@ export const create = config => {
       runMonitors
     )
 
-    return instance.request(axiosRequestConfig).then(chain).catch(chain)
+    return instance
+      .request(axiosRequestConfig)
+      .then(chain)
+      .catch(chain)
   }
 
   /**
@@ -253,78 +288,45 @@ export const create = config => {
   /**
     Converts an axios response/error into our response.
    */
-  const convertResponse = curry((startedAt: number, axiosResult: AxiosResponse | AxiosError) => {
-    const end: number = toNumber(new Date())
-    const duration: number = end - startedAt
+  const convertResponse = curry(
+    (startedAt: number, axiosResult: AxiosResponse | AxiosError) => {
+      const end: number = toNumber(new Date())
+      const duration: number = end - startedAt
 
-    // new in Axios 0.13 -- some data could be buried 1 level now
-    const isError = axiosResult instanceof Error || axios.isCancel(axiosResult)
-    const axiosResponse = axiosResult as AxiosResponse
-    const axiosError = axiosResult as AxiosError
-    const response = isError ? axiosError.response : axiosResponse
-    const status = (response && response.status) || null
-    const problem = isError
-      ? getProblemFromError(axiosResult)
-      : getProblemFromStatus(status)
-    const originalError = isError 
-      ? axiosError 
-      : null
-    const ok = in200s(status)
-    const config = axiosResult.config || null
-    const headers = (response && response.headers) || null
-    let data = (response && response.data) || null
+      // new in Axios 0.13 -- some data could be buried 1 level now
+      const isError =
+        axiosResult instanceof Error || axios.isCancel(axiosResult)
+      const axiosResponse = axiosResult as AxiosResponse
+      const axiosError = axiosResult as AxiosError
+      const response = isError ? axiosError.response : axiosResponse
+      const status = (response && response.status) || null
+      const problem = isError
+        ? getProblemFromError(axiosResult)
+        : getProblemFromStatus(status)
+      const originalError = isError ? axiosError : null
+      const ok = in200s(status)
+      const config = axiosResult.config || null
+      const headers = (response && response.headers) || null
+      let data = (response && response.data) || null
 
-    // give an opportunity for anything to the response transforms to change stuff along the way
-    let transformedResponse = {
-      duration,
-      problem,
-      originalError,
-      ok,
-      status,
-      headers,
-      config,
-      data
+      // give an opportunity for anything to the response transforms to change stuff along the way
+      let transformedResponse = {
+        duration,
+        problem,
+        originalError,
+        ok,
+        status,
+        headers,
+        config,
+        data
+      }
+      if (responseTransforms.length > 0) {
+        forEach(transform => transform(transformedResponse), responseTransforms)
+      }
+
+      return transformedResponse
     }
-    if (responseTransforms.length > 0) {
-      forEach(transform => transform(transformedResponse), responseTransforms)
-    }
-
-    return transformedResponse
-  })
-
-  /**
-    What's the problem for this response?
-
-    TODO: We're losing some error granularity, but i'm cool with that
-    until someone cares.
-   */
-  const getProblemFromError = error => {
-    // first check if the error message is Network Error (set by axios at 0.12) on platforms other than NodeJS.
-    if (error.message === 'Network Error') return NETWORK_ERROR
-    if (axios.isCancel(error)) return CANCEL_ERROR
-
-    // then check the specific error code
-    return cond([
-      // if we don't have an error code, we have a response status
-      [isNil, () => getProblemFromStatus(statusNil(error.response))],
-      [containsText(TIMEOUT_ERROR_CODES), always(TIMEOUT_ERROR)],
-      [containsText(NODEJS_CONNECTION_ERROR_CODES), always(CONNECTION_ERROR)],
-      [T, always(UNKNOWN_ERROR)]
-    ])(error.code)
-  }
-
-  /**
-   * Given a HTTP status code, return back the appropriate problem enum.
-   */
-  const getProblemFromStatus = status => {
-    return cond([
-      [isNil, always(UNKNOWN_ERROR)],
-      [in200s, always(NONE)],
-      [in400s, always(CLIENT_ERROR)],
-      [in500s, always(SERVER_ERROR)],
-      [T, always(UNKNOWN_ERROR)]
-    ])(status)
-  }
+  )
 
   // create the base object
   const sauce = {

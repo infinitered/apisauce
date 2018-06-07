@@ -335,6 +335,10 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.15.2 - June 7, 2018
+
+* [NEW] Makes the detection logic functions available externally.
+
 ### 0.15.1 - May 18, 2018
 
 * [FIX] Adds missing files to the release build that, you know, make this even work.
