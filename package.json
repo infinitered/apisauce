@@ -54,7 +54,6 @@
     "prepare": "npm-run-all compile build",
     "dist": "npm-run-all clean compile build test",
     "lint": "standard lib/* test/* rollup.config.js",
-    "shipit": "npm-run-all dist np",
     "test": "npm-run-all compile test:unit",
     "test:unit": "ava -s"
   },
@@ -66,5 +65,5 @@
     "singleQuote": true
   },
   "types": "./apisauce.d.ts",
-  "version": "0.15.1"
+  "version": "0.15.2"
 }
