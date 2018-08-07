@@ -75,15 +75,6 @@ const isWithin = curry((min, max, value) => {
 // a workaround to deal with __ not being available from the ramda types in typescript
 const containsText = textToSearch => list => contains(list, textToSearch)
 
-// check for an invalid config
-const isInvalidConfig = anyPass([
-  isNil,
-  isEmpty,
-  complement(has('baseURL')),
-  complement(propIs(String, 'baseURL')),
-  propSatisfies(isEmpty, 'baseURL')
-])
-
 /**
  * Are we dealing with a promise?
  */
@@ -158,8 +149,6 @@ export const getProblemFromStatus = status => {
   Creates a instance of our API using the configuration.
  */
 export const create = config => {
-  // quick sanity check
-  if (isInvalidConfig(config)) throw new Error('config must have a baseURL')
 
   // combine the user's defaults with ours
   const headers = merge(DEFAULT_HEADERS, config.headers || {})
