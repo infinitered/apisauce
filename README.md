@@ -335,6 +335,10 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 0.16.0 - August 8, 2018
+
+* [NEW] Removes baseURL error checking so baseURL can be assigned later.  #172 by @gantman
+
 ### 0.15.2 - June 7, 2018
 
 * [NEW] Makes the detection logic functions available externally.
@@ -400,7 +404,7 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 ### 0.7.0 - December 2, 2016
 
-* [NEW] Adds support for reassign data in request transforms - #44 and #42 by @mmahalwy and @skellock 
+* [NEW] Adds support for reassign data in request transforms - #44 and #42 by @mmahalwy and @skellock
 * [NEW] Upgrades to Axios 0.15.3 - #43 by @skellock
 
 ### 0.6.0 - November 2, 2016
