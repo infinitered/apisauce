@@ -11,19 +11,6 @@ test('is a function', t => {
   t.is(typeof create, 'function')
 })
 
-test('config must be an object and have a baseURL', t => {
-  t.throws(() => create())
-  t.throws(() => create(null))
-  t.throws(() => create(2))
-  t.throws(() => create([]))
-})
-
-test('config must have a valid baseURL', t => {
-  t.throws(() => create({}))
-  t.throws(() => create({ baseURL: null }))
-  t.throws(() => create({ baseURL: '' }))
-})
-
 test('returns an object when we configure correctly', t => {
   const x = create(validConfig)
   t.truthy(x)
