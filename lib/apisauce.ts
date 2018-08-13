@@ -329,7 +329,7 @@ export const create = config => {
     setBaseURL,
     getBaseURL,
     get: partial(doRequestWithoutBody, ['get']),
-    delete: partial(doRequestWithoutBody, ['delete']),
+    delete: partial(doRequestWithBody, ['delete']),
     head: partial(doRequestWithoutBody, ['head']),
     post: partial(doRequestWithBody, ['post']),
     put: partial(doRequestWithBody, ['put']),
