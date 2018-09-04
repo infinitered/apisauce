@@ -24,7 +24,7 @@ export type PROBLEM_CODE =
   'CANCEL_ERROR';
 
 export interface ApisauceConfig extends AxiosRequestConfig {
-  baseURL: string;
+  baseURL: string | undefined;
 }
 
 /**
