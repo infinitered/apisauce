@@ -1,8 +1,7 @@
 import test from 'ava'
-import { create, CANCEL_ERROR } from '../lib/apisauce'
+import { CancelToken, isCancel, create, CANCEL_ERROR } from '../lib/apisauce'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
-import { CancelToken } from 'axios'
 
 let port
 let server = null
@@ -27,6 +26,7 @@ test('cancel request', t => {
   }, 20)
 
   return x.get('/sleep/150').then(response => {
+    t.truthy(isCancel(response.originalError))
     t.falsy(response.ok)
     t.is(response.problem, CANCEL_ERROR)
   })

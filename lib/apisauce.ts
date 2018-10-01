@@ -341,6 +341,8 @@ export const create = config => {
   return sauce
 }
 
+export const { isCancel , CancelToken } = axios;
+
 export default {
   DEFAULT_HEADERS,
   NONE,
@@ -350,5 +352,7 @@ export default {
   CONNECTION_ERROR,
   NETWORK_ERROR,
   UNKNOWN_ERROR,
-  create
+  create,
+  isCancel,
+  CancelToken
 }
