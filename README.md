@@ -123,7 +123,7 @@ api.unlink('/images/my_dog.jpg', {}, {headers: {Link: '<http://example.com/profi
 
 ## Responses
 
-The responses are promise-based, so you you'll need to handle things in a
+The responses are promise-based, so you'll need to handle things in a
 `.then()` function.
 
 The promised is always resolved with a `response` object.
