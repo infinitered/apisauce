@@ -1,4 +1,4 @@
-import {AxiosInstance, AxiosRequestConfig, AxiosError} from 'axios';
+import {AxiosInstance, AxiosRequestConfig, AxiosError, CancelTokenStatic} from 'axios';
 
 export type HEADERS = { [key: string]: string };
 export const DEFAULT_HEADERS: {
@@ -95,6 +95,10 @@ export interface ApisauceInstance {
   unlink: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>;
 }
 
+export function isCancel(value: any): boolean; 
+
+export const CancelToken: CancelTokenStatic;
+
 declare const _default: {
   DEFAULT_HEADERS: typeof DEFAULT_HEADERS;
   NONE: typeof NONE;
@@ -105,6 +109,8 @@ declare const _default: {
   NETWORK_ERROR: typeof NETWORK_ERROR;
   UNKNOWN_ERROR: typeof UNKNOWN_ERROR;
   create: typeof create;
+  isCancel: typeof isCancel;
+  CancelToken: typeof CancelToken;
 }
 
 export default _default;
