@@ -335,6 +335,11 @@ Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
 
 # Release Notes
 
+### 1.0.0 - October 9, 2018
+
+* [NEW] Adds cancel token typings. #186 by @ahce
+* [FIX] Fixes baseURL typings. #182 by @nonameolsson
+
 ### 0.16.0 - August 8, 2018
 
 * [NEW] Removes baseURL error checking so baseURL can be assigned later.  #172 by @gantman
