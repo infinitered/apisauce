@@ -1,4 +1,5 @@
 {
+  "version": "1.0.0",
   "author": "Steve Kellock <steve@kellock.ca>",
   "ava": {
     "require": [
@@ -64,6 +65,5 @@
     "semi": false,
     "singleQuote": true
   },
-  "types": "./apisauce.d.ts",
-  "version": "0.16.0"
+  "types": "./apisauce.d.ts"
 }
