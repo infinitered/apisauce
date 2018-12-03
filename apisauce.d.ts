@@ -61,6 +61,7 @@ export type Monitor = (response: ApiResponse<any>) => void;
 export type RequestTransform = (request: AxiosRequestConfig) => void;
 export type AsyncRequestTransform = (request: AxiosRequestConfig) => (Promise<void> | ((request: AxiosRequestConfig) => Promise<void>));
 export type ResponseTransform = (response: ApiResponse<any>) => void;
+export type AsyncResponseTransform = (response: ApiResponse<any>) => (Promise<void> | ((response: ApiResponse<any>) => Promise<void>));
 
 export interface ApisauceInstance {
   axiosInstance: AxiosInstance;
@@ -71,9 +72,11 @@ export interface ApisauceInstance {
   requestTransforms: RequestTransform[];
   asyncRequestTransforms: AsyncRequestTransform[];
   responseTransforms: ResponseTransform[];
+  asyncResponseTransforms: AsyncResponseTransform[];
   addRequestTransform: (transform: RequestTransform) => void;
   addAsyncRequestTransform: (transform: AsyncRequestTransform) => void;
   addResponseTransform: (transform: ResponseTransform) => void;
+  addAsyncResponseTransform: (transform: AsyncResponseTransform) => void;
 
   headers: HEADERS;
   setHeader: (key: string, value: string) => AxiosInstance;
@@ -95,7 +98,7 @@ export interface ApisauceInstance {
   unlink: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>;
 }
 
-export function isCancel(value: any): boolean; 
+export function isCancel(value: any): boolean;
 
 export const CancelToken: CancelTokenStatic;
 

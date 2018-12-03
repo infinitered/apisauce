@@ -159,11 +159,14 @@ export const create = config => {
   const requestTransforms = []
   const asyncRequestTransforms = []
   const responseTransforms = []
+  const asyncResponseTransforms = []
 
   const addRequestTransform = transform => requestTransforms.push(transform)
   const addAsyncRequestTransform = transform =>
     asyncRequestTransforms.push(transform)
   const addResponseTransform = transform => responseTransforms.push(transform)
+  const addAsyncResponseTransform = transform =>
+    asyncResponseTransforms.push(transform)
 
   // convenience for setting new request headers
   const setHeader = (name, value) => {
@@ -241,11 +244,16 @@ export const create = config => {
     }
 
     // after the call, convert the axios response, then execute our monitors
-    const chain = pipe(
-      convertResponse(toNumber(new Date())),
-      // partial(convertResponse, [toNumber(new Date())]),
-      runMonitors
-    )
+    // const chain = pipe(
+    //   convertResponse(toNumber(new Date())),
+    //   // partial(convertResponse, [toNumber(new Date())]),
+    //   runMonitors
+    // )
+		const chain = async (axiosResult) => {
+			const transformedResponse = await convertResponse(toNumber(new Date()), axiosResult);
+			const monitorResponse = runMonitors(transformedResponse);
+			return monitorResponse;
+		};
 
     return instance
       .request(axiosRequestConfig)
@@ -271,45 +279,55 @@ export const create = config => {
   /**
     Converts an axios response/error into our response.
    */
-  const convertResponse = curry(
-    (startedAt: number, axiosResult: AxiosResponse | AxiosError) => {
-      const end: number = toNumber(new Date())
-      const duration: number = end - startedAt
+  const convertResponse = async (startedAt: number, axiosResult: AxiosResponse | AxiosError) => {
+    const end: number = toNumber(new Date())
+    const duration: number = end - startedAt
 
-      // new in Axios 0.13 -- some data could be buried 1 level now
-      const isError =
-        axiosResult instanceof Error || axios.isCancel(axiosResult)
-      const axiosResponse = axiosResult as AxiosResponse
-      const axiosError = axiosResult as AxiosError
-      const response = isError ? axiosError.response : axiosResponse
-      const status = (response && response.status) || null
-      const problem = isError
-        ? getProblemFromError(axiosResult)
-        : getProblemFromStatus(status)
-      const originalError = isError ? axiosError : null
-      const ok = in200s(status)
-      const config = axiosResult.config || null
-      const headers = (response && response.headers) || null
-      let data = (response && response.data) || null
+    // new in Axios 0.13 -- some data could be buried 1 level now
+    const isError =
+      axiosResult instanceof Error || axios.isCancel(axiosResult)
+    const axiosResponse = axiosResult as AxiosResponse
+    const axiosError = axiosResult as AxiosError
+    const response = isError ? axiosError.response : axiosResponse
+    const status = (response && response.status) || null
+    const problem = isError
+      ? getProblemFromError(axiosResult)
+      : getProblemFromStatus(status)
+    const originalError = isError ? axiosError : null
+    const ok = in200s(status)
+    const config = axiosResult.config || null
+    const headers = (response && response.headers) || null
+    let data = (response && response.data) || null
 
-      // give an opportunity for anything to the response transforms to change stuff along the way
-      let transformedResponse = {
-        duration,
-        problem,
-        originalError,
-        ok,
-        status,
-        headers,
-        config,
-        data
-      }
-      if (responseTransforms.length > 0) {
-        forEach(transform => transform(transformedResponse), responseTransforms)
-      }
-
-      return transformedResponse
+    // give an opportunity for anything to the response transforms to change stuff along the way
+    let transformedResponse = {
+      duration,
+      problem,
+      originalError,
+      ok,
+      status,
+      headers,
+      config,
+      data
     }
-  )
+    if (responseTransforms.length > 0) {
+      forEach(transform => transform(transformedResponse), responseTransforms)
+    }
+
+    // add the async response transforms
+    if (asyncResponseTransforms.length > 0) {
+      for (let index = 0; index < asyncResponseTransforms.length; index++) {
+        const transform = asyncResponseTransforms[index](transformedResponse)
+        if (isPromise(transform)) {
+          await transform
+        } else {
+          await transform(transformedResponse)
+        }
+      }
+    }
+
+    return transformedResponse
+  }
 
   // create the base object
   const sauce = {
@@ -322,6 +340,7 @@ export const create = config => {
     addRequestTransform,
     addAsyncRequestTransform,
     addResponseTransform,
+    addAsyncResponseTransform,
     setHeader,
     setHeaders,
     deleteHeader,
@@ -341,7 +360,7 @@ export const create = config => {
   return sauce
 }
 
-export const { isCancel , CancelToken } = axios;
+export const { isCancel, CancelToken } = axios;
 
 export default {
   DEFAULT_HEADERS,
