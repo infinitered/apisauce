@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Steve Kellock <steve@kellock.ca>",
   "ava": {
     "require": [
