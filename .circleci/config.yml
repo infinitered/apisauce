@@ -31,7 +31,7 @@ jobs:
           key: v1-dependencies-{{ checksum "package.json" }}
 
 
-  tests:
+  rollup_and_tests:
     <<: *defaults
     steps:
       - checkout
@@ -41,15 +41,38 @@ jobs:
             - v1-dependencies-{{ checksum "package.json" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
+      # dist command compiles the rollup file and also runs tests
       - run:
-          name: Run tests
-          command: yarn test
+          name: Run rollup and tests
+          command: yarn dist
+
+  publish:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      - restore_cache:
+          name: Restore node modules
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      # Run semantic-release after all the above is set.
+      - run:
+          name: Publish to NPM
+          command: yarn ci:publish # this will be added to your package.json scripts
 
 workflows:
   version: 2
-  test:
+  test_and_release:
     jobs:
       - setup
-      - tests:
+      - rollup_and_tests:
           requires:
             - setup
+      - publish:
+          requires:
+            - rollup_and_tests
+          filters:
+            branches:
+              only: master

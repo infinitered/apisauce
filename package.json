@@ -12,6 +12,7 @@
   },
   "description": "Axios + standardized errors + request/response transforms.",
   "devDependencies": {
+    "@semantic-release/git": "^7.0.5",
     "@types/ramda": "^0.25.28",
     "ava": "^0.25.0",
     "babel-cli": "^6.26.0",
@@ -27,6 +28,7 @@
     "rollup-plugin-babel": "^3.0.4",
     "rollup-plugin-filesize": "^1.5.0",
     "rollup-plugin-uglify": "^3.0.0",
+    "semantic-release": "^15.12.4",
     "standard": "^11.0.1",
     "typescript": "3.2.1"
   },
@@ -56,7 +58,9 @@
     "dist": "npm-run-all clean compile build test",
     "lint": "standard lib/* test/* rollup.config.js",
     "test": "npm-run-all compile test:unit",
-    "test:unit": "ava -s"
+    "test:unit": "ava -s",
+    "ci:publish": "yarn semantic-release",
+    "semantic-release": "semantic-release"
   },
   "standard": {
     "parser": "babel-eslint"
@@ -65,5 +69,20 @@
     "semi": false,
     "singleQuote": true
   },
-  "types": "./apisauce.d.ts"
+  "types": "./apisauce.d.ts",
+  "release": {
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm",
+      "@semantic-release/github",
+      [
+        "@semantic-release/git",
+        {
+          "assets": "package.json",
+          "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        }
+      ]
+    ]
+  }
 }
