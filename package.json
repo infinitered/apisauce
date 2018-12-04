@@ -28,7 +28,7 @@
     "rollup-plugin-filesize": "^1.5.0",
     "rollup-plugin-uglify": "^3.0.0",
     "standard": "^11.0.1",
-    "typescript": "2.8.3"
+    "typescript": "3.2.1"
   },
   "files": [
     "dist/apisauce.js",
