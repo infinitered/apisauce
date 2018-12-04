@@ -7,6 +7,7 @@ import {
   is,
   T,
   curry,
+  curryN,
   gte,
   ifElse,
   prop,
@@ -55,7 +56,7 @@ const toNumber = cond([
  * isWithin(1, 5, 5) //=> true
  * isWithin(1, 5, 5.1) //=> false
  */
-const isWithin = curry((min, max, value) => {
+const isWithin = curryN(3, (min, max, value) => {
   const isNumber = is(Number)
   return (
     isNumber(min) &&
@@ -67,7 +68,7 @@ const isWithin = curry((min, max, value) => {
 })
 
 // a workaround to deal with __ not being available from the ramda types in typescript
-const containsText = textToSearch => list => contains(list, textToSearch)
+const containsText = curryN(2, (textToSearch, list) => contains(list, textToSearch))
 
 /**
  * Are we dealing with a promise?
