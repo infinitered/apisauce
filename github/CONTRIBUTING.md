@@ -17,7 +17,7 @@ We welcome all contributions! This guide should help you get up and running to s
 
 Before submitting a pull request, you will want to make sure your branch meets the following requirements:
 
-- Everything works on iOS/Android
+- Everything works on iOS/Android/Web
 - Unit tests are passing (`yarn test`)
 - New unit tests have been included for any new features or functionality
 - Code is compliant with the linter and typescript compiles (`yarn lint && yarn compile`)
