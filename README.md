@@ -17,44 +17,42 @@ Talking to APIs doesn't have to be awkward anymore.
 
 # Features
 
-* low-fat wrapper for the amazing `axios` http client library
-* all responses follow the same flow: success and failure alike
-* responses have a `problem` property to help guide exception flow
-* attach functions that get called each request
-* attach functions that change all request or response data
-* detects connection issues (on React Native)
+- low-fat wrapper for the amazing `axios` http client library
+- all responses follow the same flow: success and failure alike
+- responses have a `problem` property to help guide exception flow
+- attach functions that get called each request
+- attach functions that change all request or response data
+- detects connection issues (on React Native)
 
 # Installing
 
 `npm i apisauce --save`
 
-* Depends on `axios@^0.18.0`.
-* Targets ES5.
-* Built with ES6.
-* Supported in Node and the browser(s) and React Native.
-
+- Depends on `axios@^0.18.0`.
+- Targets ES5.
+- Built with ES6.
+- Supported in Node and the browser(s) and React Native.
 
 # Quick Start
 
 ```js
 // showLastCommitMessageForThisLibrary.js
-import {create} from 'apisauce'
+import { create } from 'apisauce'
 
 // define the api
 const api = create({
   baseURL: 'https://api.github.com',
-  headers: {'Accept': 'application/vnd.github.v3+json'}
+  headers: { Accept: 'application/vnd.github.v3+json' },
 })
 
 // start making calls
 api
   .get('/repos/skellock/apisauce/commits')
-  .then((response) => response.data[0].commit.message)
+  .then(response => response.data[0].commit.message)
   .then(console.log)
 
 // customizing headers per-request
-api.post('/users', {name: 'steve'}, {headers: {'x-gigawatts': '1.21'}})
-
+api.post('/users', { name: 'steve' }, { headers: { 'x-gigawatts': '1.21' } })
 ```
 
 See the examples folder for more code.
@@ -66,14 +64,14 @@ See the examples folder for more code.
 You create an api by calling `.create()` and passing in a configuration object.
 
 ```js
-const api = create({baseURL: 'https://api.github.com'})
+const api = create({ baseURL: 'https://api.github.com' })
 ```
 
 The only required property is `baseURL` and it should be the starting point for
-your API.  It can contain a sub-path and a port as well.
+your API. It can contain a sub-path and a port as well.
 
 ```js
-const api = create({baseURL: 'https://example.com/api/v3'})
+const api = create({ baseURL: 'https://example.com/api/v3' })
 ```
 
 HTTP request headers for all requests can be included as well.
@@ -83,15 +81,15 @@ const api = create({
   baseURL: '...',
   headers: {
     'X-API-KEY': '123',
-    'X-MARKS-THE-SPOT': 'yarrrrr'
-  }
+    'X-MARKS-THE-SPOT': 'yarrrrr',
+  },
 })
 ```
 
 Default timeouts can be applied too:
 
 ```js
-const api = create({baseURL: '...', timeout: 30000}) // 30 seconds
+const api = create({ baseURL: '...', timeout: 30000 }) // 30 seconds
 ```
 
 ## Calling The API
@@ -102,24 +100,24 @@ With your fresh `api`, you can now call it like this:
 api.get('/repos/skellock/apisauce/commits')
 api.head('/me')
 api.delete('/users/69')
-api.post('/todos', {note: 'jump around'}, {headers: {'x-ray': 'machine'}})
-api.patch('/servers/1', {live: false})
-api.put('/servers/1', {live: true})
-api.link('/images/my_dog.jpg', {}, {headers: {Link: '<http://example.com/profiles/joe>; rel="tag"'}})
-api.unlink('/images/my_dog.jpg', {}, {headers: {Link: '<http://example.com/profiles/joe>; rel="tag"'}})
+api.post('/todos', { note: 'jump around' }, { headers: { 'x-ray': 'machine' } })
+api.patch('/servers/1', { live: false })
+api.put('/servers/1', { live: true })
+api.link('/images/my_dog.jpg', {}, { headers: { Link: '<http://example.com/profiles/joe>; rel="tag"' } })
+api.unlink('/images/my_dog.jpg', {}, { headers: { Link: '<http://example.com/profiles/joe>; rel="tag"' } })
 ```
 
 `get`, `head`, `delete`, `link` and `unlink` accept 3 parameters:
 
-* url - the relative path to the API (required)
-* params - Object - query string variables (optional)
-* axiosConfig - Object - config passed along to the `axios` request (optional)
+- url - the relative path to the API (required)
+- params - Object - query string variables (optional)
+- axiosConfig - Object - config passed along to the `axios` request (optional)
 
 `post`, `put`, and `patch` accept 3 different parameters:
 
-* url - the relative path to the API (required)
-* data - Object - the object jumping the wire
-* axiosConfig - Object - config passed along to the `axios` request (optional)
+- url - the relative path to the API (required)
+- data - Object - the object jumping the wire
+- axiosConfig - Object - config passed along to the `axios` request (optional)
 
 ## Responses
 
@@ -128,8 +126,8 @@ The responses are promise-based, so you'll need to handle things in a
 
 The promised is always resolved with a `response` object.
 
-Even if there was a problem with the request!  This is one of the goals of
-this library.  It ensures sane calling code without having to handle `.catch`
+Even if there was a problem with the request! This is one of the goals of
+this library. It ensures sane calling code without having to handle `.catch`
 and have 2 separate flows.
 
 A response will always have these 2 properties:
@@ -174,29 +172,30 @@ calling `setHeader` or `setHeaders` on the api. These stay with the api instance
 ```js
 api.setHeader('Authorization', 'the new token goes here')
 api.setHeaders({
-  'Authorization': 'token',
-  'X-Even-More': 'hawtness'
+  Authorization: 'token',
+  'X-Even-More': 'hawtness',
 })
 ```
 
 ## Adding Monitors
 
 Monitors are functions you can attach to the API which will be called
-when any request is made.  You can use it to do things like:
+when any request is made. You can use it to do things like:
 
-* check for headers and record values
-* determine if you need to trigger other parts of your code
-* measure performance of API calls
-* perform logging
+- check for headers and record values
+- determine if you need to trigger other parts of your code
+- measure performance of API calls
+- perform logging
 
-Monitors are run just before the promise is resolved.  You get an
+Monitors are run just before the promise is resolved. You get an
 early sneak peak at what will come back.
 
 You cannot change anything, just look.
 
 Here's a sample monitor:
+
 ```js
-const naviMonitor = (response) => console.log('hey!  listen! ', response)
+const naviMonitor = response => console.log('hey!  listen! ', response)
 api.addMonitor(naviMonitor)
 ```
 
@@ -210,7 +209,7 @@ api.addMonitor(response => this.kaboom())
 Internally, each monitor callback is surrounded by an oppressive `try/catch`
 block.
 
-Remember.  Safety first!
+Remember. Safety first!
 
 ## Adding Transforms
 
@@ -218,24 +217,23 @@ In addition to monitoring, you can change every request or response globally.
 
 This can be useful if you would like to:
 
-* fix an api response
-* add/edit/delete query string variables for all requests
-* change outbound headers without changing everywhere in your app
+- fix an api response
+- add/edit/delete query string variables for all requests
+- change outbound headers without changing everywhere in your app
 
-Unlike monitors, exceptions are not swallowed.  They will bring down the stack, so careful!
-
+Unlike monitors, exceptions are not swallowed. They will bring down the stack, so careful!
 
 ### Response Transforms
 
 For responses, you're provided an object with these properties.
 
-* `data` - the object originally from the server that you might wanna mess with
-* `duration` - the number of milliseconds
-* `problem` - the problem code (see the bottom for the list)
-* `ok` - true or false
-* `status` - the HTTP status code
-* `headers` - the HTTP response headers
-* `config` - the underlying axios config for the request
+- `data` - the object originally from the server that you might wanna mess with
+- `duration` - the number of milliseconds
+- `problem` - the problem code (see the bottom for the list)
+- `ok` - true or false
+- `status` - the HTTP status code
+- `headers` - the HTTP response headers
+- `config` - the underlying axios config for the request
 
 Data is the only option changeable.
 
@@ -252,15 +250,15 @@ api.addResponseTransform(response => {
 
 ### Request Transforms
 
-For requests, you are given a `request` object.  Mutate anything in here to change anything about the request.
+For requests, you are given a `request` object. Mutate anything in here to change anything about the request.
 
 The object passed in has these properties:
 
-* `data` - the object being passed up to the server
-* `method` - the HTTP verb
-* `url` - the url we're hitting
-* `headers` - the request headers
-* `params` - the request params for `get`, `delete`, `head`, `link`, `unlink`
+- `data` - the object being passed up to the server
+- `method` - the HTTP verb
+- `url` - the url we're hitting
+- `headers` - the request headers
+- `params` - the request params for `get`, `delete`, `head`, `link`, `unlink`
 
 Request transforms can be a function:
 
@@ -295,13 +293,12 @@ This is great if you need to fetch an API key from storage for example.
 
 Multiple async transforms will be run one at a time in succession, not parallel.
 
-
 # Using Async/Await
 
 If you're more of a `stage-0` kinda person, you can use it like this:
 
 ```js
-const api = create({baseURL: '...'})
+const api = create({ baseURL: '...' })
 const response = await api.get('/slowest/site/on/the/net')
 console.log(response.ok) // yay!
 ```
@@ -309,8 +306,8 @@ console.log(response.ok) // yay!
 # Problem Codes
 
 The `problem` property on responses is filled with the best
-guess on where the problem lies.  You can use a switch to
-check the problem.  The values are exposed as `CONSTANTS`
+guess on where the problem lies. You can use a switch to
+check the problem. The values are exposed as `CONSTANTS`
 hanging on your built API.
 
 ```
@@ -327,142 +324,6 @@ CANCEL_ERROR     'CANCEL_ERROR'     ---           Request has been cancelled. On
 
 Which problem is chosen will be picked by walking down the list.
 
+# Contributing
 
-# Feedback
-
-Bugs?  Comments?  Features?  PRs and Issues happily welcomed!
-
-
-# Release Notes
-
-### 1.0.0 - October 9, 2018
-
-* [NEW] Adds cancel token typings. #186 by @ahce
-* [FIX] Fixes baseURL typings. #182 by @nonameolsson
-
-### 0.16.0 - August 8, 2018
-
-* [NEW] Removes baseURL error checking so baseURL can be assigned later.  #172 by @gantman
-
-### 0.15.2 - June 7, 2018
-
-* [NEW] Makes the detection logic functions available externally.
-
-### 0.15.1 - May 18, 2018
-
-* [FIX] Adds missing files to the release build that, you know, make this even work.
-
-### 0.15.0 - May 18, 2018
-
-* [NEW] Adds an originalError property to the underlying axios exception. #152 by @DiMoNTD
-* [UPGRADE] Bumps to the latest axios (version 0.18). #153
-
-### 0.14.3 - December 20, 2017
-
-* [FIX] Exports more interfaces in TS definitions.  #133 by @HelloEdit
-
-### 0.14.2 - November 27, 2017
-
-* [FIX] Adds TypeScript 2.6 support.  #128 by @hammadzz
-
-### 0.14.1 - August 12, 2017
-
-* [FIX] Correct a typescript typing.
-
-### 0.14.0 - June 19, 2017
-
-* [NEW] Bumps Axios to 0.16.2.
-* [FIX] Address issue with React Native 0.45.1 and enumerable key warning.
-* [BORING] Staring to migrate source to TypeScript because I want to feel normal again.
-
-### 0.13.0 - May 23, 2017
-
-* [NEW] Typescript typings <3. #104 by @dxiao
-
-### 0.12.0 - April 25, 2017
-
-* [NEW] Bumps Axios to 0.16.1. #110 by @skellock
-* [NEW] Adds `deleteHeader()`. #95 by @jkeam
-* [FIX] Safely reads status code to support mocking environments. #97 by @ashik94vc
-* [SUPPORT] Uses `babel-plugin-ramda` for lighter builds. #93 by @DiscoStarslayer
-* [SUPPORT] Bumps all dev dependencies. #99 by @skellock
-* [SUPPORT] Reformats codebase with `prettier` and `standard --fix`. #98 by @skellock
-
-### 0.11.0 - March 17, 2017
-
-* [NEW] Optimizes dependencies - #76, #79, #84 by @cloud-walker & @skellock
-* [BORING] Code formatting, test renaming, and other maintenance.
-
-### 0.10.0 - February 7, 2017
-
-* [NEW] Adds async request transforms. - #31, #54, #56 by @skibz & @skellock
-* [NEW] Adds a way to change the base URL of an API. - #55 by @skellock
-* [NEW] Upgrades dependencies including an [odd corner case](https://github.com/skellock/ramdasauce/pull/7). - #52 by @skellock
-
-### 0.9.0 - February 7, 2017
-
-* [NOTE] We don't talk about 0.9.0.
-
-### 0.8.0 - January 15, 2017
-
-* [NEW] Adds cancel token support. - #49 by @romanlv
-
-### 0.7.0 - December 2, 2016
-
-* [NEW] Adds support for reassign data in request transforms - #44 and #42 by @mmahalwy and @skellock
-* [NEW] Upgrades to Axios 0.15.3 - #43 by @skellock
-
-### 0.6.0 - November 2, 2016
-
-* [NEW] Adds new HTTP verbs for LINK and UNLINK [@justim](https://github.com/justim) ([#35](https://github.com/skellock/apisauce/pull/35))
-* [NEW] Upgrades to Axios 0.15.2 - [@skellock](https://github.com/skellock)
-
-### 0.5.0 - August 28, 2016
-
-* [NEW] Adds more options to addRequestTransform - [@skellock](https://github.com/skellock) ([#28](https://github.com/skellock/apisauce/pull/28))
-* [NOTE] Due to how Axios stores headers and our new mutable transforms, I had to move header storage out of Axios and into Apisauce.  This will only affect you if you're talking to the Axios object directly.  I didn't really predict this coming, so heads up if you're talking to the Axios object currently.  It's better to just ask me to change Apisauce to include the missing features.  By the time we get to 1.0, we actually might not even use Axios anymore!  =)
-
-
-### 0.4.0 - August 17, 2016
-
-* [NEW] Adds transform support for request and response - [@skellock](https://github.com/skellock) ([#26](https://github.com/skellock/apisauce/pull/26))
-* [NEW] Upgraded to axios 0.13 and fixed a few API changes to make it transparent - [@skellock](https://github.com/skellock) ([#24](https://github.com/skellock/apisauce/pull/24))
-* [FIX] Exposes the config (request) object when the API call fails [@skellock](https://github.com/skellock) ([#25](https://github.com/skellock/apisauce/pull/25))
-
-### 0.3.0 - July 1st, 2016
-
-* [NEW] setHeader and setHeaders for updating HTTP request headers - [@skellock](https://github.com/skellock)
-
-### 0.2.0 - July 1st, 2016
-
-* [NEW] Bumped all dependencies to the latest version.
-* [NEW] Network errors and timeouts are now detected on React Native - [@skellock](https://github.com/skellock)
-
-### 0.1.5 - June 1st, 2016
-
-* [FIX] Fixed up the problematic babel references in package.json - [@gantman](https://github.com/gantman)
-
-### 0.1.4 - May 31st, 2016
-
-* [NEW] Bumped all dependencies to latest version.
-* [FIX] Repaired dev dependencies. thx [@gabceb](https://github.com/gabceb)
-
-### 0.1.3 - April 18th, 2016
-
-* [FIX] Forgot to run the `dist` script to repackage.  :(  Failsauce.
-
-### 0.1.2 - April 18th, 2016
-
-* [NEW] Added duration (in milliseconds) to the response.
-
-### 0.1.1 - April 10th, 2016
-
-* [NEW] timeout detection
-
-### 0.1.0 - April 10th, 2016
-
-* Initial Release
-
-### TODO
-
-* [ ] Detect network failures on iOS and Android.
+Bugs? Comments? Features? PRs and Issues happily welcomed! Make sure to check out our [contributing guide](./github/CONTRIBUTING.md) to get started!
