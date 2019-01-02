@@ -43,4 +43,4 @@ If you have to bypass the linter for a special commit that you will come back an
 
 **Understanding Linting Errors**
 
-The linting rules are from TSLint. [TSLint rrors can be found with descriptions here](https://palantir.github.io/tslint/rules/).
+The linting rules are from TSLint. [TSLint errors can be found with descriptions here](https://palantir.github.io/tslint/rules/).
