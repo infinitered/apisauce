@@ -135,7 +135,7 @@ and have 2 separate flows.
 A response will always have these 2 properties:
 
 ```
-ok      - Boolean - True is the status code is in the 200's; false otherwise.
+ok      - Boolean - True if the status code is in the 200's; false otherwise.
 problem - String  - One of 6 different values (see below - problem codes)
 ```
 
