@@ -225,11 +225,6 @@ export const create = config => {
     }
 
     // after the call, convert the axios response, then execute our monitors
-    // const chain = pipe(
-    //   convertResponse(toNumber(new Date())),
-    //   // partial(convertResponse, [toNumber(new Date())]),
-    //   runMonitors,
-    // )
     const chain = async (axiosResult) => {
       const transformedResponse = await convertResponse(toNumber(new Date()), axiosResult);
       const monitorResponse = runMonitors(transformedResponse);
@@ -292,17 +287,17 @@ export const create = config => {
       forEach(transform => transform(transformedResponse), responseTransforms)
     }
 
-		// add the async response transforms
-		if (asyncResponseTransforms.length > 0) {
-			for (let index = 0; index < asyncResponseTransforms.length; index++) {
-			  const transform = asyncResponseTransforms[index](transformedResponse)
-			  if (isPromise(transform)) {
-			    await transform
-			  } else {
-			    await transform(transformedResponse)
-			  }
-			}
-		}
+    // add the async response transforms
+    if (asyncResponseTransforms.length > 0) {
+      for (let index = 0; index < asyncResponseTransforms.length; index++) {
+        const transform = asyncResponseTransforms[index](transformedResponse)
+        if (isPromise(transform)) {
+          await transform
+        } else {
+          await transform(transformedResponse)
+        }
+      }
+    }
 
     return transformedResponse
   })
