@@ -55,7 +55,7 @@ export interface ApiOkResponse<T> {
   config?: AxiosRequestConfig;
   duration?: number;
 }
-export type ApiResponse<T> = ApiErrorResponse<T> | ApiOkResponse<T>;
+export type ApiResponse<T, U = T> = ApiErrorResponse<U> | ApiOkResponse<T>;
 
 export type Monitor = (response: ApiResponse<any>) => void;
 export type RequestTransform = (request: AxiosRequestConfig) => void;
@@ -95,7 +95,7 @@ export interface ApisauceInstance {
   unlink: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>;
 }
 
-export function isCancel(value: any): boolean; 
+export function isCancel(value: any): boolean;
 
 export const CancelToken: CancelTokenStatic;
 
