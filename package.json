@@ -7,7 +7,7 @@
     ]
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "ramda": "^0.25.0"
   },
   "description": "Axios + standardized errors + request/response transforms.",
