@@ -77,7 +77,7 @@ export interface ApisauceInstance {
 
   headers: HEADERS;
   setHeader: (key: string, value: string) => AxiosInstance;
-  setHeaders: (headers: [[string, string]]) => AxiosInstance;
+  setHeaders: (headers: HEADERS) => AxiosInstance;
   deleteHeader: (name: string) => AxiosInstance;
 
   /** Sets a new base URL */
