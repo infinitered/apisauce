@@ -25,6 +25,7 @@ export type PROBLEM_CODE =
 
 export interface ApisauceConfig extends AxiosRequestConfig {
   baseURL: string | undefined;
+  axiosInstance: AxiosInstance | undefined;
 }
 
 /**
