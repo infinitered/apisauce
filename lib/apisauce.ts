@@ -127,13 +127,19 @@ export const getProblemFromStatus = status => {
  * Creates a instance of our API using the configuration.
  */
 export const create = config => {
-  // combine the user's defaults with ours
+  // combine the user's headers with ours
   const headers = merge(DEFAULT_HEADERS, config.headers || {})
-  const combinedConfig = merge(DEFAULT_CONFIG, dissoc('headers', config))
 
-  // create the axios instance
-  const instance = axios.create(combinedConfig)
-
+  let instance
+  if (config.axiosInstance) {
+    // use passed axios instance
+    instance = config.axiosInstance
+  } else {
+    const combinedConfig = merge(DEFAULT_CONFIG, dissoc('headers', config))
+    // create the axios instance
+    instance = axios.create(combinedConfig)
+  }
+  
   const monitors = []
   const addMonitor = monitor => {
     monitors.push(monitor)

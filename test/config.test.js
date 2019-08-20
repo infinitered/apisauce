@@ -1,6 +1,7 @@
 import test from 'ava'
 import { create, DEFAULT_HEADERS } from '../lib/apisauce'
 import { merge } from 'ramda'
+import axios from 'axios'
 
 const validConfig = {
   baseURL: 'http://localhost:9991',
@@ -19,8 +20,18 @@ test('returns an object when we configure correctly', t => {
 
 test('configures axios correctly', t => {
   const apisauce = create(validConfig)
-  const axios = apisauce.axiosInstance
-  t.is(axios.defaults.timeout, 0)
-  t.is(axios.defaults.baseURL, validConfig.baseURL)
+  const { axiosInstance } = apisauce
+  t.is(axiosInstance.defaults.timeout, 0)
+  t.is(axiosInstance.defaults.baseURL, validConfig.baseURL)
   t.deepEqual(apisauce.headers, merge(DEFAULT_HEADERS, validConfig.headers))
 })
+
+test('configures axios correctly with passed instance', t => {
+  const customAxiosInstance = axios.create({ baseURL: validConfig.baseURL })
+  const apisauce = create({ axiosInstance: customAxiosInstance, headers: validConfig.headers })
+  const { axiosInstance } = apisauce
+  t.is(axiosInstance.defaults.timeout, 0)
+  t.is(axiosInstance.defaults.baseURL, validConfig.baseURL)
+  t.deepEqual(apisauce.headers, merge(DEFAULT_HEADERS, validConfig.headers))
+})
+
