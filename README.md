@@ -92,6 +92,17 @@ Default timeouts can be applied too:
 const api = create({ baseURL: '...', timeout: 30000 }) // 30 seconds
 ```
 
+You can also pass an already created axios instance
+
+```js
+import axios from 'axios'
+import { create } from 'apisauce'
+
+const customAxiosInstance = axios.create({ baseURL: 'https://example.com/api/v3' })
+
+const apisauceInstance = create({ axiosInstance: customAxiosInstance })
+```
+
 ## Calling The API
 
 With your fresh `api`, you can now call it like this:
