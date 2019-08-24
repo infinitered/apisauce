@@ -14,7 +14,7 @@ import {
   dissoc,
   keys,
   forEach,
-  pipe,
+  pipeP,
   partial,
   contains,
   always,
@@ -127,12 +127,18 @@ export const getProblemFromStatus = status => {
  * Creates a instance of our API using the configuration.
  */
 export const create = config => {
-  // combine the user's defaults with ours
+  // combine the user's headers with ours
   const headers = merge(DEFAULT_HEADERS, config.headers || {})
-  const combinedConfig = merge(DEFAULT_CONFIG, dissoc('headers', config))
 
-  // create the axios instance
-  const instance = axios.create(combinedConfig)
+  let instance
+  if (config.axiosInstance) {
+    // use passed axios instance
+    instance = config.axiosInstance
+  } else {
+    const combinedConfig = merge(DEFAULT_CONFIG, dissoc('headers', config))
+    // create the axios instance
+    instance = axios.create(combinedConfig)
+  }
 
   const monitors = []
   const addMonitor = monitor => {
@@ -225,11 +231,11 @@ export const create = config => {
     }
 
     // after the call, convert the axios response, then execute our monitors
-    const chain = async (axiosResult) => {
-      const transformedResponse = await convertResponse(toNumber(new Date()), axiosResult);
-      const monitorResponse = runMonitors(transformedResponse);
-      return monitorResponse;
-    };
+    const chain = pipeP(
+      convertResponse(toNumber(new Date())),
+      // partial(convertResponse, [toNumber(new Date())]),
+      runMonitors,
+    )
 
     return instance
       .request(axiosRequestConfig)
@@ -255,7 +261,7 @@ export const create = config => {
   /**
    * Converts an axios response/error into our response.
    */
-  const convertResponse = curry(async(startedAt: number, axiosResult: AxiosResponse | AxiosError) => {
+  const convertResponse = curry(async (startedAt: number, axiosResult: AxiosResponse | AxiosError) => {
     const end: number = toNumber(new Date())
     const duration: number = end - startedAt
 
