@@ -64,7 +64,9 @@ export type AsyncRequestTransform = (
   request: AxiosRequestConfig,
 ) => Promise<void> | ((request: AxiosRequestConfig) => Promise<void>)
 export type ResponseTransform = (response: ApiResponse<any>) => void
-export type AsyncResponseTransform = (response: ApiResponse<any>) => void
+export type AsyncResponseTransform = (
+  response: ApiResponse<any>,
+) => Promise<void> | ((response: ApiResponse<any>) => Promise<void>)
 
 export interface ApisauceInstance {
   axiosInstance: AxiosInstance
@@ -75,7 +77,7 @@ export interface ApisauceInstance {
   requestTransforms: RequestTransform[]
   asyncRequestTransforms: AsyncRequestTransform[]
   responseTransforms: ResponseTransform[]
-  asyncresponseTransforms: AsyncResponseTransform[]
+  asyncResponseTransforms: AsyncResponseTransform[]
   addRequestTransform: (transform: RequestTransform) => void
   addAsyncRequestTransform: (transform: AsyncRequestTransform) => void
   addResponseTransform: (transform: ResponseTransform) => void
