@@ -93,14 +93,14 @@ export interface ApisauceInstance {
   /** Gets the current base URL used by axios */
   getBaseURL: () => string
 
-  get: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>
-  delete: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>
-  head: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>
-  post: <T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>
-  put: <T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>
-  patch: <T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>
-  link: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>
-  unlink: <T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T>>
+  get: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
+  delete: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
+  head: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
+  post: <T, U = T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
+  put: <T, U = T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
+  patch: <T, U = T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
+  link: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
+  unlink: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
 }
 
 export function isCancel(value: any): boolean
