@@ -259,6 +259,19 @@ api.addResponseTransform(response => {
 })
 ```
 
+Or make it async:
+
+```js
+api.addAsyncResponseTransform(response => {
+  const something = await AsyncStorage.load('something')
+  if (something) {
+    // just mutate the data to what you want.
+    response.data.doorsOpen = false
+    response.data.message = 'I cannot let you do that.'
+  }
+})
+```
+
 ### Request Transforms
 
 For requests, you are given a `request` object. Mutate anything in here to change anything about the request.
