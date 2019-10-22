@@ -28,7 +28,7 @@ Talking to APIs doesn't have to be awkward anymore.
 
 `npm i apisauce --save`
 
-- Depends on `axios@^0.18.0`.
+- Depends on `axios@^0.19.0`.
 - Targets ES5.
 - Built with ES6.
 - Supported in Node and the browser(s) and React Native.
