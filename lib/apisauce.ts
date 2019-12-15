@@ -32,7 +32,11 @@ import {
  * @example
  * toNumber('7') //=> 7
  */
-const toNumber = cond([[isNil, identity], [is(Number), identity], [T, x => Number(x)]])
+const toNumber = cond([
+  [isNil, identity],
+  [is(Number), identity],
+  [T, x => Number(x)],
+])
 
 /**
  * Given a min and max, determines if the value is included
@@ -327,6 +331,7 @@ export const create = config => {
     headers,
     setBaseURL,
     getBaseURL,
+    any: doRequest,
     get: partial(doRequestWithoutBody, ['get']),
     delete: partial(doRequestWithoutBody, ['delete']),
     head: partial(doRequestWithoutBody, ['head']),

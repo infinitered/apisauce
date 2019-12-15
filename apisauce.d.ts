@@ -93,6 +93,7 @@ export interface ApisauceInstance {
   /** Gets the current base URL used by axios */
   getBaseURL: () => string
 
+  any: <T, U = T>(config: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
   get: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
   delete: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
   head: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
