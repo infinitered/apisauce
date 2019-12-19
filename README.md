@@ -116,6 +116,7 @@ api.patch('/servers/1', { live: false })
 api.put('/servers/1', { live: true })
 api.link('/images/my_dog.jpg', {}, { headers: { Link: '<http://example.com/profiles/joe>; rel="tag"' } })
 api.unlink('/images/my_dog.jpg', {}, { headers: { Link: '<http://example.com/profiles/joe>; rel="tag"' } })
+api.any({ method: 'GET' url: '/product', params: { id: 1 } })
 ```
 
 `get`, `head`, `delete`, `link` and `unlink` accept 3 parameters:
@@ -129,6 +130,10 @@ api.unlink('/images/my_dog.jpg', {}, { headers: { Link: '<http://example.com/pro
 - url - the relative path to the API (required)
 - data - Object - the object jumping the wire
 - axiosConfig - Object - config passed along to the `axios` request (optional)
+
+`any` only accept one parameter
+
+- config - Object - config passed along to the `axios` request, this object same as `axiosConfig`
 
 ## Responses
 
