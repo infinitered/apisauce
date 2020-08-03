@@ -41,7 +41,7 @@ export interface ApiErrorResponse<T> {
 
   data?: T
   status?: number
-  headers?: {}
+  headers?: HEADERS
   config?: AxiosRequestConfig
   duration?: number
 }
@@ -52,7 +52,7 @@ export interface ApiOkResponse<T> {
 
   data?: T
   status?: number
-  headers?: {}
+  headers?: HEADERS
   config?: AxiosRequestConfig
   duration?: number
 }
