@@ -26,9 +26,9 @@ Talking to APIs doesn't have to be awkward anymore.
 
 # Installing
 
-`npm i apisauce --save`
+`npm i apisauce --save` or `yarn add apisauce`
 
-- Depends on `axios@^0.19.0`.
+- Depends on `axios`.
 - Targets ES5.
 - Built with ES6.
 - Supported in Node and the browser(s) and React Native.
