@@ -355,7 +355,7 @@ export default {
   TIMEOUT_ERROR,
   CONNECTION_ERROR,
   NETWORK_ERROR,
-  CANCLE_ERROR,
+  CANCEL_ERROR,
   UNKNOWN_ERROR,
   create,
   isCancel,
