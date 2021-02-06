@@ -267,7 +267,7 @@ api.addResponseTransform(response => {
 Or make it async:
 
 ```js
-api.addAsyncResponseTransform(response => {
+api.addAsyncResponseTransform(async (response) => {
   const something = await AsyncStorage.load('something')
   if (something) {
     // just mutate the data to what you want.
