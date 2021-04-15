@@ -13,6 +13,7 @@
   "description": "Axios + standardized errors + request/response transforms.",
   "devDependencies": {
     "@semantic-release/git": "^7.0.5",
+    "@types/node": "14.0.4",
     "@types/ramda": "^0.25.28",
     "ava": "^0.25.0",
     "babel-cli": "^6.26.0",
