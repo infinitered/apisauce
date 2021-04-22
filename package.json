@@ -42,6 +42,7 @@
   },
   "files": [
     "dist/apisauce.js",
+    "dist/umd/apisauce.js",
     "apisauce.d.ts"
   ],
   "keywords": [
