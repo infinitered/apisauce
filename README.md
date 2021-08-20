@@ -332,6 +332,19 @@ const response = await api.get('/slowest/site/on/the/net')
 console.log(response.ok) // yay!
 ```
 
+# Cancel Request
+
+```js
+import {CancelToken} from 'apisauce'
+
+const source = CancelToken.source()
+const api = create({ baseURL: 'github.com' })
+api.get('/users', {}, { cancelToken: source.token })
+
+// To cancel request
+source.cancel()
+```
+
 # Problem Codes
 
 The `problem` property on responses is filled with the best
