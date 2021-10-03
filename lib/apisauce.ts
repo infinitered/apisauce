@@ -202,7 +202,7 @@ export const create = config => {
   /**
    * Make the request for POST, PUT, PATCH
    */
-  const doRequestWithBody = (method, url, data = null, axiosConfig = {}) => {
+  const doRequestWithBody = (method, url, data, axiosConfig = {}) => {
     return doRequest(merge({ url, method, data }, axiosConfig))
   }
 
