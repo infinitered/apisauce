@@ -32,11 +32,12 @@ import {
  * @example
  * toNumber('7') //=> 7
  */
-const toNumber = cond([
-  [isNil, identity],
-  [is(Number), identity],
-  [T, x => Number(x)],
-])
+const toNumber = (value: any): number => {
+  if (typeof value === 'number' || value === null || value === undefined) {
+    return value
+  }
+  return Number(value)
+}
 
 /**
  * Given a min and max, determines if the value is included
