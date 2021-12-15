@@ -1,13 +1,12 @@
 import axios, { AxiosResponse, AxiosError } from 'axios'
+
+// prettier-ignore
 import {
   cond,
   isNil,
   T,
   curry,
   curryN,
-  gte,
-  ifElse,
-  prop,
   merge,
   dissoc,
   keys,
@@ -90,7 +89,6 @@ const NODEJS_CONNECTION_ERROR_CODES = ['ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET'
 const in200s = (n: number): boolean => isWithin(200, 299, n)
 const in400s = (n: number): boolean => isWithin(400, 499, n)
 const in500s = (n: number): boolean => isWithin(500, 599, n)
-const statusNil = ifElse(isNil, always(undefined), prop('status'))
 
 /**
  * What's the problem for this axios response?
@@ -103,24 +101,24 @@ export const getProblemFromError = error => {
   // then check the specific error code
   return cond([
     // if we don't have an error code, we have a response status
-    [isNil, () => getProblemFromStatus(statusNil(error.response))],
+    [isNil, () => getProblemFromStatus(error.response.status)],
     [containsText(TIMEOUT_ERROR_CODES), always(TIMEOUT_ERROR)],
     [containsText(NODEJS_CONNECTION_ERROR_CODES), always(CONNECTION_ERROR)],
     [T, always(UNKNOWN_ERROR)],
   ])(error.code)
 }
 
+type StatusCodes = undefined | number
+
 /**
  * Given a HTTP status code, return back the appropriate problem enum.
  */
-export const getProblemFromStatus = status => {
-  return cond([
-    [isNil, always(UNKNOWN_ERROR)],
-    [in200s, always(NONE)],
-    [in400s, always(CLIENT_ERROR)],
-    [in500s, always(SERVER_ERROR)],
-    [T, always(UNKNOWN_ERROR)],
-  ])(status)
+export const getProblemFromStatus = (status: StatusCodes) => {
+  if (!status) return UNKNOWN_ERROR
+  if (in200s(status)) return NONE
+  if (in400s(status)) return CLIENT_ERROR
+  if (in500s(status)) return SERVER_ERROR
+  return UNKNOWN_ERROR
 }
 
 /**
