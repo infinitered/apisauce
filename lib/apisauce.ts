@@ -2,8 +2,6 @@ import axios, { AxiosResponse, AxiosError } from 'axios'
 import {
   cond,
   isNil,
-  identity,
-  is,
   T,
   curry,
   curryN,
@@ -56,10 +54,7 @@ const toNumber = (value: any): number => {
  * isWithin(1, 5, 5) //=> true
  * isWithin(1, 5, 5.1) //=> false
  */
-const isWithin = curryN(3, (min, max, value) => {
-  const isNumber = is(Number)
-  return isNumber(min) && isNumber(max) && isNumber(value) && gte(value, min) && gte(max, value)
-})
+const isWithin = (min: number, max: number, value: number): boolean => value >= min && value <= max
 
 // a workaround to deal with __ not being available from the ramda types in typescript
 const containsText = curryN(2, (textToSearch, list) => contains(list, textToSearch))
@@ -92,9 +87,9 @@ export const CANCEL_ERROR = 'CANCEL_ERROR'
 
 const TIMEOUT_ERROR_CODES = ['ECONNABORTED']
 const NODEJS_CONNECTION_ERROR_CODES = ['ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET']
-const in200s = isWithin(200, 299)
-const in400s = isWithin(400, 499)
-const in500s = isWithin(500, 599)
+const in200s = (n: number): boolean => isWithin(200, 299, n)
+const in400s = (n: number): boolean => isWithin(400, 499, n)
+const in500s = (n: number): boolean => isWithin(500, 599, n)
 const statusNil = ifElse(isNil, always(undefined), prop('status'))
 
 /**
