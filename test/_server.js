@@ -6,11 +6,11 @@ const processPost = (request, response, callback) => {
   let queryData = ''
   if (typeof callback !== 'function') return null
 
-  request.on('data', function (data) {
+  request.on('data', function(data) {
     queryData += data
   })
 
-  request.on('end', function () {
+  request.on('end', function() {
     request.post = JSON.parse(queryData)
     callback()
   })
@@ -55,7 +55,7 @@ export default (port, mockData = {}) => {
     }
 
     if (url === '/post') {
-      processPost(req, res, function () {
+      processPost(req, res, function() {
         sendResponse(res, 200, JSON.stringify({ got: req.post }))
       })
     }

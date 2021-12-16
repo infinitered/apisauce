@@ -1,11 +1,5 @@
 import axios, { AxiosResponse, AxiosError } from 'axios'
 
-// prettier-ignore
-import {
-  pipeP,
-  partial,
-} from 'ramda'
-
 /**
  * Converts the parameter to a number.
  *
@@ -19,17 +13,21 @@ import {
  * toNumber('7') //=> 7
  */
 const toNumber = (value: any): number => {
+  // if value is a Date, convert to a number
+  if (value instanceof Date) {
+    return value.getTime()
+  }
+
   if (typeof value === 'number' || value === null || value === undefined) {
     return value
   }
+
   return Number(value)
 }
 
 /**
  * Given a min and max, determines if the value is included
  * in the range.
- *
- * This function is curried.
  *
  * @sig Number a -> a -> a -> b
  * @param {Number} the minimum number
@@ -170,17 +168,20 @@ export const create = config => {
     return instance.defaults.baseURL
   }
 
+  type RequestsWithoutBody = 'get' | 'head' | 'delete' | 'link' | 'unlink'
+  type RequestsWithBody = 'post' | 'put' | 'patch'
+
   /**
    * Make the request for GET, HEAD, DELETE
    */
-  const doRequestWithoutBody = (method, url, params = {}, axiosConfig = {}) => {
+  const doRequestWithoutBody = (method: RequestsWithoutBody) => (url: string, params = {}, axiosConfig = {}) => {
     return doRequest({ ...axiosConfig, url, params, method })
   }
 
   /**
    * Make the request for POST, PUT, PATCH
    */
-  const doRequestWithBody = (method, url, data, axiosConfig = {}) => {
+  const doRequestWithBody = (method: RequestsWithBody) => (url: string, data, axiosConfig = {}) => {
     return doRequest({ ...axiosConfig, url, method, data })
   }
 
@@ -213,11 +214,17 @@ export const create = config => {
     }
 
     // after the call, convert the axios response, then execute our monitors
-    const chain = pipeP(
-      convertResponse(toNumber(new Date())),
-      // partial(convertResponse, [toNumber(new Date())]),
-      runMonitors,
-    )
+    const startTime = toNumber(new Date())
+    const chain = async response => {
+      const ourResponse = await convertResponse(startTime, response)
+      return runMonitors(ourResponse)
+    }
+
+    // const chain = pipeP(
+    //   convertResponse(toNumber(new Date())),
+    //   // partial(convertResponse, [toNumber(new Date())]),
+    //   runMonitors,
+    // )
 
     return instance
       .request(axiosRequestConfig)
@@ -241,21 +248,9 @@ export const create = config => {
   }
 
   /**
-   * Turns a function into a curried function.
-   */
-  const curry = fn => {
-    return (...args) => {
-      if (args.length >= fn.length) {
-        return fn(...args)
-      }
-      return curry(fn.bind(null, ...args))
-    }
-  }
-
-  /**
    * Converts an axios response/error into our response.
    */
-  const convertResponse = curry(async (startedAt: number, axiosResult: AxiosResponse | AxiosError) => {
+  const convertResponse = async (startedAt: number, axiosResult: AxiosResponse | AxiosError) => {
     const end: number = toNumber(new Date())
     const duration: number = end - startedAt
 
@@ -300,7 +295,7 @@ export const create = config => {
     }
 
     return transformedResponse
-  })
+  }
 
   // create the base object
   const sauce = {
@@ -322,14 +317,14 @@ export const create = config => {
     setBaseURL,
     getBaseURL,
     any: doRequest,
-    get: partial(doRequestWithoutBody, ['get']),
-    delete: partial(doRequestWithoutBody, ['delete']),
-    head: partial(doRequestWithoutBody, ['head']),
-    post: partial(doRequestWithBody, ['post']),
-    put: partial(doRequestWithBody, ['put']),
-    patch: partial(doRequestWithBody, ['patch']),
-    link: partial(doRequestWithoutBody, ['link']),
-    unlink: partial(doRequestWithoutBody, ['unlink']),
+    get: doRequestWithoutBody('get'),
+    delete: doRequestWithoutBody('delete'),
+    head: doRequestWithoutBody('head'),
+    post: doRequestWithBody('post'),
+    put: doRequestWithBody('put'),
+    patch: doRequestWithBody('patch'),
+    link: doRequestWithoutBody('link'),
+    unlink: doRequestWithoutBody('unlink'),
   }
   // send back the sauce
   return sauce
