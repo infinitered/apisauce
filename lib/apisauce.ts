@@ -2,7 +2,6 @@ import axios, { AxiosResponse, AxiosError } from 'axios'
 
 // prettier-ignore
 import {
-  curry,
   merge,
   dissoc,
   keys,
@@ -242,6 +241,18 @@ export const create = config => {
       }
     })
     return ourResponse
+  }
+
+  /**
+   * Turns a function into a curried function.
+   */
+  const curry = fn => {
+    return (...args) => {
+      if (args.length >= fn.length) {
+        return fn(...args)
+      }
+      return curry(fn.bind(null, ...args))
+    }
   }
 
   /**
