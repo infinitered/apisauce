@@ -2,19 +2,13 @@ import axios, { AxiosResponse, AxiosError } from 'axios'
 
 // prettier-ignore
 import {
-  cond,
-  isNil,
-  T,
   curry,
-  curryN,
   merge,
   dissoc,
   keys,
   forEach,
   pipeP,
   partial,
-  contains,
-  always,
 } from 'ramda'
 
 /**
@@ -54,9 +48,6 @@ const toNumber = (value: any): number => {
  * isWithin(1, 5, 5.1) //=> false
  */
 const isWithin = (min: number, max: number, value: number): boolean => value >= min && value <= max
-
-// a workaround to deal with __ not being available from the ramda types in typescript
-const containsText = curryN(2, (textToSearch, list) => contains(list, textToSearch))
 
 /**
  * Are we dealing with a promise?
@@ -123,7 +114,7 @@ export const getProblemFromStatus = (status: StatusCodes) => {
  */
 export const create = config => {
   // combine the user's headers with ours
-  const headers = merge(DEFAULT_HEADERS, config.headers || {})
+  const headers = { ...DEFAULT_HEADERS, ...(config.headers || {}) }
 
   let instance
   if (config.axiosInstance) {
@@ -187,14 +178,14 @@ export const create = config => {
    * Make the request for GET, HEAD, DELETE
    */
   const doRequestWithoutBody = (method, url, params = {}, axiosConfig = {}) => {
-    return doRequest(merge({ url, params, method }, axiosConfig))
+    return doRequest({ ...axiosConfig, url, params, method })
   }
 
   /**
    * Make the request for POST, PUT, PATCH
    */
   const doRequestWithBody = (method, url, data, axiosConfig = {}) => {
-    return doRequest(merge({ url, method, data }, axiosConfig))
+    return doRequest({ ...axiosConfig, url, method, data })
   }
 
   /**
