@@ -27,40 +27,40 @@ const send200 = (res, body) => {
 }
 
 export default (port, mockData = {}) => {
-  const server = http.createServer((req, res) => {
-    const url = req.url
-    if (url === '/ok') {
-      send200(res)
-      return
-    }
-
-    if (RS.startsWith('/echo', url)) {
-      const echo = R.slice(8, Infinity, url)
-      sendResponse(res, 200, JSON.stringify({ echo }))
-      return
-    }
-
-    if (RS.startsWith('/number', url)) {
-      const n = R.slice(8, 11, url)
-      sendResponse(res, n, JSON.stringify(mockData))
-      return
-    }
-
-    if (RS.startsWith('/sleep', url)) {
-      const wait = R.pipe(R.split('/'), R.last, Number)(url)
-      setTimeout(() => {
+  return new Promise(resolve => {
+    const server = http.createServer((req, res) => {
+      const url = req.url
+      if (url === '/ok') {
         send200(res)
-      }, wait)
-      return
-    }
+        return
+      }
 
-    if (url === '/post') {
-      processPost(req, res, function() {
-        sendResponse(res, 200, JSON.stringify({ got: req.post }))
-      })
-    }
+      if (RS.startsWith('/echo', url)) {
+        const echo = R.slice(8, Infinity, url)
+        sendResponse(res, 200, JSON.stringify({ echo }))
+        return
+      }
+
+      if (RS.startsWith('/number', url)) {
+        const n = R.slice(8, 11, url)
+        sendResponse(res, n, JSON.stringify(mockData))
+        return
+      }
+
+      if (RS.startsWith('/sleep', url)) {
+        const wait = R.pipe(R.split('/'), R.last, Number)(url)
+        setTimeout(() => {
+          send200(res)
+        }, wait)
+        return
+      }
+
+      if (url === '/post') {
+        processPost(req, res, function() {
+          sendResponse(res, 200, JSON.stringify({ got: req.post }))
+        })
+      }
+    })
+    server.listen(port, 'localhost', () => resolve(server))
   })
-  server.listen(port, 'localhost')
-
-  return server
 }

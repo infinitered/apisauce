@@ -7,7 +7,7 @@ let port
 let server = null
 test.before(async t => {
   port = await getFreePort()
-  server = createServer(port)
+  server = await createServer(port)
 })
 
 test.after('cleanup', t => {
@@ -19,7 +19,7 @@ test('cancel request', t => {
   const x = create({
     baseURL: `http://localhost:${port}`,
     cancelToken: source.token,
-    timeout: 200
+    timeout: 200,
   })
   setTimeout(() => {
     source.cancel()

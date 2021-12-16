@@ -93,15 +93,15 @@ export interface ApisauceInstance {
   /** Gets the current base URL used by axios */
   getBaseURL: () => string
 
-  any: <T, U = T>(config: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
-  get: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
-  delete: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
-  head: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
-  post: <T, U = T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
-  put: <T, U = T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
-  patch: <T, U = T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
-  link: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
-  unlink: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig) => Promise<ApiResponse<T, U>>
+  any: <T, U = T>(config: AxiosRequestConfig<T>) => Promise<ApiResponse<T, U>>
+  get: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig<T>) => Promise<ApiResponse<T, U>>
+  delete: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig<T>) => Promise<ApiResponse<T, U>>
+  head: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig<T>) => Promise<ApiResponse<T, U>>
+  post: <T, U = T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig<T>) => Promise<ApiResponse<T, U>>
+  put: <T, U = T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig<T>) => Promise<ApiResponse<T, U>>
+  patch: <T, U = T>(url: string, data?: any, axiosConfig?: AxiosRequestConfig<T>) => Promise<ApiResponse<T, U>>
+  link: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig<T>) => Promise<ApiResponse<T, U>>
+  unlink: <T, U = T>(url: string, params?: {}, axiosConfig?: AxiosRequestConfig<T>) => Promise<ApiResponse<T, U>>
 }
 
 export function isCancel(value: any): boolean
