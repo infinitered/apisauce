@@ -2,10 +2,6 @@ import axios, { AxiosResponse, AxiosError } from 'axios'
 
 // prettier-ignore
 import {
-  merge,
-  dissoc,
-  keys,
-  forEach,
   pipeP,
   partial,
 } from 'ramda'
@@ -120,7 +116,8 @@ export const create = config => {
     // use passed axios instance
     instance = config.axiosInstance
   } else {
-    const combinedConfig = merge(DEFAULT_CONFIG, dissoc('headers', config))
+    const configWithoutHeaders = { ...config, headers: undefined }
+    const combinedConfig = { ...DEFAULT_CONFIG, ...configWithoutHeaders }
     // create the axios instance
     instance = axios.create(combinedConfig)
   }
@@ -148,7 +145,7 @@ export const create = config => {
 
   // sets headers in bulk
   const setHeaders = headers => {
-    forEach(header => setHeader(header, headers[header]), keys(headers))
+    Object.keys(headers).forEach(header => setHeader(header, headers[header]))
     return instance
   }
 
@@ -200,7 +197,7 @@ export const create = config => {
     if (requestTransforms.length > 0) {
       // overwrite our axios request with whatever our object looks like now
       // axiosRequestConfig = doRequestTransforms(requestTransforms, axiosRequestConfig)
-      forEach(transform => transform(axiosRequestConfig), requestTransforms)
+      requestTransforms.forEach(transform => transform(axiosRequestConfig))
     }
 
     // add the async request transforms
@@ -287,7 +284,7 @@ export const create = config => {
       data,
     }
     if (responseTransforms.length > 0) {
-      forEach(transform => transform(transformedResponse), responseTransforms)
+      responseTransforms.forEach(transform => transform(transformedResponse))
     }
 
     // add the async response transforms
