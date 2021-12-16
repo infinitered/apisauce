@@ -7,7 +7,7 @@ let port
 let server = null
 test.before(async t => {
   port = await getFreePort()
-  server = createServer(port)
+  server = await createServer(port)
 })
 
 test.after('cleanup', t => {

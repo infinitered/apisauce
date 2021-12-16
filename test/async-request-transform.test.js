@@ -21,7 +21,7 @@ const delay = time =>
 
 test.before(async t => {
   port = await getFreePort()
-  server = createServer(port, MOCK)
+  server = await createServer(port, MOCK)
 })
 
 test.after('cleanup', t => {
@@ -195,7 +195,7 @@ test('headers can be created', t => {
 test('headers from creation time can be changed', t => {
   const x = create({
     baseURL: `http://localhost:${port}`,
-    headers: { 'X-APISAUCE': 'hello' }
+    headers: { 'X-APISAUCE': 'hello' },
   })
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
@@ -215,7 +215,7 @@ test('headers from creation time can be changed', t => {
 test('headers can be deleted', t => {
   const x = create({
     baseURL: `http://localhost:${port}`,
-    headers: { 'X-APISAUCE': 'omg' }
+    headers: { 'X-APISAUCE': 'omg' },
   })
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {

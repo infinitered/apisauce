@@ -8,7 +8,7 @@ let port
 let server = null
 test.before(async t => {
   port = await getFreePort()
-  server = createServer(port, MOCK)
+  server = await createServer(port, MOCK)
 })
 
 test.after('cleanup', t => {
@@ -18,7 +18,7 @@ test.after('cleanup', t => {
 test('changes the headers', async t => {
   const api = create({
     baseURL: `http://localhost:${port}`,
-    headers: { 'X-Testing': 'hello' }
+    headers: { 'X-Testing': 'hello' },
   })
   const response1 = await api.get('/number/200')
   t.deepEqual(response1.data, MOCK)
