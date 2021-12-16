@@ -1,6 +1,10 @@
 {
   "version": "2.1.3",
-  "author": "Steve Kellock <steve@kellock.ca>",
+  "author": {
+    "name": "Infinite Red",
+    "email": "npm@infinite.red",
+    "url": "https://github.com/infinitered/ignite"
+  },
   "ava": {
     "require": [
       "babel-core/register"
@@ -55,7 +59,7 @@
   "name": "apisauce",
   "repository": {
     "type": "git",
-    "url": "https://github.com/skellock/apisauce.git"
+    "url": "https://github.com/infinitered/apisauce.git"
   },
   "scripts": {
     "build": "BABEL_ENV=production rollup -c",
@@ -69,7 +73,8 @@
     "test:unit": "ava -s",
     "ci:publish": "yarn semantic-release",
     "semantic-release": "semantic-release",
-    "format": "prettier --write \"{**/*.ts,.circleci/**/*.js}\" --loglevel error && tslint -p . --fix"
+    "format": "prettier --write \"{**/*.ts,.circleci/**/*.js}\" --loglevel error && tslint -p . --fix",
+    "example": "node ./examples/github.js"
   },
   "prettier": {
     "semi": false,
