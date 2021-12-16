@@ -1,6 +1,5 @@
 {
-  "presets": [ "es2015" ],
-  "plugins": [ "ramda" ],
+  "presets": ["es2015"],
   "ignore": "test/*",
   "env": {
     "development": {

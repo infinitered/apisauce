@@ -2,22 +2,18 @@ import apisauce from '../lib/apisauce'
 import R from 'ramda'
 import RS from 'ramdasauce'
 
-const REPO = 'skellock/apisauce'
+const REPO = 'infinitered/apisauce'
 
 const api = apisauce.create({
   baseURL: 'https://api.github.com',
   headers: {
-    Accept: 'application/vnd.github.v3+json'
-  }
+    Accept: 'application/vnd.github.v3+json',
+  },
 })
 
 // attach a monitor that fires with each request
 api.addMonitor(
-  R.pipe(
-    RS.dotPath('headers.x-ratelimit-remaining'),
-    R.concat('Calls remaining this hour: '),
-    console.log
-  )
+  R.pipe(RS.dotPath('headers.x-ratelimit-remaining'), R.concat('Calls remaining this hour: '), console.log),
 )
 
 // show the latest commit message
