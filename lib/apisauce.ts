@@ -220,12 +220,6 @@ export const create = config => {
       return runMonitors(ourResponse)
     }
 
-    // const chain = pipeP(
-    //   convertResponse(toNumber(new Date())),
-    //   // partial(convertResponse, [toNumber(new Date())]),
-    //   runMonitors,
-    // )
-
     return instance
       .request(axiosRequestConfig)
       .then(chain)
