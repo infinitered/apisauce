@@ -6,7 +6,5 @@
     "strict": false,
     "lib": ["es2015"]
   },
-  "include": [
-    "lib"
-  ]
+  "include": ["lib"]
 }
