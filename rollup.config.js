@@ -4,11 +4,11 @@ import filesize from 'rollup-plugin-filesize'
 import resolve from 'rollup-plugin-node-resolve'
 import uglify from 'rollup-plugin-uglify'
 
-const externalModules = ['ramda', 'axios']
+const externalModules = ['axios']
 const input = 'lib/apisauce.js'
 const name = 'apisauce'
 
-function isImportExternal (importStr) {
+function isImportExternal(importStr) {
   let external = false
 
   // Check for each of the external modules defined above
@@ -19,8 +19,8 @@ function isImportExternal (importStr) {
   return external
 }
 
-function getBabelOptions () {
-  return { babelrc: false, plugins: ['ramda'] }
+function getBabelOptions() {
+  return { babelrc: false, plugins: [] }
 }
 
 export default [
@@ -31,12 +31,8 @@ export default [
       file: `dist/${name}.js`,
       format: 'cjs',
     },
-    plugins: [
-      babel(getBabelOptions()),
-      uglify(),
-      filesize()
-    ],
-    external: isImportExternal
+    plugins: [babel(getBabelOptions()), uglify(), filesize()],
+    external: isImportExternal,
   },
   {
     input,
@@ -45,18 +41,11 @@ export default [
       file: `dist/umd/${name}.js`,
       format: 'umd',
       globals: {
-        'ramda': 'ramda',
-        'axios': 'axios'
+        axios: 'axios',
       },
       name,
     },
-    plugins: [
-      babel(getBabelOptions()),
-      resolve(),
-      commonjs(),
-      uglify(),
-      filesize()
-    ],
+    plugins: [babel(getBabelOptions()), resolve(), commonjs(), uglify(), filesize()],
     external: externalModules,
   },
 ]

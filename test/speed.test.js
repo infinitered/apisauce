@@ -17,10 +17,9 @@ test.after('cleanup', t => {
 
 test('has a duration node', async t => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  const speed = 150
-  const response = await x.get(`/sleep/${speed}`)
+  const response = await x.get(`/sleep/150`)
   t.is(response.status, 200)
   t.truthy(response.duration)
   t.truthy(response.duration >= 150)
-  t.truthy(response.duration <= 1000) // fragile
+  // t.truthy(response.duration <= 1000) // fragile
 })

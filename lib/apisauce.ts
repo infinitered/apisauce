@@ -1,24 +1,4 @@
 import axios, { AxiosResponse, AxiosError } from 'axios'
-import {
-  cond,
-  isNil,
-  identity,
-  is,
-  T,
-  curry,
-  curryN,
-  gte,
-  ifElse,
-  prop,
-  merge,
-  dissoc,
-  keys,
-  forEach,
-  pipeP,
-  partial,
-  contains,
-  always,
-} from 'ramda'
 
 /**
  * Converts the parameter to a number.
@@ -32,17 +12,22 @@ import {
  * @example
  * toNumber('7') //=> 7
  */
-const toNumber = cond([
-  [isNil, identity],
-  [is(Number), identity],
-  [T, x => Number(x)],
-])
+const toNumber = (value: any): number => {
+  // if value is a Date, convert to a number
+  if (value instanceof Date) {
+    return value.getTime()
+  }
+
+  if (typeof value === 'number' || value === null || value === undefined) {
+    return value
+  }
+
+  return Number(value)
+}
 
 /**
  * Given a min and max, determines if the value is included
  * in the range.
- *
- * This function is curried.
  *
  * @sig Number a -> a -> a -> b
  * @param {Number} the minimum number
@@ -55,13 +40,7 @@ const toNumber = cond([
  * isWithin(1, 5, 5) //=> true
  * isWithin(1, 5, 5.1) //=> false
  */
-const isWithin = curryN(3, (min, max, value) => {
-  const isNumber = is(Number)
-  return isNumber(min) && isNumber(max) && isNumber(value) && gte(value, min) && gte(max, value)
-})
-
-// a workaround to deal with __ not being available from the ramda types in typescript
-const containsText = curryN(2, (textToSearch, list) => contains(list, textToSearch))
+const isWithin = (min: number, max: number, value: number): boolean => value >= min && value <= max
 
 /**
  * Are we dealing with a promise?
@@ -91,10 +70,9 @@ export const CANCEL_ERROR = 'CANCEL_ERROR'
 
 const TIMEOUT_ERROR_CODES = ['ECONNABORTED']
 const NODEJS_CONNECTION_ERROR_CODES = ['ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET']
-const in200s = isWithin(200, 299)
-const in400s = isWithin(400, 499)
-const in500s = isWithin(500, 599)
-const statusNil = ifElse(isNil, always(undefined), prop('status'))
+const in200s = (n: number): boolean => isWithin(200, 299, n)
+const in400s = (n: number): boolean => isWithin(400, 499, n)
+const in500s = (n: number): boolean => isWithin(500, 599, n)
 
 /**
  * What's the problem for this axios response?
@@ -105,26 +83,23 @@ export const getProblemFromError = error => {
   if (axios.isCancel(error)) return CANCEL_ERROR
 
   // then check the specific error code
-  return cond([
-    // if we don't have an error code, we have a response status
-    [isNil, () => getProblemFromStatus(statusNil(error.response))],
-    [containsText(TIMEOUT_ERROR_CODES), always(TIMEOUT_ERROR)],
-    [containsText(NODEJS_CONNECTION_ERROR_CODES), always(CONNECTION_ERROR)],
-    [T, always(UNKNOWN_ERROR)],
-  ])(error.code)
+  if (!error.code) return getProblemFromStatus(error.response.status)
+  if (TIMEOUT_ERROR_CODES.includes(error.code)) return TIMEOUT_ERROR
+  if (NODEJS_CONNECTION_ERROR_CODES.includes(error.code)) return CONNECTION_ERROR
+  return UNKNOWN_ERROR
 }
+
+type StatusCodes = undefined | number
 
 /**
  * Given a HTTP status code, return back the appropriate problem enum.
  */
-export const getProblemFromStatus = status => {
-  return cond([
-    [isNil, always(UNKNOWN_ERROR)],
-    [in200s, always(NONE)],
-    [in400s, always(CLIENT_ERROR)],
-    [in500s, always(SERVER_ERROR)],
-    [T, always(UNKNOWN_ERROR)],
-  ])(status)
+export const getProblemFromStatus = (status: StatusCodes) => {
+  if (!status) return UNKNOWN_ERROR
+  if (in200s(status)) return NONE
+  if (in400s(status)) return CLIENT_ERROR
+  if (in500s(status)) return SERVER_ERROR
+  return UNKNOWN_ERROR
 }
 
 /**
@@ -132,14 +107,15 @@ export const getProblemFromStatus = status => {
  */
 export const create = config => {
   // combine the user's headers with ours
-  const headers = merge(DEFAULT_HEADERS, config.headers || {})
+  const headers = { ...DEFAULT_HEADERS, ...(config.headers || {}) }
 
   let instance
   if (config.axiosInstance) {
     // use passed axios instance
     instance = config.axiosInstance
   } else {
-    const combinedConfig = merge(DEFAULT_CONFIG, dissoc('headers', config))
+    const configWithoutHeaders = { ...config, headers: undefined }
+    const combinedConfig = { ...DEFAULT_CONFIG, ...configWithoutHeaders }
     // create the axios instance
     instance = axios.create(combinedConfig)
   }
@@ -167,7 +143,7 @@ export const create = config => {
 
   // sets headers in bulk
   const setHeaders = headers => {
-    forEach(header => setHeader(header, headers[header]), keys(headers))
+    Object.keys(headers).forEach(header => setHeader(header, headers[header]))
     return instance
   }
 
@@ -192,18 +168,21 @@ export const create = config => {
     return instance.defaults.baseURL
   }
 
+  type RequestsWithoutBody = 'get' | 'head' | 'delete' | 'link' | 'unlink'
+  type RequestsWithBody = 'post' | 'put' | 'patch'
+
   /**
    * Make the request for GET, HEAD, DELETE
    */
-  const doRequestWithoutBody = (method, url, params = {}, axiosConfig = {}) => {
-    return doRequest(merge({ url, params, method }, axiosConfig))
+  const doRequestWithoutBody = (method: RequestsWithoutBody) => (url: string, params = {}, axiosConfig = {}) => {
+    return doRequest({ ...axiosConfig, url, params, method })
   }
 
   /**
    * Make the request for POST, PUT, PATCH
    */
-  const doRequestWithBody = (method, url, data, axiosConfig = {}) => {
-    return doRequest(merge({ url, method, data }, axiosConfig))
+  const doRequestWithBody = (method: RequestsWithBody) => (url: string, data, axiosConfig = {}) => {
+    return doRequest({ ...axiosConfig, url, method, data })
   }
 
   /**
@@ -219,7 +198,7 @@ export const create = config => {
     if (requestTransforms.length > 0) {
       // overwrite our axios request with whatever our object looks like now
       // axiosRequestConfig = doRequestTransforms(requestTransforms, axiosRequestConfig)
-      forEach(transform => transform(axiosRequestConfig), requestTransforms)
+      requestTransforms.forEach(transform => transform(axiosRequestConfig))
     }
 
     // add the async request transforms
@@ -235,11 +214,11 @@ export const create = config => {
     }
 
     // after the call, convert the axios response, then execute our monitors
-    const chain = pipeP(
-      convertResponse(toNumber(new Date())),
-      // partial(convertResponse, [toNumber(new Date())]),
-      runMonitors,
-    )
+    const startTime = toNumber(new Date())
+    const chain = async response => {
+      const ourResponse = await convertResponse(startTime, response)
+      return runMonitors(ourResponse)
+    }
 
     return instance
       .request(axiosRequestConfig)
@@ -265,7 +244,7 @@ export const create = config => {
   /**
    * Converts an axios response/error into our response.
    */
-  const convertResponse = curry(async (startedAt: number, axiosResult: AxiosResponse | AxiosError) => {
+  const convertResponse = async (startedAt: number, axiosResult: AxiosResponse | AxiosError) => {
     const end: number = toNumber(new Date())
     const duration: number = end - startedAt
 
@@ -294,7 +273,7 @@ export const create = config => {
       data,
     }
     if (responseTransforms.length > 0) {
-      forEach(transform => transform(transformedResponse), responseTransforms)
+      responseTransforms.forEach(transform => transform(transformedResponse))
     }
 
     // add the async response transforms
@@ -310,7 +289,7 @@ export const create = config => {
     }
 
     return transformedResponse
-  })
+  }
 
   // create the base object
   const sauce = {
@@ -332,14 +311,14 @@ export const create = config => {
     setBaseURL,
     getBaseURL,
     any: doRequest,
-    get: partial(doRequestWithoutBody, ['get']),
-    delete: partial(doRequestWithoutBody, ['delete']),
-    head: partial(doRequestWithoutBody, ['head']),
-    post: partial(doRequestWithBody, ['post']),
-    put: partial(doRequestWithBody, ['put']),
-    patch: partial(doRequestWithBody, ['patch']),
-    link: partial(doRequestWithoutBody, ['link']),
-    unlink: partial(doRequestWithoutBody, ['unlink']),
+    get: doRequestWithoutBody('get'),
+    delete: doRequestWithoutBody('delete'),
+    head: doRequestWithoutBody('head'),
+    post: doRequestWithBody('post'),
+    put: doRequestWithBody('put'),
+    patch: doRequestWithBody('patch'),
+    link: doRequestWithoutBody('link'),
+    unlink: doRequestWithoutBody('unlink'),
   }
   // send back the sauce
   return sauce
