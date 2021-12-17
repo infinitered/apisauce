@@ -8,7 +8,7 @@ let server = null
 const MOCK = { a: { b: [1, 2, 3] } }
 test.before(async t => {
   port = await getFreePort()
-  server = createServer(port, MOCK)
+  server = await createServer(port, MOCK)
 })
 
 test.after.always('cleanup', t => {

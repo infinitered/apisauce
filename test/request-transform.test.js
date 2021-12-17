@@ -9,7 +9,7 @@ let port
 let server = null
 test.before(async t => {
   port = await getFreePort()
-  server = createServer(port, MOCK)
+  server = await createServer(port, MOCK)
 })
 
 test.after('cleanup', t => {
@@ -107,7 +107,7 @@ test('headers can be created', t => {
 test('headers from creation time can be changed', t => {
   const x = create({
     baseURL: `http://localhost:${port}`,
-    headers: { 'X-APISAUCE': 'hello' }
+    headers: { 'X-APISAUCE': 'hello' },
   })
   x.addRequestTransform(request => {
     t.is(request.headers['X-APISAUCE'], 'hello')
@@ -122,7 +122,7 @@ test('headers from creation time can be changed', t => {
 test('headers can be deleted', t => {
   const x = create({
     baseURL: `http://localhost:${port}`,
-    headers: { 'X-APISAUCE': 'omg' }
+    headers: { 'X-APISAUCE': 'omg' },
   })
   x.addRequestTransform(request => {
     t.is(request.headers['X-APISAUCE'], 'omg')
