@@ -29,9 +29,9 @@ Talking to APIs doesn't have to be awkward anymore.
 `npm i apisauce --save` or `yarn add apisauce`
 
 - Depends on `axios`.
-- Targets ES5.
-- Built with ES6.
-- Supported in Node and the browser(s) and React Native.
+- Compatible with ES5.
+- Built with TypeScript.
+- Supports Node, the browser, and React Native.
 
 # Quick Start
 
@@ -267,7 +267,7 @@ api.addResponseTransform(response => {
 Or make it async:
 
 ```js
-api.addAsyncResponseTransform(async (response) => {
+api.addAsyncResponseTransform(async response => {
   const something = await AsyncStorage.load('something')
   if (something) {
     // just mutate the data to what you want.
@@ -335,7 +335,7 @@ console.log(response.ok) // yay!
 # Cancel Request
 
 ```js
-import {CancelToken} from 'apisauce'
+import { CancelToken } from 'apisauce'
 
 const source = CancelToken.source()
 const api = create({ baseURL: 'github.com' })
