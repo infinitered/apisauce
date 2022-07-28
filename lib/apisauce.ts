@@ -83,7 +83,7 @@ export const getProblemFromError = error => {
   if (axios.isCancel(error)) return CANCEL_ERROR
 
   // then check the specific error code
-  if (!error.code) return getProblemFromStatus(error.response.status)
+  if (!error.code) return getProblemFromStatus(error.response ? error.response.status : null)
   if (TIMEOUT_ERROR_CODES.includes(error.code)) return TIMEOUT_ERROR
   if (NODEJS_CONNECTION_ERROR_CODES.includes(error.code)) return CONNECTION_ERROR
   return UNKNOWN_ERROR
