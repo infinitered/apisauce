@@ -48,6 +48,7 @@ jobs:
 
   publish:
     <<: *defaults
+    context: infinitered-npm-package
     steps:
       - checkout
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
