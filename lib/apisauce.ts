@@ -70,6 +70,7 @@ export const CANCEL_ERROR = 'CANCEL_ERROR'
 
 const TIMEOUT_ERROR_CODES = ['ECONNABORTED']
 const NODEJS_CONNECTION_ERROR_CODES = ['ENOTFOUND', 'ECONNREFUSED', 'ECONNRESET']
+const STATUS_ERROR_CODES = ['ERR_BAD_REQUEST', 'ERR_BAD_RESPONSE']
 const in200s = (n: number): boolean => isWithin(200, 299, n)
 const in400s = (n: number): boolean => isWithin(400, 499, n)
 const in500s = (n: number): boolean => isWithin(500, 599, n)
@@ -84,6 +85,7 @@ export const getProblemFromError = error => {
 
   // then check the specific error code
   if (!error.code) return getProblemFromStatus(error.response ? error.response.status : null)
+  if (STATUS_ERROR_CODES.includes(error.code)) return getProblemFromStatus(error.response.status)
   if (TIMEOUT_ERROR_CODES.includes(error.code)) return TIMEOUT_ERROR
   if (NODEJS_CONNECTION_ERROR_CODES.includes(error.code)) return CONNECTION_ERROR
   return UNKNOWN_ERROR
