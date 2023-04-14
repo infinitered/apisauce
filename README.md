@@ -370,7 +370,6 @@ Which problem is chosen will be picked by walking down the list.
 
 A common testing pattern is to use `axios-mock-adapter` to mock axios and respond with stubbed data. These libraries mock a specific instance of axios, and don't globally intercept all instances of axios. When using a mocking library like this, it's important to make sure to pass the same axios instance into the mock adapter.
 
-
 This example will *not* work. `axios-mock-adapter` will not intercept the request and mock the response:
 ```javascript
 import apisauce from 'apisauce'
@@ -404,8 +403,6 @@ test('mock adapter', async () => {
   expect(response.data[0].sha).toEqual"aef849923444")
 })
 ```
-
-
 
 # Contributing
 
