@@ -366,6 +366,29 @@ CANCEL_ERROR     'CANCEL_ERROR'     ---           Request has been cancelled. On
 
 Which problem is chosen will be picked by walking down the list.
 
+# Mocking with axios-mock-adapter (or other libraries)
+
+A common testing pattern is to use `axios-mock-adapter` to mock axios and respond with stubbed data. These libraries mock a specific instance of axios, and don't globally intercept all instances of axios. When using a mocking library like this, it's important to make sure to pass the same axios instance into the mock adapter.
+
+Here is an example code from axios_mock, modified to work with Apisauce:
+
+```diff
+import apisauce from 'apisauce'
+import MockAdapter from 'axios-mock-adapter'
+
+test('mock adapter', async () => {
+  const api = apisauce.create("https://api.github.com")
+- const mock = new MockAdapter(axios)
++ const mock = new MockAdapter(api.axiosInstance)
+  mock.onGet("/repos/skellock/apisauce/commits").reply(200, {
+    commits: [{ id: 1, sha: "aef849923444" }],
+  });
+
+  const response = await api..get('/repos/skellock/apisauce/commits')
+  expect(response.data[0].sha).toEqual"aef849923444")
+})
+```
+
 # Contributing
 
 Bugs? Comments? Features? PRs and Issues happily welcomed! Make sure to check out our [contributing guide](./github/CONTRIBUTING.md) to get started!
