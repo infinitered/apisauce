@@ -61,6 +61,6 @@ export default (port, mockData = {}) => {
         })
       }
     })
-    server.listen(port, 'localhost', () => resolve(server))
+    server.listen(port, '::', () => resolve(server))
   })
 }
