@@ -6,7 +6,7 @@
 defaults: &defaults
   docker:
     # Choose the version of Node you want here
-    - image: circleci/node:10.11
+    - image: cimg/node:19.9
   working_directory: ~/repo
 
 version: 2
@@ -29,7 +29,6 @@ jobs:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-
 
   rollup_and_tests:
     <<: *defaults
