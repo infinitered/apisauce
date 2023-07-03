@@ -1,6 +1,5 @@
 import test from 'ava'
 import { create } from '../lib/apisauce'
-import R from 'ramda'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
 
@@ -33,7 +32,7 @@ test('attaches an async request transform', t => {
   t.truthy(api.addAsyncRequestTransform)
   t.truthy(api.asyncRequestTransforms)
   t.is(api.asyncRequestTransforms.length, 0)
-  api.addAsyncRequestTransform(R.identity)
+  api.addAsyncRequestTransform(request => request) // Replaced R.identity with plain JS function
   t.is(api.asyncRequestTransforms.length, 1)
 })
 
@@ -145,7 +144,7 @@ test('url can be changed', t => {
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        req.url = R.replace('/201', '/200', req.url)
+        req.url = req.url.replace('/201', '/200') // Replaced R.replace with plain JS function
         resolve()
       })
     })

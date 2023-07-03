@@ -1,6 +1,5 @@
 import test from 'ava'
 import { create } from '../lib/apisauce'
-import R from 'ramda'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
 
@@ -21,7 +20,7 @@ test('attaches a response transform', t => {
   t.truthy(api.addResponseTransform)
   t.truthy(api.responseTransforms)
   t.is(api.responseTransforms.length, 0)
-  api.addResponseTransform(R.identity)
+  api.addResponseTransform(response => response)
   t.is(api.responseTransforms.length, 1)
 })
 
@@ -46,7 +45,7 @@ test('swap out data on response', t => {
   x.addResponseTransform(response => {
     count++
     response.status = 222
-    response.data = { a: R.reverse(response.data.a.b) }
+    response.data = { a: response.data.a.b.reverse() }
   })
   // t.is(count, 0)
   return x.get('/number/201').then(response => {

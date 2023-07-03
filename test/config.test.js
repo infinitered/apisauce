@@ -1,11 +1,10 @@
 import test from 'ava'
 import { create, DEFAULT_HEADERS } from '../lib/apisauce'
-import { merge } from 'ramda'
 import axios from 'axios'
 
 const validConfig = {
   baseURL: 'http://localhost:9991',
-  headers: { 'X-Testing': 'hello' }
+  headers: { 'X-Testing': 'hello' },
 }
 
 test('is a function', t => {
@@ -23,7 +22,7 @@ test('configures axios correctly', t => {
   const { axiosInstance } = apisauce
   t.is(axiosInstance.defaults.timeout, 0)
   t.is(axiosInstance.defaults.baseURL, validConfig.baseURL)
-  t.deepEqual(apisauce.headers, merge(DEFAULT_HEADERS, validConfig.headers))
+  t.deepEqual(apisauce.headers, Object.assign({}, DEFAULT_HEADERS, validConfig.headers))
 })
 
 test('configures axios correctly with passed instance', t => {
@@ -32,6 +31,5 @@ test('configures axios correctly with passed instance', t => {
   const { axiosInstance } = apisauce
   t.is(axiosInstance.defaults.timeout, 0)
   t.is(axiosInstance.defaults.baseURL, validConfig.baseURL)
-  t.deepEqual(apisauce.headers, merge(DEFAULT_HEADERS, validConfig.headers))
+  t.deepEqual(apisauce.headers, Object.assign({}, DEFAULT_HEADERS, validConfig.headers))
 })
-
