@@ -22,7 +22,7 @@ test('attaches a async response transform', t => {
   t.truthy(api.addAsyncResponseTransform)
   t.truthy(api.asyncResponseTransforms)
   t.is(api.asyncResponseTransforms.length, 0)
-  api.addAsyncResponseTransform(data => data) // Replaced R.identity with a plain JS function
+  api.addAsyncResponseTransform(data => data)
   t.is(api.asyncResponseTransforms.length, 1)
 })
 
@@ -54,7 +54,7 @@ test('swap out data on response', t => {
       setImmediate(_ => {
         count++
         response.status = 222
-        response.data = { a: response.data.a.b.reverse() } // Replaced R.reverse with Array.prototype.reverse
+        response.data = { a: response.data.a.b.reverse() }
         resolve(response)
       })
     })
