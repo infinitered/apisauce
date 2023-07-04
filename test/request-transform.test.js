@@ -1,6 +1,5 @@
 import test from 'ava'
 import { create } from '../lib/apisauce'
-import R from 'ramda'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
 
@@ -21,7 +20,7 @@ test('attaches a request transform', t => {
   t.truthy(api.addRequestTransform)
   t.truthy(api.requestTransforms)
   t.is(api.requestTransforms.length, 0)
-  api.addRequestTransform(R.identity)
+  api.addRequestTransform(request => request)
   t.is(api.requestTransforms.length, 1)
 })
 
@@ -70,7 +69,7 @@ test('fires for gets', t => {
 test('url can be changed', t => {
   const x = create({ baseURL: `http://localhost:${port}` })
   x.addRequestTransform(request => {
-    request.url = R.replace('/201', '/200', request.url)
+    request.url = request.url.replace('/201', '/200')
   })
   return x.get('/number/201', { x: 1 }).then(response => {
     t.is(response.status, 200)

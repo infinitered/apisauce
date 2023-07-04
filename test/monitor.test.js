@@ -1,6 +1,5 @@
 import test from 'ava'
 import { create } from '../lib/apisauce'
-import R from 'ramda'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
 
@@ -21,7 +20,7 @@ test('attaches a monitor', t => {
   t.truthy(api.addMonitor)
   t.truthy(api.monitors)
   t.is(api.monitors.length, 0)
-  api.addMonitor(R.identity)
+  api.addMonitor(x => x)
   t.is(api.monitors.length, 1)
 })
 

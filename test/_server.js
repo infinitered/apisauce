@@ -1,6 +1,5 @@
+
 import http from 'http'
-import R from 'ramda'
-import RS from 'ramdasauce'
 
 const processPost = (request, response, callback) => {
   let queryData = ''
@@ -35,20 +34,20 @@ export default (port, mockData = {}) => {
         return
       }
 
-      if (RS.startsWith('/echo', url)) {
-        const echo = R.slice(8, Infinity, url)
+      if (url.startsWith('/echo')) {
+        const echo = url.slice(8)
         sendResponse(res, 200, JSON.stringify({ echo }))
         return
       }
 
-      if (RS.startsWith('/number', url)) {
-        const n = R.slice(8, 11, url)
+      if (url.startsWith('/number')) {
+        const n = url.slice(8, 11)
         sendResponse(res, n, JSON.stringify(mockData))
         return
       }
 
-      if (RS.startsWith('/sleep', url)) {
-        const wait = R.pipe(R.split('/'), R.last, Number)(url)
+      if (url.startsWith('/sleep')) {
+        const wait = Number(url.split('/').pop())
         setTimeout(() => {
           send200(res)
         }, wait)
