@@ -1,4 +1,3 @@
-import test from 'ava'
 import { create } from '../lib/apisauce'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
@@ -18,46 +17,45 @@ const delay = time =>
     setTimeout(resolve, time)
   })
 
-test.before(async t => {
+beforeAll(async () => {
   port = await getFreePort()
   server = await createServer(port, MOCK)
 })
 
-test.after('cleanup', t => {
+afterAll(() => {
   server.close()
 })
 
-test('attaches an async request transform', t => {
+test('attaches an async request transform', () => {
   const api = create({ baseURL: `http://localhost:${port}` })
-  t.truthy(api.addAsyncRequestTransform)
-  t.truthy(api.asyncRequestTransforms)
-  t.is(api.asyncRequestTransforms.length, 0)
+  expect(api.addAsyncRequestTransform).toBeTruthy()
+  expect(api.asyncRequestTransforms).toBeTruthy()
+  expect(api.asyncRequestTransforms.length).toBe(0)
   api.addAsyncRequestTransform(request => request)
-  t.is(api.asyncRequestTransforms.length, 1)
+  expect(api.asyncRequestTransforms.length).toBe(1)
 })
 
-test('alters the request data', t => {
+test('alters the request data', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        t.is(count, 0)
+        expect(count).toBe(0)
         count = 1
-        t.is(req.data.b, 1)
+        expect(req.data.b).toBe(1)
         req.data.b = 2
         resolve(req)
       })
     })
   })
-  return x.post('/post', MOCK).then(response => {
-    t.is(response.status, 200)
-    t.is(count, 1)
-    t.is(response.data.got.b, 2)
-  })
+  const response = await x.post('/post', MOCK)
+  expect(response.status).toBe(200)
+  expect(count).toBe(1)
+  expect(response.data.got.b).toBe(2)
 })
 
-test('serial async', async t => {
+test('serial async', async () => {
   const api = create({ baseURL: `http://localhost:${port}` })
   let fired = false
   api.addAsyncRequestTransform(request => async () => {
@@ -66,20 +64,20 @@ test('serial async', async t => {
     fired = true
   })
   const response = await api.get('/number/200')
-  t.true(response.ok)
-  t.is(response.status, 201)
-  t.true(fired)
+  expect(response.ok).toBeTruthy()
+  expect(response.status).toBe(201)
+  expect(fired).toBeTruthy()
 })
 
-test('transformers should run serially', t => {
+test('transformers should run serially', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let first = false
   let second = false
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        t.is(second, false)
-        t.is(first, false)
+        expect(second).toBeFalsy()
+        expect(first).toBeFalsy()
         first = true
         resolve()
       })
@@ -88,21 +86,20 @@ test('transformers should run serially', t => {
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        t.is(first, true)
-        t.is(second, false)
+        expect(first).toBeTruthy()
+        expect(second).toBeFalsy()
         second = true
         resolve()
       })
     })
   })
-  return x.post('/post', MOCK).then(response => {
-    t.is(response.status, 200)
-    t.is(first, true)
-    t.is(second, true)
-  })
+  const response = await x.post('/post', MOCK)
+  expect(response.status).toBe(200)
+  expect(first).toBeTruthy()
+  expect(second).toBeTruthy()
 })
 
-test('survives empty PUTs', t => {
+test('survives empty PUTs', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
   x.addAsyncRequestTransform(req => {
@@ -113,14 +110,13 @@ test('survives empty PUTs', t => {
       })
     })
   })
-  t.is(count, 0)
-  return x.put('/post', {}).then(response => {
-    t.is(response.status, 200)
-    t.is(count, 1)
-  })
+  expect(count).toBe(0)
+  const response = await x.put('/post', {})
+  expect(response.status).toBe(200)
+  expect(count).toBe(1)
 })
 
-test('fires for gets', t => {
+test('fires for gets', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
   x.addAsyncRequestTransform(req => {
@@ -131,15 +127,14 @@ test('fires for gets', t => {
       })
     })
   })
-  t.is(count, 0)
-  return x.get('/number/201').then(response => {
-    t.is(response.status, 201)
-    t.is(count, 1)
-    t.deepEqual(response.data, MOCK)
-  })
+  expect(count).toBe(0)
+  const response = await x.get('/number/201')
+  expect(response.status).toBe(201)
+  expect(count).toBe(1)
+  expect(response.data).toEqual(MOCK)
 })
 
-test('url can be changed', t => {
+test('url can be changed', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
@@ -149,12 +144,11 @@ test('url can be changed', t => {
       })
     })
   })
-  return x.get('/number/201', { x: 1 }).then(response => {
-    t.is(response.status, 200)
-  })
+  const response = await x.get('/number/201', { x: 1 })
+  expect(response.status).toBe(200)
 })
 
-test('params can be added, edited, and deleted', t => {
+test('params can be added, edited, and deleted', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
@@ -166,32 +160,30 @@ test('params can be added, edited, and deleted', t => {
       })
     })
   })
-  return x.get('/number/200', { x: 1, z: 4 }).then(response => {
-    t.is(response.status, 200)
-    t.is(response.config.params.x, 2)
-    t.is(response.config.params.y, 1)
-    t.falsy(response.config.params.z)
-  })
+  const response = await x.get('/number/200', { x: 1, z: 4 })
+  expect(response.status).toBe(200)
+  expect(response.config.params.x).toBe(2)
+  expect(response.config.params.y).toBe(1)
+  expect(response.config.params.z).toBeFalsy()
 })
 
-test('headers can be created', t => {
+test('headers can be created', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        t.falsy(req.headers['X-APISAUCE'])
+        expect(req.headers['X-APISAUCE']).toBeFalsy()
         req.headers['X-APISAUCE'] = 'new'
         resolve()
       })
     })
   })
-  return x.get('/number/201', { x: 1 }).then(response => {
-    t.is(response.status, 201)
-    t.is(response.config.headers['X-APISAUCE'], 'new')
-  })
+  const response = await x.get('/number/201', { x: 1 })
+  expect(response.status).toBe(201)
+  expect(response.config.headers['X-APISAUCE']).toBe('new')
 })
 
-test('headers from creation time can be changed', t => {
+test('headers from creation time can be changed', async () => {
   const x = create({
     baseURL: `http://localhost:${port}`,
     headers: { 'X-APISAUCE': 'hello' },
@@ -199,19 +191,18 @@ test('headers from creation time can be changed', t => {
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        t.is(req.headers['X-APISAUCE'], 'hello')
+        expect(req.headers['X-APISAUCE']).toBe('hello')
         req.headers['X-APISAUCE'] = 'change'
         resolve()
       })
     })
   })
-  return x.get('/number/201', { x: 1 }).then(response => {
-    t.is(response.status, 201)
-    t.is(response.config.headers['X-APISAUCE'], 'change')
-  })
+  const response = await x.get('/number/201', { x: 1 })
+  expect(response.status).toBe(201)
+  expect(response.config.headers['X-APISAUCE']).toBe('change')
 })
 
-test('headers can be deleted', t => {
+test('headers can be deleted', async () => {
   const x = create({
     baseURL: `http://localhost:${port}`,
     headers: { 'X-APISAUCE': 'omg' },
@@ -219,14 +210,13 @@ test('headers can be deleted', t => {
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        t.is(req.headers['X-APISAUCE'], 'omg')
+        expect(req.headers['X-APISAUCE']).toBe('omg')
         delete req.headers['X-APISAUCE']
         resolve()
       })
     })
   })
-  return x.get('/number/201', { x: 1 }).then(response => {
-    t.is(response.status, 201)
-    t.falsy(response.config.headers['X-APISAUCE'])
-  })
+  const response = await x.get('/number/201', { x: 1 })
+  expect(response.status).toBe(201)
+  expect(response.config.headers['X-APISAUCE']).toBeFalsy()
 })

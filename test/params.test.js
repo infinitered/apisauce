@@ -1,111 +1,99 @@
-import test from 'ava'
 import { create, NONE } from '../lib/apisauce'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
+import { beforeAll, afterAll, test } from '@jest/globals'
 
 let port
 let server = null
-test.before(async t => {
+beforeAll(async () => {
   port = await getFreePort()
   server = await createServer(port)
 })
 
-test.after('cleanup', t => {
+afterAll(() => {
   server.close()
 })
 
-test('GET supports params', t => {
+test('GET supports params', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.get('/echo', { q: 'hello' }).then(response => {
-    t.is(response.problem, NONE)
-    t.deepEqual(response.data, { echo: 'hello' })
-  })
+  const response = await x.get('/echo', { q: 'hello' })
+  expect(response.problem).toBe(NONE)
+  expect(response.data).toEqual({ echo: 'hello' })
 })
 
-test('POST supports params', t => {
+test('POST supports params', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.post('/echo', null, { params: { q: 'hello' } }).then(response => {
-    t.is(response.problem, NONE)
-    t.deepEqual(response.data, { echo: 'hello' })
-  })
+  const response = await x.post('/echo', null, { params: { q: 'hello' } })
+  expect(response.problem).toBe(NONE)
+  expect(response.data).toEqual({ echo: 'hello' })
 })
 
-test('PATCH supports params', t => {
+test('PATCH supports params', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.patch('/echo', null, { params: { q: 'hello' } }).then(response => {
-    t.is(response.problem, NONE)
-    t.deepEqual(response.data, { echo: 'hello' })
-  })
+  const response = await x.patch('/echo', null, { params: { q: 'hello' } })
+  expect(response.problem).toBe(NONE)
+  expect(response.data).toEqual({ echo: 'hello' })
 })
 
-test('PUT supports params', t => {
+test('PUT supports params', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.put('/echo', null, { params: { q: 'hello' } }).then(response => {
-    t.is(response.problem, NONE)
-    t.deepEqual(response.data, { echo: 'hello' })
-  })
+  const response = await x.put('/echo', null, { params: { q: 'hello' } })
+  expect(response.problem).toBe(NONE)
+  expect(response.data).toEqual({ echo: 'hello' })
 })
 
-test('DELETE supports params', t => {
+test('DELETE supports params', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.delete('/echo', { q: 'hello' }).then(response => {
-    t.is(response.problem, NONE)
-    t.deepEqual(response.data, { echo: 'hello' })
-  })
+  const response = await x.delete('/echo', { q: 'hello' })
+  expect(response.problem).toBe(NONE)
+  expect(response.data).toEqual({ echo: 'hello' })
 })
 
-test('LINK supports params', t => {
+test('LINK supports params', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.link('/echo', { q: 'hello' }).then(response => {
-    t.is(response.problem, NONE)
-    t.deepEqual(response.data, { echo: 'hello' })
-  })
+  const response = await x.link('/echo', { q: 'hello' })
+  expect(response.problem).toBe(NONE)
+  expect(response.data).toEqual({ echo: 'hello' })
 })
 
-test('UNLINK supports params', t => {
+test('UNLINK supports params', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.unlink('/echo', { q: 'hello' }).then(response => {
-    t.is(response.problem, NONE)
-    t.deepEqual(response.data, { echo: 'hello' })
-  })
+  const response = await x.unlink('/echo', { q: 'hello' })
+  expect(response.problem).toBe(NONE)
+  expect(response.data).toEqual({ echo: 'hello' })
 })
 
-test('Empty params are supported', t => {
+test('Empty params are supported', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.get('/echo', {}).then(response => {
-    t.is(response.problem, NONE)
-    t.deepEqual(response.data, { echo: '' })
-  })
+  const response = await x.get('/echo', {})
+  expect(response.problem).toBe(NONE)
+  expect(response.data).toEqual({ echo: '' })
 })
 
-test('Null params are supported', t => {
+test('Null params are supported', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.get('/echo', null).then(response => {
-    t.is(response.problem, NONE)
-    t.deepEqual(response.data, { echo: '' })
-  })
+  const response = await x.get('/echo', null)
+  expect(response.problem).toBe(NONE)
+  expect(response.data).toEqual({ echo: '' })
 })
 
-test('Undefined params are supported', t => {
+test('Undefined params are supported', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.get('/echo').then(response => {
-    t.is(response.problem, NONE)
-    t.deepEqual(response.data, { echo: '' })
-  })
+  const response = await x.get('/echo')
+  expect(response.problem).toBe(NONE)
+  expect(response.data).toEqual({ echo: '' })
 })
 
-test('Null parameters should be null', t => {
+test('Null parameters should be null', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.get('/echo', { q: null }).then(response => {
-    t.is(response.problem, NONE)
-    t.deepEqual(response.data, { echo: '' })
-  })
+  const response = await x.get('/echo', { q: null })
+  expect(response.problem).toBe(NONE)
+  expect(response.data).toEqual({ echo: '' })
 })
 
-test('Empty parameters should be empty', t => {
+test('Empty parameters should be empty', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.get('/echo', { q: '' }).then(response => {
-    t.is(response.problem, NONE)
-    t.deepEqual(response.data, { echo: '' })
-  })
+  const response = await x.get('/echo', { q: '' })
+  expect(response.problem).toBe(NONE)
+  expect(response.data).toEqual({ echo: '' })
 })

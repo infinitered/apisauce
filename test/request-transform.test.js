@@ -1,134 +1,126 @@
-import test from 'ava'
 import { create } from '../lib/apisauce'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
+import { beforeAll, afterAll, expect, test } from '@jest/globals'
 
 const MOCK = { a: { b: [1, 2, 3] } }
 let port
 let server = null
-test.before(async t => {
+beforeAll(async () => {
   port = await getFreePort()
   server = await createServer(port, MOCK)
 })
 
-test.after('cleanup', t => {
+afterAll(() => {
   server.close()
 })
 
-test('attaches a request transform', t => {
+test('attaches a request transform', () => {
   const api = create({ baseURL: `http://localhost:${port}` })
-  t.truthy(api.addRequestTransform)
-  t.truthy(api.requestTransforms)
-  t.is(api.requestTransforms.length, 0)
+  expect(api.addRequestTransform).toBeTruthy()
+  expect(api.requestTransforms).toBeTruthy()
+  expect(api.requestTransforms.length).toBe(0)
   api.addRequestTransform(request => request)
-  t.is(api.requestTransforms.length, 1)
+  expect(api.requestTransforms.length).toBe(1)
 })
 
-test('alters the request data', t => {
+test('alters the request data', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
   x.addRequestTransform(({ data, url, method }) => {
     data.a = 'hi'
     count++
   })
-  t.is(count, 0)
-  return x.post('/post', MOCK).then(response => {
-    t.is(response.status, 200)
-    t.is(count, 1)
-    t.deepEqual(response.data, { got: { a: 'hi' } })
-  })
+  expect(count).toBe(0)
+  const response = await x.post('/post', MOCK)
+  expect(response.status).toBe(200)
+  expect(count).toBe(1)
+  expect(response.data).toEqual({ got: { a: 'hi' } })
 })
 
-test('survives empty PUTs', t => {
+test('survives empty PUTs', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
   x.addRequestTransform(() => {
     count++
   })
-  t.is(count, 0)
-  return x.put('/post', {}).then(response => {
-    t.is(response.status, 200)
-    t.is(count, 1)
-  })
+  expect(count).toBe(0)
+  const response = await x.put('/post', {})
+  expect(response.status).toBe(200)
+  expect(count).toBe(1)
 })
 
-test('fires for gets', t => {
+test('fires for gets', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
   x.addRequestTransform(({ data, url, method }) => {
     count++
   })
-  t.is(count, 0)
-  return x.get('/number/201').then(response => {
-    t.is(response.status, 201)
-    t.is(count, 1)
-    t.deepEqual(response.data, MOCK)
-  })
+  expect(count).toBe(0)
+  const response = await x.get('/number/201')
+  expect(response.status).toBe(201)
+  expect(count).toBe(1)
+  expect(response.data).toEqual(MOCK)
 })
 
-test('url can be changed', t => {
+test('url can be changed', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   x.addRequestTransform(request => {
     request.url = request.url.replace('/201', '/200')
   })
-  return x.get('/number/201', { x: 1 }).then(response => {
-    t.is(response.status, 200)
-  })
+  const response = await x.get('/number/201', { x: 1 })
+  expect(response.status).toBe(200)
 })
 
-test('params can be added, edited, and deleted', t => {
+test('params can be added, edited, and deleted', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   x.addRequestTransform(request => {
     request.params.x = 2
     request.params.y = 1
     delete request.params.z
   })
-  return x.get('/number/200', { x: 1, z: 4 }).then(response => {
-    t.is(response.status, 200)
-    t.is(response.config.params.x, 2)
-    t.is(response.config.params.y, 1)
-    t.falsy(response.config.params.z)
-  })
+  const response = await x.get('/number/200', { x: 1, z: 4 })
+  expect(response.status).toBe(200)
+  expect(response.config.params.x).toBe(2)
+  expect(response.config.params.y).toBe(1)
+  expect(response.config.params.z).toBeFalsy()
 })
 
-test('headers can be created', t => {
+test('headers can be created', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   x.addRequestTransform(request => {
-    t.falsy(request.headers['X-APISAUCE'])
+    expect(request.headers['X-APISAUCE']).toBeFalsy()
     request.headers['X-APISAUCE'] = 'new'
   })
-  return x.get('/number/201', { x: 1 }).then(response => {
-    t.is(response.status, 201)
-    t.is(response.config.headers['X-APISAUCE'], 'new')
-  })
+  const response = await x.get('/number/201', { x: 1 })
+  expect(response.status).toBe(201)
+  expect(response.config.headers['X-APISAUCE']).toBe('new')
 })
 
-test('headers from creation time can be changed', t => {
+test('headers from creation time can be changed', async () => {
   const x = create({
     baseURL: `http://localhost:${port}`,
     headers: { 'X-APISAUCE': 'hello' },
   })
   x.addRequestTransform(request => {
-    t.is(request.headers['X-APISAUCE'], 'hello')
+    expect(request.headers['X-APISAUCE']).toBe('hello')
     request.headers['X-APISAUCE'] = 'change'
   })
-  return x.get('/number/201', { x: 1 }).then(response => {
-    t.is(response.status, 201)
-    t.is(response.config.headers['X-APISAUCE'], 'change')
-  })
+  const response = await x.get('/number/201', { x: 1 })
+  expect(response.status).toBe(201)
+  expect(response.config.headers['X-APISAUCE']).toBe('change')
 })
 
-test('headers can be deleted', t => {
+test('headers can be deleted', async () => {
   const x = create({
     baseURL: `http://localhost:${port}`,
     headers: { 'X-APISAUCE': 'omg' },
   })
   x.addRequestTransform(request => {
-    t.is(request.headers['X-APISAUCE'], 'omg')
+    expect(request.headers['X-APISAUCE']).toBe('omg')
     delete request.headers['X-APISAUCE']
   })
-  return x.get('/number/201', { x: 1 }).then(response => {
-    t.is(response.status, 201)
-    t.falsy(response.config.headers['X-APISAUCE'])
-  })
+  const response = await x.get('/number/201', { x: 1 })
+  expect(response.status).toBe(201)
+  expect(response.config.headers['X-APISAUCE']).toBeFalsy()
 })

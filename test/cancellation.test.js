@@ -1,20 +1,20 @@
-import test from 'ava'
+import { beforeAll, afterAll, test } from '@jest/globals'
 import { CancelToken, isCancel, create, CANCEL_ERROR } from '../lib/apisauce'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
 
 let port
 let server = null
-test.before(async t => {
+beforeAll(async () => {
   port = await getFreePort()
   server = await createServer(port)
 })
 
-test.after('cleanup', t => {
+afterAll(() => {
   server.close()
 })
 
-test('cancel request', t => {
+test('cancel request', () => {
   const source = CancelToken.source()
   const x = create({
     baseURL: `http://localhost:${port}`,
@@ -26,8 +26,8 @@ test('cancel request', t => {
   }, 20)
 
   return x.get('/sleep/150').then(response => {
-    t.truthy(isCancel(response.originalError))
-    t.falsy(response.ok)
-    t.is(response.problem, CANCEL_ERROR)
+    expect(isCancel(response.originalError)).toBeTruthy()
+    expect(response.ok).toBeFalsy()
+    expect(response.problem).toBe(CANCEL_ERROR)
   })
 })

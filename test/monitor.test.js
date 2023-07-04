@@ -1,30 +1,30 @@
-import test from 'ava'
 import { create } from '../lib/apisauce'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
+import { beforeAll, afterAll, expect, test } from '@jest/globals'
 
 const MOCK = { a: { b: [1, 2, 3] } }
 let port
 let server = null
-test.before(async t => {
+beforeAll(async () => {
   port = await getFreePort()
   server = await createServer(port, MOCK)
 })
 
-test.after('cleanup', t => {
+afterAll(() => {
   server.close()
 })
 
-test('attaches a monitor', t => {
+test('attaches a monitor', () => {
   const api = create({ baseURL: `http://localhost:${port}` })
-  t.truthy(api.addMonitor)
-  t.truthy(api.monitors)
-  t.is(api.monitors.length, 0)
+  expect(api.addMonitor).toBeTruthy()
+  expect(api.monitors).toBeTruthy()
+  expect(api.monitors.length).toBe(0)
   api.addMonitor(x => x)
-  t.is(api.monitors.length, 1)
+  expect(api.monitors.length).toBe(1)
 })
 
-test('fires our monitor function', t => {
+test('fires our monitor function', async () => {
   let a = 0
   let b = 0
   const x = create({ baseURL: `http://localhost:${port}` })
@@ -34,15 +34,14 @@ test('fires our monitor function', t => {
   x.addMonitor(response => {
     b = response.status
   })
-  t.is(a, 0)
-  return x.get('/number/201').then(response => {
-    t.is(response.status, 201)
-    t.is(a, 1)
-    t.is(b, 201)
-  })
+  expect(a).toBe(0)
+  const response = await x.get('/number/201')
+  expect(response.status).toBe(201)
+  expect(a).toBe(1)
+  expect(b).toBe(201)
 })
 
-test('ignores exceptions raised inside monitors', t => {
+test('ignores exceptions raised inside monitors', async () => {
   let a = 0
   let b = 0
   const x = create({ baseURL: `http://localhost:${port}` })
@@ -55,10 +54,9 @@ test('ignores exceptions raised inside monitors', t => {
   x.addMonitor(response => {
     b = response.status
   })
-  t.is(a, 0)
-  return x.get('/number/201').then(response => {
-    t.is(response.status, 201)
-    t.is(a, 1)
-    t.is(b, 201)
-  })
+  expect(a).toBe(0)
+  const response = await x.get('/number/201')
+  expect(response.status).toBe(201)
+  expect(a).toBe(1)
+  expect(b).toBe(201)
 })

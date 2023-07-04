@@ -1,91 +1,83 @@
-import test from 'ava'
 import { create } from '../lib/apisauce'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
+import { beforeAll, afterAll, expect, test } from '@jest/globals'
 
 let port
 let server = null
-test.before(async t => {
+beforeAll(async () => {
   port = await getFreePort()
   server = await createServer(port)
 })
 
-test.after('cleanup', t => {
+afterAll(() => {
   server.close()
 })
 
-test('supports all verbs', t => {
+test('supports all verbs', () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  t.truthy(x.get)
-  t.truthy(x.post)
-  t.truthy(x.patch)
-  t.truthy(x.put)
-  t.truthy(x.head)
-  t.truthy(x.delete)
-  t.truthy(x.link)
-  t.truthy(x.unlink)
+  expect(x.get).toBeTruthy()
+  expect(x.post).toBeTruthy()
+  expect(x.patch).toBeTruthy()
+  expect(x.put).toBeTruthy()
+  expect(x.head).toBeTruthy()
+  expect(x.delete).toBeTruthy()
+  expect(x.link).toBeTruthy()
+  expect(x.unlink).toBeTruthy()
 })
 
-test('can make a get', t => {
+test('can make a get', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.get('/ok').then(response => {
-    t.truthy(response.ok)
-    t.is(response.config.method, 'get')
-  })
+  const response = await x.get('/ok')
+  expect(response.ok).toBeTruthy()
+  expect(response.config.method).toBe('get')
 })
 
-test('can make a post', t => {
+test('can make a post', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.post('/ok').then(response => {
-    t.truthy(response.ok)
-    t.is(response.config.method, 'post')
-  })
+  const response = await x.post('/ok')
+  expect(response.ok).toBeTruthy()
+  expect(response.config.method).toBe('post')
 })
 
-test('can make a patch', t => {
+test('can make a patch', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.patch('/ok').then(response => {
-    t.truthy(response.ok)
-    t.is(response.config.method, 'patch')
-  })
+  const response = await x.patch('/ok')
+  expect(response.ok).toBeTruthy()
+  expect(response.config.method).toBe('patch')
 })
 
-test('can make a put', t => {
+test('can make a put', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.put('/ok').then(response => {
-    t.truthy(response.ok)
-    t.is(response.config.method, 'put')
-  })
+  const response = await x.put('/ok')
+  expect(response.ok).toBeTruthy()
+  expect(response.config.method).toBe('put')
 })
 
-test('can make a delete', t => {
+test('can make a delete', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.delete('/ok').then(response => {
-    t.truthy(response.ok)
-    t.is(response.config.method, 'delete')
-  })
+  const response = await x.delete('/ok')
+  expect(response.ok).toBeTruthy()
+  expect(response.config.method).toBe('delete')
 })
 
-test('can make a head', t => {
+test('can make a head', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.head('/ok').then(response => {
-    t.truthy(response.ok)
-    t.is(response.config.method, 'head')
-  })
+  const response = await x.head('/ok')
+  expect(response.ok).toBeTruthy()
+  expect(response.config.method).toBe('head')
 })
 
-test('can make a link', t => {
+test('can make a link', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.link('/ok').then(response => {
-    t.truthy(response.ok)
-    t.is(response.config.method, 'link')
-  })
+  const response = await x.link('/ok')
+  expect(response.ok).toBeTruthy()
+  expect(response.config.method).toBe('link')
 })
 
-test('can make a unlink', t => {
+test('can make a unlink', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.unlink('/ok').then(response => {
-    t.truthy(response.ok)
-    t.is(response.config.method, 'unlink')
-  })
+  const response = await x.unlink('/ok')
+  expect(response.ok).toBeTruthy()
+  expect(response.config.method).toBe('unlink')
 })
