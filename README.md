@@ -237,7 +237,7 @@ This can be useful if you would like to:
 - add/edit/delete query string variables for all requests
 - change outbound headers without changing everywhere in your app
 
-Unlike monitors, exceptions are not swallowed. They will bring down the stack, so careful!
+Unlike monitors, exceptions are not swallowed. They will bring down the stack, so be careful!
 
 ### Response Transforms
 
