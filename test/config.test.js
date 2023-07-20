@@ -1,6 +1,5 @@
 import { create, DEFAULT_HEADERS } from '../lib/apisauce'
 import axios from 'axios'
-import { expect } from '@jest/globals'
 
 const validConfig = {
   baseURL: 'http://localhost:9991',

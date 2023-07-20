@@ -1,6 +1,5 @@
 import { create, CONNECTION_ERROR } from '../lib/apisauce'
 import getFreePort from './_getFreePort'
-import { beforeAll, test } from '@jest/globals'
 
 let port
 beforeAll(async () => {

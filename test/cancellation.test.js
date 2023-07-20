@@ -1,4 +1,3 @@
-import { beforeAll, afterAll, test } from '@jest/globals'
 import { CancelToken, isCancel, create, CANCEL_ERROR } from '../lib/apisauce'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
