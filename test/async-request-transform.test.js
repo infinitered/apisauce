@@ -76,8 +76,8 @@ test('transformers should run serially', async () => {
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        expect(second).toBeFalsy()
-        expect(first).toBeFalsy()
+        expect(second).toBe(false)
+        expect(first).toBe(false)
         first = true
         resolve()
       })
@@ -86,8 +86,8 @@ test('transformers should run serially', async () => {
   x.addAsyncRequestTransform(req => {
     return new Promise((resolve, reject) => {
       setImmediate(_ => {
-        expect(first).toBeTruthy()
-        expect(second).toBeFalsy()
+        expect(first).toBe(true)
+        expect(second).toBe(false)
         second = true
         resolve()
       })
@@ -95,8 +95,8 @@ test('transformers should run serially', async () => {
   })
   const response = await x.post('/post', MOCK)
   expect(response.status).toBe(200)
-  expect(first).toBeTruthy()
-  expect(second).toBeTruthy()
+  expect(first).toBe(true)
+  expect(second).toBe(true)
 })
 
 test('survives empty PUTs', async () => {
@@ -218,5 +218,5 @@ test('headers can be deleted', async () => {
   })
   const response = await x.get('/number/201', { x: 1 })
   expect(response.status).toBe(201)
-  expect(response.config.headers['X-APISAUCE']).toBeFalsy()
+  expect(response.config.headers['X-APISAUCE']).toBe(undefined)
 })

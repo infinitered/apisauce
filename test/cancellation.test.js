@@ -13,7 +13,7 @@ afterAll(() => {
   server.close()
 })
 
-test('cancel request', () => {
+test('cancel request', async () => {
   const source = CancelToken.source()
   const x = create({
     baseURL: `http://localhost:${port}`,
@@ -24,9 +24,8 @@ test('cancel request', () => {
     source.cancel()
   }, 20)
 
-  return x.get('/sleep/150').then(response => {
-    expect(isCancel(response.originalError)).toBeTruthy()
-    expect(response.ok).toBeFalsy()
-    expect(response.problem).toBe(CANCEL_ERROR)
-  })
+  const response = await x.get('/sleep/150')
+  expect(isCancel(response.originalError)).toBeTruthy()
+  expect(response.ok).toBeFalsy()
+  expect(response.problem).toBe(CANCEL_ERROR)
 })
