@@ -64,9 +64,9 @@ test('serial async', async () => {
     fired = true
   })
   const response = await api.get('/number/200')
-  expect(response.ok).toBeTruthy()
+  expect(response.ok).toBe(true)
   expect(response.status).toBe(201)
-  expect(fired).toBeTruthy()
+  expect(fired).toBe(true)
 })
 
 test('transformers should run serially', async () => {
