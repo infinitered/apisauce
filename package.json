@@ -1,5 +1,5 @@
 {
-  "version": "3.0.1",
+  "version": "3.0.2",
   "author": {
     "name": "Infinite Red",
     "email": "npm@infinite.red",
@@ -11,7 +11,7 @@
     ]
   },
   "dependencies": {
-    "axios": "^1.4.0"
+    "axios": "^1.6.5"
   },
   "description": "Axios + standardized errors + request/response transforms.",
   "devDependencies": {
