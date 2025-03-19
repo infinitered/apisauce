@@ -38,3 +38,10 @@ test('has valid data with a 500s', t => {
     t.deepEqual(response.data, MOCK)
   })
 })
+
+test('Falsy data is preserved', t => {
+  const x = create({ baseURL: `http://localhost:${port}` })
+  return x.get('/falsy').then(response => {
+    t.is(response.data, false)
+  })
+})

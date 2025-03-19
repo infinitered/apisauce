@@ -261,7 +261,7 @@ export const create = config => {
     const ok = in200s(status)
     const config = axiosResult.config || null
     const headers = (response && response.headers) || null
-    let data = (response && response.data) || null
+    let data = (response && response.data) ?? null
 
     // give an opportunity for anything to the response transforms to change stuff along the way
     let transformedResponse = {
