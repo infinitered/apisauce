@@ -1,4 +1,3 @@
-import test from 'ava'
 import { create } from '../lib/apisauce'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
@@ -6,27 +5,27 @@ import getFreePort from './_getFreePort'
 const MOCK = { a: { b: [1, 2, 3] } }
 let port
 let server = null
-test.before(async t => {
+beforeAll(async () => {
   port = await getFreePort()
   server = await createServer(port, MOCK)
 })
 
-test.after('cleanup', t => {
+afterAll(() => {
   server.close()
 })
 
-test('attaches a async response transform', t => {
+test('attaches a async response transform', () => {
   const api = create({ baseURL: `http://localhost:${port}` })
 
   console.log(api.asyncResponseTransforms)
-  t.truthy(api.addAsyncResponseTransform)
-  t.truthy(api.asyncResponseTransforms)
-  t.is(api.asyncResponseTransforms.length, 0)
+  expect(api.addAsyncResponseTransform).toBeTruthy()
+  expect(api.asyncResponseTransforms).toBeTruthy()
+  expect(api.asyncResponseTransforms.length).toBe(0)
   api.addAsyncResponseTransform(data => data)
-  t.is(api.asyncResponseTransforms.length, 1)
+  expect(api.asyncResponseTransforms.length).toBe(1)
 })
 
-test('alters the response', t => {
+test('alters the response', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
   x.addAsyncResponseTransform(({ data }) => {
@@ -38,15 +37,14 @@ test('alters the response', t => {
       })
     })
   })
-  t.is(count, 0)
-  return x.get('/number/201').then(response => {
-    t.is(response.status, 201)
-    t.is(count, 1)
-    t.deepEqual(response.data.a, 'hi')
-  })
+  expect(count).toBe(0)
+  const response = await x.get('/number/201')
+  expect(response.status).toBe(201)
+  expect(count).toBe(1)
+  expect(response.data.a).toEqual('hi')
 })
 
-test('swap out data on response', t => {
+test('swap out data on response', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   let count = 0
   x.addAsyncResponseTransform(response => {
@@ -59,10 +57,8 @@ test('swap out data on response', t => {
       })
     })
   })
-  // t.is(count, 0)
-  return x.get('/number/201').then(response => {
-    t.is(response.status, 222)
-    t.is(count, 1)
-    t.deepEqual(response.data.a, [3, 2, 1])
-  })
+  const response = await x.get('/number/201')
+  expect(response.status).toBe(222)
+  expect(count).toBe(1)
+  expect(response.data.a).toEqual([3, 2, 1])
 })
