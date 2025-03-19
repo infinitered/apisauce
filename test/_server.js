@@ -46,6 +46,11 @@ export default (port, mockData = {}) => {
         return
       }
 
+      if (url.startsWith('/falsy')) {
+        sendResponse(res, 200, JSON.stringify(false))
+        return
+      }
+
       if (url.startsWith('/sleep')) {
         const wait = Number(url.split('/').pop())
         setTimeout(() => {
