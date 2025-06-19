@@ -1,4 +1,3 @@
-import test from 'ava'
 import { create } from '../lib/apisauce'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
@@ -6,20 +5,20 @@ import getFreePort from './_getFreePort'
 const MOCK = { a: { b: [1, 2, 3] } }
 let port
 let server = null
-test.before(async t => {
+beforeAll(async () => {
   port = await getFreePort()
   server = await createServer(port, MOCK)
 })
 
-test.after('cleanup', t => {
+afterAll(() => {
   server.close()
 })
 
-test('has a duration node', async t => {
+test('has a duration node', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
   const response = await x.get(`/sleep/150`)
-  t.is(response.status, 200)
-  t.truthy(response.duration)
-  t.truthy(response.duration >= 150)
-  // t.truthy(response.duration <= 1000) // fragile
+  expect(response.status).toBe(200)
+  expect(response.duration).toBeTruthy()
+  expect(response.duration >= 150).toBeTruthy()
+  // expect(response.duration <= 1000).toBeTruthy() // fragile
 })

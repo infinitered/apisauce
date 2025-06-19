@@ -1,4 +1,3 @@
-import test from 'ava'
 import { create } from '../lib/apisauce'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
@@ -6,35 +5,32 @@ import getFreePort from './_getFreePort'
 const MOCK = { a: { b: [1, 2, 3] } }
 let port
 let server = null
-test.before(async t => {
+beforeAll(async () => {
   port = await getFreePort()
   server = await createServer(port, MOCK)
 })
 
-test.after('cleanup', t => {
+afterAll(() => {
   server.close()
 })
 
-test('POST has proper data', t => {
+test('POST has proper data', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.post('/post', MOCK).then(response => {
-    t.is(response.status, 200)
-    t.deepEqual(response.data, { got: MOCK })
-  })
+  const response = await x.post('/post', MOCK)
+  expect(response.status).toBe(200)
+  expect(response.data).toEqual({ got: MOCK })
 })
 
-test('PATCH has proper data', t => {
+test('PATCH has proper data', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.patch('/post', MOCK).then(response => {
-    t.is(response.status, 200)
-    t.deepEqual(response.data, { got: MOCK })
-  })
+  const response = await x.patch('/post', MOCK)
+  expect(response.status).toBe(200)
+  expect(response.data).toEqual({ got: MOCK })
 })
 
-test('PUT has proper data', t => {
+test('PUT has proper data', async () => {
   const x = create({ baseURL: `http://localhost:${port}` })
-  return x.put('/post', MOCK).then(response => {
-    t.is(response.status, 200)
-    t.deepEqual(response.data, { got: MOCK })
-  })
+  const response = await x.put('/post', MOCK)
+  expect(response.status).toBe(200)
+  expect(response.data).toEqual({ got: MOCK })
 })

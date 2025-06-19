@@ -1,4 +1,3 @@
-import test from 'ava'
 import { create } from '../lib/apisauce'
 import createServer from './_server'
 import getFreePort from './_getFreePort'
@@ -6,29 +5,29 @@ import getFreePort from './_getFreePort'
 const MOCK = { a: { b: [1, 2, 3] } }
 let port
 let server = null
-test.before(async t => {
+beforeAll(async () => {
   port = await getFreePort()
   server = await createServer(port, MOCK)
 })
 
-test.after('cleanup', t => {
+afterAll(() => {
   server.close()
 })
 
-test('changes the headers', async t => {
+test('changes the headers', async () => {
   const api = create({
     baseURL: `http://localhost:${port}`,
     headers: { 'X-Testing': 'hello' },
   })
   const response1 = await api.get('/number/200')
-  t.deepEqual(response1.data, MOCK)
+  expect(response1.data).toEqual(MOCK)
 
   // change the url
   const nextUrl = `http://127.0.0.1:${port}`
   api.setBaseURL(nextUrl)
-  t.is(api.getBaseURL(), nextUrl)
+  expect(api.getBaseURL()).toBe(nextUrl)
   const response2 = await api.get('/number/200')
-  t.deepEqual(response2.data, MOCK)
+  expect(response2.data).toEqual(MOCK)
 
   // now close the server
   server.close()
@@ -36,5 +35,5 @@ test('changes the headers', async t => {
   // and try connecting back to the original one
   api.setBaseURL(`http://localhost:${port}`)
   const response3 = await api.get('/number/200')
-  t.is(response3.problem, 'CONNECTION_ERROR')
+  expect(response3.problem).toBe('CONNECTION_ERROR')
 })
