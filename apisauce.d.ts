@@ -37,7 +37,7 @@ export function create(config: ApisauceConfig): ApisauceInstance
 export interface ApiErrorResponse<T> {
   ok: false
   problem: PROBLEM_CODE
-  originalError: AxiosError
+  originalError: AxiosError<T>
 
   data?: T
   status?: number
