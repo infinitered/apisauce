@@ -2,6 +2,7 @@
   "compilerOptions": {
     "moduleResolution": "node",
     "target": "es5",
+    "skipLibCheck": true,
     "module": "es2015",
     "strict": false,
     "lib": ["dom", "es2015"]
