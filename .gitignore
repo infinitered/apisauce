@@ -7,3 +7,4 @@ yarn.lock
 dist
 .vscode
 lib/apisauce.js
+.DS_Store
