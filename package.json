@@ -16,6 +16,7 @@
   "description": "Axios + standardized errors + request/response transforms.",
   "devDependencies": {
     "@semantic-release/git": "^7.0.5",
+    "@types/minimatch": "^3.0.5",
     "@types/node": "14.0.4",
     "ava": "0.25.0",
     "babel-cli": "^6.26.0",
@@ -95,6 +96,9 @@
     ]
   },
   "types": "./apisauce.d.ts",
+  "overrides": {
+    "@types/minimatch": "3.0.4"
+  },
   "release": {
     "plugins": [
       "@semantic-release/commit-analyzer",
