@@ -345,6 +345,157 @@ api.get('/users', {}, { cancelToken: source.token })
 source.cancel()
 ```
 
+# React Native + Cookies
+
+React Native uses a native networking stack under the hood (what `axios` talks to). That has a couple of
+cookie quirks worth knowing about.
+
+Install helpers used in the examples below:
+
+```sh
+npm i @react-native-cookies/cookies set-cookie-parser
+# iOS only
+npx pod-install
+```
+
+## Sending cookies
+
+- If `withCredentials` is `true`, React Native will attach cookies from the native cookie jar and may ignore a
+  manual `Cookie` header you set.
+- If you want full control over the outbound `Cookie` header, set `withCredentials: false` on that request and
+  set the header yourself.
+
+Two common patterns that work well:
+
+1. Use the native cookie jar (recommended)
+
+   ```js
+   import CookieManager from '@react-native-cookies/cookies'
+   import { create } from 'apisauce'
+
+   // Seed a cookie into the native jar (optional)
+   ;(async () => {
+     await CookieManager.set('https://example.com', {
+       name: 'session',
+       value: 'abc123',
+       domain: 'example.com',
+       path: '/',
+       secure: true,
+       httpOnly: true,
+     })
+   })()
+
+   const api = create({
+     baseURL: 'https://example.com',
+     withCredentials: true, // RN will add cookies from the native jar
+   })
+   ```
+
+2. Send a manual `Cookie` header for a call (opt out of the jar)
+
+   ```js
+   import { create } from 'apisauce'
+
+   const api = create({ baseURL: 'https://example.com' })
+   // Set Cookie per-request to avoid leaking it globally
+   api.get('/users', {}, { withCredentials: false, headers: { Cookie: 'session=abc123' } })
+   ```
+
+## Reading Set-Cookie from responses
+
+Servers can return multiple `Set-Cookie` headers. On React Native, the header values are sometimes
+flattened into a single comma‑separated string. Because cookie attributes like `Expires=...` also contain
+commas, splitting on `,` is unsafe.
+
+Use a tiny helper to split and parse safely, then (optionally) persist them to the native jar so future
+requests pick them up automatically:
+
+```js
+import { parse, splitCookiesString } from 'set-cookie-parser'
+import CookieManager from '@react-native-cookies/cookies'
+import { create } from 'apisauce'
+
+const api = create({ baseURL: 'https://example.com', withCredentials: true })
+
+api.addResponseTransform((res) => {
+  const headers = res.headers || {}
+  const raw = headers['set-cookie']
+    ?? headers['Set-Cookie']
+    ?? Object.entries(headers).find(([k]) => k.toLowerCase() === 'set-cookie')?.[1]
+  if (!raw) return
+
+  // RN may provide a string; this handles Expires=... commas correctly
+  const parts = Array.isArray(raw) ? raw : splitCookiesString(String(raw))
+  const cookies = parse(parts, { map: false })
+
+  // Persist to the native jar (optional). Fire-and-forget to avoid blocking.
+  const { url = '/', baseURL = '' } = res.config || {}
+  let origin = ''
+  try {
+    if (baseURL) {
+      origin = new URL(url || '', baseURL).origin
+    } else if (url) {
+      origin = new URL(String(url)).origin
+    }
+  } catch {
+    if (typeof baseURL === 'string') {
+      const m = baseURL.match(/^(https?:\/\/[^/]+)/i)
+      if (m) origin = m[1]
+    }
+  }
+  if (!origin || !/^https?:\/\//.test(origin)) return
+  // Compute a standards-compliant default path for new cookies
+  let defaultPath = '/'
+  try {
+    const reqUrl = baseURL ? new URL(url || '', baseURL) : new URL(String(url))
+    const p = reqUrl.pathname || '/'
+    defaultPath = p === '/' ? '/' : (p.endsWith('/') ? p : p.replace(/\/[^/]*$/, '/'))
+  } catch {}
+  Promise.all(
+    cookies.map((c) => {
+      // Normalize attributes
+      const domain = c.domain ? c.domain.replace(/^\./, '') : undefined
+      const expires = c.expires instanceof Date
+        ? c.expires.toISOString()
+        : typeof c.maxAge === 'number'
+          ? new Date(Date.now() + c.maxAge * 1000).toISOString()
+          : undefined
+
+      const normSameSite = c.sameSite
+        ? ({ lax: 'Lax', strict: 'Strict', none: 'None' }[String(c.sameSite).toLowerCase()] || undefined)
+        : undefined
+      const forceSecure = normSameSite === 'None' ? true : !!c.secure
+
+      return CookieManager.set(origin, {
+        name: c.name,
+        value: c.value,
+        ...(domain ? { domain } : {}), // host-only if server omitted Domain
+        path: c.path || defaultPath,
+        ...(expires ? { expires } : {}),
+        ...(normSameSite ? { sameSite: normSameSite } : {}),
+        secure: forceSecure,
+        httpOnly: !!c.httpOnly,
+      })
+    }),
+  ).catch(() => {
+    // prevent unhandled promise rejections
+  })
+})
+```
+
+If your RN runtime doesn’t include the `URL` global, add a polyfill (for example, in your entry file):
+
+```js
+import 'react-native-url-polyfill/auto'
+```
+
+Notes:
+
+- `Set-Cookie` (response) vs `Cookie` (request) use different formats. Multiple cookies in a request go in one
+  `Cookie` header separated by `; `.
+- If you choose `withCredentials: false`, server‑set cookies won’t be persisted automatically. The transform
+  above shows one way to capture them.
+
 # Problem Codes
 
 The `problem` property on responses is filled with the best
