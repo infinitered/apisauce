@@ -29,6 +29,12 @@ export default (port, mockData = {}) => {
   return new Promise(resolve => {
     const server = http.createServer((req, res) => {
       const url = req.url
+      if (url === '/headers') {
+        // Echo request headers for tests that need to assert on outbound headers
+        sendResponse(res, 200, JSON.stringify({ headers: req.headers }))
+        return
+      }
+
       if (url === '/ok') {
         send200(res)
         return
