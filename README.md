@@ -353,7 +353,7 @@ cookie quirks worth knowing about.
 Install helpers used in the examples below:
 
 ```sh
-npm i @react-native-cookies/cookies set-cookie-parser
+npm i @react-native-cookies/cookies
 # iOS only
 npx pod-install
 ```
@@ -397,93 +397,96 @@ Two common patterns that work well:
    import { create } from 'apisauce'
 
    const api = create({ baseURL: 'https://example.com' })
-   // Set Cookie per-request to avoid leaking it globally
+   // Set Cookie per-request to avoid leaking it globally.
+   //
+   // Important: the `Cookie` request header is a
+   // [forbidden header name](https://fetch.spec.whatwg.org/#forbidden-header-name)
+   // in the Fetch/XHR spec. Many React Native runtimes (including current
+   // releases that use the built-in `fetch` / XHR implementation) will strip a
+   // manually set `Cookie` header for security reasons. This pattern can work
+   // in some environments, but you **must** test it on the exact RN versions
+   // and platforms you ship to.
+   //
+   // Prefer the native cookie jar with `withCredentials: true` whenever
+   // possible. Treat manual `Cookie` headers as a best-effort fallback only.
    api.get('/users', {}, { withCredentials: false, headers: { Cookie: 'session=abc123' } })
    ```
 
 ## Reading Set-Cookie from responses
 
 Servers can return multiple `Set-Cookie` headers. On React Native, the header values are sometimes
-flattened into a single comma‑separated string. Because cookie attributes like `Expires=...` also contain
-commas, splitting on `,` is unsafe.
+flattened or normalized by the native networking layer. Let the platform handle cookie parsing by
+handing the raw header value(s) to `@react-native-cookies/cookies`:
 
-Use a tiny helper to split and parse safely, then (optionally) persist them to the native jar so future
-requests pick them up automatically:
-
-```js
-import { parse, splitCookiesString } from 'set-cookie-parser'
+```ts
 import CookieManager from '@react-native-cookies/cookies'
 import { create } from 'apisauce'
 
 const api = create({ baseURL: 'https://example.com', withCredentials: true })
 
+type Origin = `http://${string}` | `https://${string}`
+type SetCookieHeader = string | string[] | undefined
+
+/**
+* Persist `Set-Cookie` header value(s) from an axios / apisauce response into
+* React Native's native cookie jar.
+*
+* This uses `CookieManager.setFromResponse` so the host platform is
+* responsible for parsing, expiration, SameSite / Secure handling, etc.
+*
+* @param origin - Request origin such as `https://example.com`.
+* @param setCookie - Raw `Set-Cookie` header value(s) from the response.
+*/
+async function persistSetCookieHeader(origin: Origin, setCookie: SetCookieHeader): Promise<void> {
+  if (!setCookie) return
+
+  const values = Array.isArray(setCookie) ? setCookie : [setCookie]
+
+  await Promise.all(
+    values
+      .filter(Boolean)
+      .map((value) => CookieManager.setFromResponse(origin, value)),
+  )
+}
+
 api.addResponseTransform((res) => {
   const headers = res.headers || {}
-  const raw = headers['set-cookie']
-    ?? headers['Set-Cookie']
-    ?? Object.entries(headers).find(([k]) => k.toLowerCase() === 'set-cookie')?.[1]
+  const raw =
+    headers['set-cookie'] ??
+    headers['Set-Cookie'] ??
+    Object.entries(headers).find(([k]) => k.toLowerCase() === 'set-cookie')?.[1]
   if (!raw) return
 
-  // RN may provide a string; this handles Expires=... commas correctly
-  const parts = Array.isArray(raw) ? raw : splitCookiesString(String(raw))
-  const cookies = parse(parts, { map: false })
-
-  // Persist to the native jar (optional). Fire-and-forget to avoid blocking.
   const { url = '/', baseURL = '' } = res.config || {}
-  let origin = ''
+  let origin: Origin | '' = ''
   try {
     if (baseURL) {
-      origin = new URL(url || '', baseURL).origin
+      origin = new URL(url || '', baseURL).origin as Origin
     } else if (url) {
-      origin = new URL(String(url)).origin
+      origin = new URL(String(url)).origin as Origin
     }
   } catch {
     if (typeof baseURL === 'string') {
       const m = baseURL.match(/^(https?:\/\/[^/]+)/i)
-      if (m) origin = m[1]
+      if (m) origin = m[1] as Origin
     }
   }
   if (!origin || !/^https?:\/\//.test(origin)) return
-  // Compute a standards-compliant default path for new cookies
-  let defaultPath = '/'
-  try {
-    const reqUrl = baseURL ? new URL(url || '', baseURL) : new URL(String(url))
-    const p = reqUrl.pathname || '/'
-    defaultPath = p === '/' ? '/' : (p.endsWith('/') ? p : p.replace(/\/[^/]*$/, '/'))
-  } catch {}
-  Promise.all(
-    cookies.map((c) => {
-      // Normalize attributes
-      const domain = c.domain ? c.domain.replace(/^\./, '') : undefined
-      const expires = c.expires instanceof Date
-        ? c.expires.toISOString()
-        : typeof c.maxAge === 'number'
-          ? new Date(Date.now() + c.maxAge * 1000).toISOString()
-          : undefined
 
-      const normSameSite = c.sameSite
-        ? ({ lax: 'Lax', strict: 'Strict', none: 'None' }[String(c.sameSite).toLowerCase()] || undefined)
-        : undefined
-      const forceSecure = normSameSite === 'None' ? true : !!c.secure
-
-      return CookieManager.set(origin, {
-        name: c.name,
-        value: c.value,
-        ...(domain ? { domain } : {}), // host-only if server omitted Domain
-        path: c.path || defaultPath,
-        ...(expires ? { expires } : {}),
-        ...(normSameSite ? { sameSite: normSameSite } : {}),
-        secure: forceSecure,
-        httpOnly: !!c.httpOnly,
-      })
-    }),
-  ).catch(() => {
-    // prevent unhandled promise rejections
+  persistSetCookieHeader(origin, raw).catch((error) => {
+    // Surface errors during development so cookie issues don't stay silent.
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn('apisauce: failed to persist cookies to native jar', error)
+    }
   })
 })
 ```
 
-If your RN runtime doesn’t include the `URL` global, add a polyfill (for example, in your entry file):
+React Native ships with a `URL` global, but it has historically been only
+partially aligned with the standard WHATWG `URL` implementation and has had
+bugs in some releases and engine combinations. If you see `URL`-related
+issues or want fully spec-compliant behavior, add a polyfill (for example, in
+your entry file):
 
 ```js
 import 'react-native-url-polyfill/auto'
