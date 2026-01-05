@@ -49,14 +49,14 @@ export interface ApiOkResponse<T> {
   ok: true
   problem: null
   originalError: null
+  data: T
 
-  data?: T
   status?: number
   headers?: HEADERS
   config?: AxiosRequestConfig
   duration?: number
 }
-export type ApiResponse<T, U = T> = ApiErrorResponse<U> | ApiOkResponse<T>
+export type ApiResponse<T = unknown, U = T> = ApiErrorResponse<U> | ApiOkResponse<T>
 
 export type Monitor = (response: ApiResponse<any>) => void
 export type RequestTransform = (request: AxiosRequestConfig) => void
