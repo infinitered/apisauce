@@ -1,5 +1,8 @@
 # Apisauce
 
+> [!IMPORTANT]  
+> Community Support Only: Apisauce is no longer actively maintained, although Infinite Red will release security patches submitted by the community. We do not recommend using it on new projects. Instead, use Axios directly and build your own wrapper around it or look for another better-maintained wrapper.
+
 ```
 (Ring ring ring)
 < Hello?
@@ -391,4 +394,4 @@ test('mock adapter', async () => {
 
 # Contributing
 
-Bugs? Comments? Features? PRs and Issues happily welcomed! Make sure to check out our [contributing guide](./github/CONTRIBUTING.md) to get started!
+While Infinite Red is no longer actively maintaining apisauce, we will occasionally release security updates. Make sure to check out our [contributing guide](./github/CONTRIBUTING.md) to get started.
