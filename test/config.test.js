@@ -22,6 +22,7 @@ test('configures axios correctly', t => {
   const { axiosInstance } = apisauce
   t.is(axiosInstance.defaults.timeout, 0)
   t.is(axiosInstance.defaults.baseURL, validConfig.baseURL)
+  t.is(axiosInstance.defaults.headers.common['X-Testing'], 'hello')
   t.deepEqual(apisauce.headers, Object.assign({}, DEFAULT_HEADERS, validConfig.headers))
 })
 
@@ -31,5 +32,6 @@ test('configures axios correctly with passed instance', t => {
   const { axiosInstance } = apisauce
   t.is(axiosInstance.defaults.timeout, 0)
   t.is(axiosInstance.defaults.baseURL, validConfig.baseURL)
+  t.is(axiosInstance.defaults.headers.common['X-Testing'], 'hello')
   t.deepEqual(apisauce.headers, Object.assign({}, DEFAULT_HEADERS, validConfig.headers))
 })

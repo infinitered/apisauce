@@ -140,6 +140,7 @@ export const create = config => {
   // convenience for setting new request headers
   const setHeader = (name, value) => {
     headers[name] = value
+    instance.defaults.headers.common[name] = value
     return instance
   }
 
@@ -152,8 +153,11 @@ export const create = config => {
   // remove header
   const deleteHeader = name => {
     delete headers[name]
+    delete instance.defaults.headers.common[name]
     return instance
   }
+
+  Object.assign(instance.defaults.headers.common, headers)
 
   /**
    * Sets a new base URL.
@@ -214,6 +218,13 @@ export const create = config => {
         }
       }
     }
+
+    const requestHeaderNames = new Set(Object.keys(axiosRequestConfig.headers).map(name => name.toLowerCase()))
+    Object.keys(headers).forEach(name => {
+      if (!requestHeaderNames.has(name.toLowerCase())) {
+        axiosRequestConfig.headers[name] = null
+      }
+    })
 
     // after the call, convert the axios response, then execute our monitors
     const startTime = toNumber(new Date())
