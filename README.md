@@ -106,6 +106,10 @@ const customAxiosInstance = axios.create({ baseURL: 'https://example.com/api/v3'
 const apisauceInstance = create({ axiosInstance: customAxiosInstance })
 ```
 
+Headers passed to `create`, as well as changes made with `setHeader`, `setHeaders`,
+or `deleteHeader`, are mirrored to `axiosInstance.defaults.headers.common`. Direct
+requests through the exposed Axios instance therefore use the same managed defaults.
+
 ## Calling The API
 
 With your fresh `api`, you can now call it like this:

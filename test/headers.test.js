@@ -21,17 +21,21 @@ test('jumps the wire with the right headers', async t => {
     headers: { 'X-Testing': 'hello' },
   })
   api.setHeaders({ 'X-Testing': 'foo', steve: 'hey' })
+  t.is(api.axiosInstance.defaults.headers.common['X-Testing'], 'foo')
+  t.is(api.axiosInstance.defaults.headers.common['steve'], 'hey')
   const response = await api.get('/number/200', { a: 'b' })
   t.is(response.config.headers['X-Testing'], 'foo')
   t.is(response.config.headers['steve'], 'hey')
 
   // then change one of them
   api.setHeader('steve', 'thx')
+  t.is(api.axiosInstance.defaults.headers.common['steve'], 'thx')
   const response2 = await api.get('/number/200', {})
   t.is(response2.config.headers['steve'], 'thx')
 
   // then remove one of them
   api.deleteHeader('steve')
+  t.is(api.axiosInstance.defaults.headers.common['steve'], undefined)
   const response3 = await api.get('/number/200', {})
   t.is(response3.config.headers['steve'], undefined)
 })
