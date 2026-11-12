@@ -16,6 +16,8 @@
 
 Talking to APIs doesn't have to be awkward anymore.
 
+Originally built by [Infinite Red](https://infinite.red), a U.S.-based web and mobile development company.
+
 [![npm module](https://badge.fury.io/js/apisauce.svg)](https://www.npmjs.org/package/apisauce)
 
 # Features
